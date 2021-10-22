@@ -43,6 +43,7 @@ namespace dbm {
 
     struct bounds_table_vec_t {
         std::vector<bound_t> _bounds;
+        const int _number_of_clocks;
 
         bounds_table_vec_t(int size);
 

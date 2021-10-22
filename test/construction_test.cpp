@@ -91,7 +91,7 @@ bool canonical_test03() {
     d._bounds_table_vec.at(2, 0) = bound_t(20, true);
     d._bounds_table_vec.at(2, 1) = bound_t(10, true);
     d._bounds_table_vec.at(2, 2) = bound_t::zero();
-    d._bounds_table_vec.at(2, 0) = bound_t::inf();
+    d._bounds_table_vec.at(2, 3) = bound_t::inf();
 
     d._bounds_table_vec.at(3, 0) = bound_t::inf();
     d._bounds_table_vec.at(3, 1) = bound_t::inf();
@@ -136,14 +136,15 @@ bool canonical_benchmark03(int runs) {
 }
 
 int main() {
-    std::cout << "Pointers: ";
-    canonical_benchmark01(100000000);
 
     std::cout << "Values: ";
-    canonical_benchmark02(100000000);
+    canonical_benchmark02(10000000);
 
     std::cout << "Vector: ";
-    canonical_benchmark03(100000000);
+    canonical_benchmark03(10000000);
+
+    std::cout << "Pointers: ";
+    canonical_benchmark01(10000000);
 
 //    random_gen_test01();
     return 0;
