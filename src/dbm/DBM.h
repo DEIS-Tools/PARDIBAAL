@@ -8,30 +8,24 @@
 #include "bounds_table_t.h"
 #include "bound_t.h"
 
-typedef uint32_t dim_t;
 
 namespace dbm {
-
     class DBM {
     public:
         bounds_table_t _bounds_table;
 
-        DBM(dim_t size);
+        DBM(dim_t number_of_clocks);
 
-        static DBM gen_random(int size, int max);
-
-        bool is_empty() const;
-        bool relation(const DBM &d) const;
-        bool satisfy(const bound_t &g) const;
+        [[nodiscard]] bool is_empty() const;
+        [[nodiscard]] bool is_included_in(const DBM &d) const;
 
         void close();
 
-        // Preserves the canonical form
         void delay();
-        void restrict(const bound_t &g);
-        void free(const int &i);
-        void reset(const int &i, const int &k);
-        void copy(const int &i, const int &j);
+        void restrict(dim_t x, dim_t y, bound_t g);
+        void free(dim_t x);
+        void reset(dim_t x, dim_t m);
+        void copy(dim_t x, dim_t y);
 
     };
 

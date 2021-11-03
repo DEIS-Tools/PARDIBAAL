@@ -19,27 +19,22 @@ namespace dbm{
         int _n = 0;
         bool _strict = false, _inf = false;
 
+        static const bound_t& max(const bound_t &a, const bound_t &b);
+        static bound_t max(bound_t &&a, bound_t &&b);
+        static bound_t max(const bound_t &a, bound_t &&b);
+        static bound_t max(bound_t &&a, const bound_t &b);
+
         static const bound_t& min(const bound_t &a, const bound_t &b);
         static bound_t min(bound_t &&a, bound_t &&b);
         static bound_t min(const bound_t &a, bound_t &&b);
         static bound_t min(bound_t &&a, const bound_t &b);
 
-        static bound_t add(const bound_t &a, const bound_t &b);
-        static bound_t add(bound_t &&a, bound_t &&b);
-        static bound_t add(const bound_t &a, bound_t &&b);
-        static bound_t add(bound_t &&a, const bound_t &b);
+        bound_t operator+(bound_t rhs) const;
 
-        static bool less(const bound_t &lhs, const bound_t &rhs);
-        static bool less(bound_t &&lhs, bound_t &&rhs);
-        static bool less(const bound_t &lhs, bound_t &&rhs);
-        static bool less(bound_t &&lhs, const bound_t &rhs);
+        bool operator<=(bound_t rhs) const;
 
-        static bool less_eq(const bound_t &lhs, const bound_t &rhs);
-        static bool less_eq(bound_t &&lhs, bound_t &&rhs);
-        static bool less_eq(const bound_t &lhs, bound_t &&rhs);
-        static bool less_eq(bound_t &&lhs, const bound_t &rhs);
+        bool operator<(bound_t rhs) const;
 
-        static bound_t gen_random(const int &max);
     };
 
 }
