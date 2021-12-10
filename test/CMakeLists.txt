@@ -1,0 +1,11 @@
+find_package(Boost COMPONENTS unit_test_framework REQUIRED)
+include_directories (${TEST_SOURCE_DIR}/src
+        ${Boost_INCLUDE_DIRS}
+        ${DBM_SOURCE_DIR}
+        )
+
+add_executable(DBM_test DBM_test.cpp)
+add_executable(bound_test bound_test.cpp)
+
+target_link_libraries(DBM_test ${Boost_LIBRARIES} dbm)
+target_link_libraries(bound_test ${Boost_LIBRARIES} dbm)

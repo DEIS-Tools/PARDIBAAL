@@ -37,5 +37,6 @@ if(BUILD_TESTING AND DBM_BuildTests)
     #testing
     add_subdirectory(test)
     enable_testing()
-    add_test(NAME TestPDAFactory    COMMAND TestPDAFactory)
+    add_test(NAME DBM_test   COMMAND DBM_test)
+    add_test(NAME bound_test COMMAND bound_test)
 endif()
