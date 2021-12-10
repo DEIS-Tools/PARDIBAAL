@@ -6,9 +6,9 @@
 #define BDM_BOUND_T_H
 
 #include <cstdlib>
-#include <ctime>
 
 namespace dbm{
+    using dim_t = uint32_t;
 
     struct bound_t {
         bound_t(){};
@@ -16,7 +16,7 @@ namespace dbm{
         static bound_t inf();
         static bound_t zero();
 
-        int _n = 0;
+        uint64_t _n = 0;
         bool _strict = false, _inf = false;
 
         static const bound_t& max(const bound_t &a, const bound_t &b);
@@ -35,6 +35,9 @@ namespace dbm{
 
         bool operator<(bound_t rhs) const;
 
+        bool operator==(bound_t rhs) const;
+
+        bool operator!=(bound_t rhs) const;
     };
 
 }

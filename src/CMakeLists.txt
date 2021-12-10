@@ -9,6 +9,8 @@ add_library(dbm
         dbm/bounds_table_t.cpp
         dbm/bound_t.cpp)
 
+target_include_directories (dbm PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 install(TARGETS dbm
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib

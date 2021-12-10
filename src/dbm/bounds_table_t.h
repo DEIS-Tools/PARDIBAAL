@@ -6,13 +6,11 @@
 #define BDM_BOUNDS_TABLE_T_H
 
 #include "bound_t.h"
-#include "DBM.h"
 
 #include <vector>
 
 
 namespace dbm {
-    typedef uint32_t dim_t;
 
     struct bounds_table_t {
     public:

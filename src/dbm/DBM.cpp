@@ -3,9 +3,6 @@
 //
 
 #include "DBM.h"
-#include "bounds_table_t.h"
-
-#include <iostream>
 
 namespace dbm {
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
@@ -47,18 +44,16 @@ namespace dbm {
                                                            _bounds_table.get(i, k) + _bounds_table.get(k, j));
     }
 
-    void DBM::delay() {
+    void DBM::future() {
         for (dim_t i = 1; i < _bounds_table._number_of_clocks; i++)
-            _bounds_table.get(i, 0);
+            _bounds_table.get(i, 0) = bound_t::inf();
     }
 
     void DBM::restrict(dim_t x, dim_t y, bound_t g) {
-        bound_t &Dxy = _bounds_table.get(x, y);
-
-        if (Dxy + g < bound_t::zero()) // In this case the zone is now empty
+        if ((_bounds_table.get(y, x) + g) < bound_t::zero()) // In this case the zone is now empty
             _bounds_table.get(0, 0) = bound_t(-1, false);
-        else if (g < Dxy) {
-            Dxy = g;
+        else if (g < _bounds_table.get(x, y)) {
+            _bounds_table.get(x, y) = g;
             for (dim_t i = 0; i < _bounds_table._number_of_clocks; i++) {
                 for (dim_t j = 0; j < _bounds_table._number_of_clocks; ++j) {
                     if (_bounds_table.get(i, x) + _bounds_table.get(x, j) < _bounds_table.get(i, j))
@@ -82,7 +77,7 @@ namespace dbm {
     }
 
     // x := m
-    void DBM::reset(dim_t x, dim_t m) {
+    void DBM::assign(dim_t x, dim_t m) {
         for (dim_t i = 0; i < _bounds_table._number_of_clocks; i++) {
             _bounds_table.get(x, i) = bound_t(m, false) + _bounds_table.get(0, i);
             _bounds_table.get(i, x) = bound_t(-1 * m, false) + _bounds_table.get(i, 0);

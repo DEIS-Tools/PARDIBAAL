@@ -3,9 +3,6 @@
 //
 
 #include "bounds_table_t.h"
-#include "bound_t.h"
-
-#include <vector>
 
 namespace dbm {
 

@@ -6,8 +6,6 @@
 #define BDM_DBM_H
 
 #include "bounds_table_t.h"
-#include "bound_t.h"
-
 
 namespace dbm {
     class DBM {
@@ -18,14 +16,18 @@ namespace dbm {
 
         [[nodiscard]] bool is_empty() const;
         [[nodiscard]] bool is_included_in(const DBM &d) const;
+        [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
 
         void close();
 
-        void delay();
+        void future();
+        void past();
         void restrict(dim_t x, dim_t y, bound_t g);
         void free(dim_t x);
-        void reset(dim_t x, dim_t m);
+        void assign(dim_t x, dim_t m);
         void copy(dim_t x, dim_t y);
+
+
 
     };
 

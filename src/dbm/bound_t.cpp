@@ -4,9 +4,6 @@
 
 #include "bound_t.h"
 
-#include <cstdlib>
-#include <ctime>
-
 namespace dbm {
 
     bound_t::bound_t(int n, bool strict) : _n(n), _strict(strict) {}
@@ -62,8 +59,8 @@ namespace dbm {
     }
 
     bool bound_t::operator<=(bound_t rhs) const {
-        if (this->_inf)
-            return rhs._inf;
+        if (this->_inf) return rhs._inf;
+        if (rhs._inf) return true;
 
         if (this->_n == rhs._n) {
             if (rhs._strict)
@@ -87,6 +84,17 @@ namespace dbm {
         }
 
         return this->_n < rhs._n;
+    }
+
+    bool bound_t::operator==(bound_t rhs) const {
+        if (this->_inf || rhs._inf)
+            return this->_inf && rhs._inf;
+
+        return (this->_n == rhs._n) && (this->_strict == rhs._strict);
+    }
+
+    bool bound_t::operator!=(bound_t rhs) const {
+        return !(*this == rhs);
     }
 
 }
