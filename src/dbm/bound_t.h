@@ -38,6 +38,10 @@ namespace dbm{
         bool operator==(bound_t rhs) const;
 
         bool operator!=(bound_t rhs) const;
+
+        bool operator>(bound_t rhs) const;
+
+        bool operator>=(bound_t rhs) const;
     };
 
 }

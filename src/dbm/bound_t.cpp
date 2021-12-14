@@ -97,4 +97,11 @@ namespace dbm {
         return !(*this == rhs);
     }
 
+    bool bound_t::operator>(bound_t rhs) const {
+        return rhs < *this;
+    }
+
+    bool bound_t::operator>=(bound_t rhs) const {
+        return rhs <= *this;
+    }
 }

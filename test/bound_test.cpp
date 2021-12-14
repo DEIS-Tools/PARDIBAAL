@@ -35,58 +35,64 @@ BOOST_AUTO_TEST_CASE(Equal_Test_2) {
     BOOST_CHECK(a == b);
 }
 
-BOOST_AUTO_TEST_CASE(Max_Test_1) {
-    bound_t a = bound_t::zero();
-    bound_t b = bound_t::inf();
-
-    BOOST_CHECK(b == bound_t::max(a, b));
-    BOOST_CHECK(a < b);
-    BOOST_CHECK(a <= b);
-}
-
-BOOST_AUTO_TEST_CASE(Max_Test_2) {
-    bound_t a(100, false);
-    bound_t b = bound_t::inf();
-
-    BOOST_CHECK(b == bound_t::max(a, b));
-    BOOST_CHECK(a < b);
-    BOOST_CHECK(a <= b);
-}
-
-BOOST_AUTO_TEST_CASE(Max_Test_3) {
-    bound_t a(1, true);
-    bound_t b(1, false);
-
-    BOOST_CHECK(b == bound_t::max(a, b));
-    BOOST_CHECK(a < b);
-    BOOST_CHECK(a <= b);
-}
-
-BOOST_AUTO_TEST_CASE(Min_Test_1) {
+BOOST_AUTO_TEST_CASE(Comp_Test_1) {
     bound_t a = bound_t::zero();
     bound_t b = bound_t::inf();
 
     BOOST_CHECK(a == bound_t::min(a, b));
+    BOOST_CHECK(b == bound_t::max(a, b));
     BOOST_CHECK(a < b);
     BOOST_CHECK(a <= b);
+    BOOST_CHECK(b > a);
+    BOOST_CHECK(b >= a);
 }
 
-BOOST_AUTO_TEST_CASE(Min_Test_2) {
+BOOST_AUTO_TEST_CASE(Comp_Test_2) {
     bound_t a(100, false);
     bound_t b = bound_t::inf();
 
     BOOST_CHECK(a == bound_t::min(a, b));
+    BOOST_CHECK(b == bound_t::max(a, b));
     BOOST_CHECK(a < b);
     BOOST_CHECK(a <= b);
+    BOOST_CHECK(b > a);
+    BOOST_CHECK(b >= a);
 }
 
-BOOST_AUTO_TEST_CASE(Min_Test_3) {
+BOOST_AUTO_TEST_CASE(Comp_Test_3) {
     bound_t a(1, true);
     bound_t b(1, false);
 
     BOOST_CHECK(a == bound_t::min(a, b));
+    BOOST_CHECK(b == bound_t::max(a, b));
     BOOST_CHECK(a < b);
     BOOST_CHECK(a <= b);
+    BOOST_CHECK(b > a);
+    BOOST_CHECK(b >= a);
+}
+
+BOOST_AUTO_TEST_CASE(Comp_Test_4) {
+    bound_t a = bound_t::inf();
+    bound_t b = bound_t::inf();
+
+    BOOST_CHECK(a == bound_t::min(a, b));
+    BOOST_CHECK(a == bound_t::max(a, b));
+    BOOST_CHECK(!(a < b));
+    BOOST_CHECK(a <= b);
+    BOOST_CHECK(!(b > a));
+    BOOST_CHECK(b >= a);
+}
+
+BOOST_AUTO_TEST_CASE(Comp_Test_5) {
+    bound_t a = bound_t::zero();
+    bound_t b = bound_t::zero();
+
+    BOOST_CHECK(a == bound_t::min(a, b));
+    BOOST_CHECK(a == bound_t::max(a, b));
+    BOOST_CHECK(!(a < b));
+    BOOST_CHECK(a <= b);
+    BOOST_CHECK(!(b > a));
+    BOOST_CHECK(b >= a);
 }
 
 BOOST_AUTO_TEST_CASE(Add_Test_1) {
