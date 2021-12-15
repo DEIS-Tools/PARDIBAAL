@@ -16,7 +16,7 @@ namespace dbm {
 
         [[nodiscard]] bool is_empty() const;
         [[nodiscard]] bool is_included_in(const DBM &d) const;
-        [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
+        [[nodiscard]] bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
 
         void close();
 
@@ -24,11 +24,10 @@ namespace dbm {
         void past();
         void restrict(dim_t x, dim_t y, bound_t g);
         void free(dim_t x);
-        void assign(dim_t x, dim_t m);
+        void assign(dim_t x, guard_t m);
         void copy(dim_t x, dim_t y);
-
-
-
+        void shift(dim_t x, guard_t n);
+        void norm(const std::vector<guard_t> &ceiling);
     };
 
 }

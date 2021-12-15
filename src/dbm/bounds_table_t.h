@@ -14,13 +14,13 @@ namespace dbm {
 
     struct bounds_table_t {
     public:
-        const int _number_of_clocks;
+        const dim_t _number_of_clocks;
 
-        bounds_table_t(dim_t number_of_clocks);
+        explicit bounds_table_t(dim_t number_of_clocks);
 
         bound_t &get(dim_t i, dim_t j);
 
-        bound_t at(dim_t i, dim_t j) const;
+        [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
 
     private:
         std::vector<bound_t> _bounds;

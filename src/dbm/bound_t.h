@@ -9,14 +9,15 @@
 
 namespace dbm{
     using dim_t = uint32_t;
+    using guard_t = int64_t;
 
     struct bound_t {
         bound_t(){};
-        bound_t(int n, bool strict);
+        bound_t(guard_t n, bool strict);
         static bound_t inf();
         static bound_t zero();
 
-        int64_t _n = 0;
+        guard_t _n = 0;
         bool _strict = false, _inf = false;
 
         static const bound_t& max(const bound_t &a, const bound_t &b);

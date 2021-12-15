@@ -6,7 +6,7 @@
 
 namespace dbm {
 
-    bound_t::bound_t(int n, bool strict) : _n(n), _strict(strict) {}
+    bound_t::bound_t(guard_t n, bool strict) : _n(n), _strict(strict) {}
 
     bound_t bound_t::zero() {
         return bound_t(0, false);
