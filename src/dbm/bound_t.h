@@ -16,7 +16,7 @@ namespace dbm{
         static bound_t inf();
         static bound_t zero();
 
-        uint64_t _n = 0;
+        int64_t _n = 0;
         bool _strict = false, _inf = false;
 
         static const bound_t& max(const bound_t &a, const bound_t &b);

@@ -10,8 +10,7 @@
 
 using namespace dbm;
 
-BOOST_AUTO_TEST_CASE(Close_Test_1)
-{
+BOOST_AUTO_TEST_CASE(Close_Test_1) {
     DBM D(3);
 
     D.future();
@@ -45,7 +44,26 @@ BOOST_AUTO_TEST_CASE(Delay_Test_1) {
 
 BOOST_AUTO_TEST_CASE(Restrict_Test_1) {
     DBM D(3);
+    bound_t g(5, false);
 
     D.future();
-//    D.restrict()
+    D.restrict(1, 0, g);
+    BOOST_CHECK(D._bounds_table.get(1, 0) == g);
+
+    DBM Q = D;
+    D.close();
+
+    for (dim_t i = 0; i < 3; i++)
+        for (dim_t j = 0; j < 3; j++)
+            BOOST_CHECK(D._bounds_table.get(i, j) == Q._bounds_table.get(i, j));
+}
+
+BOOST_AUTO_TEST_CASE(Restrict_Test_2) {
+    DBM D(3);
+    bound_t g(-5, false);
+
+    D.future();
+    D.restrict(1, 0, g);
+
+    BOOST_CHECK(D.is_empty());
 }
