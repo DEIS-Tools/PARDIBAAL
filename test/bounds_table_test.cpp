@@ -8,3 +8,8 @@
 #include <dbm/bounds_table_t.h>
 
 using namespace dbm;
+
+BOOST_AUTO_TEST_CASE(Dummy) {
+
+
+}

@@ -12,6 +12,10 @@ endif (NOT CMAKE_BUILD_TYPE)
 option(DBM_BuildTests "Build the unit tests when BUILD_TESTING is enabled." ON)
 option(DBM_GetDependencies "Fetch external dependencies from web." ON)
 
+if (DBM_BuildTests)
+    set(BUILD_SHARED_LIBS ON)
+endif()
+
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wpedantic -fPIC -DBUG_BOUNDS")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2 -DNDEBUG -Wall -Wpedantic -fPIC")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)

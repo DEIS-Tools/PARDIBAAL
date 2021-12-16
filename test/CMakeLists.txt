@@ -4,6 +4,8 @@ include_directories (${TEST_SOURCE_DIR}/src
         ${DBM_SOURCE_DIR}
         )
 
+add_definitions (-DBOOST_TEST_DYN_LINK)
+
 add_executable(DBM_test DBM_test.cpp)
 add_executable(bounds_table_test bounds_table_test.cpp)
 add_executable(bound_test bound_test.cpp)
