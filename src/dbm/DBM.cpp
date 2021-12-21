@@ -35,7 +35,7 @@ namespace dbm {
     }
 
     bool DBM::is_satisfied(dim_t x, dim_t y, bound_t g) const {
-        return bound_t::zero() > this->_bounds_table.at(x, y) + g;
+        return bound_t::zero() < (this->_bounds_table.at(y, x) + g);
     }
 
     void DBM::close() {
@@ -65,17 +65,17 @@ namespace dbm {
     }
 
     void DBM::restrict(dim_t x, dim_t y, bound_t g) {
-        if ((_bounds_table.get(y, x) + g) < bound_t::zero()) // In this case the zone is now empty
+        if ((_bounds_table.at(y, x) + g) < bound_t::zero()) // In this case the zone is now empty
             _bounds_table.get(0, 0) = bound_t(-1, false);
         else if (g < _bounds_table.get(x, y)) {
             _bounds_table.get(x, y) = g;
             for (dim_t i = 0; i < _bounds_table._number_of_clocks; i++) {
                 for (dim_t j = 0; j < _bounds_table._number_of_clocks; ++j) {
-                    if (_bounds_table.get(i, x) + _bounds_table.get(x, j) < _bounds_table.get(i, j))
-                        _bounds_table.get(i, j) = _bounds_table.get(i, x) + _bounds_table.get(x, j);
+                    if (_bounds_table.at(i, x) + _bounds_table.at(x, j) < _bounds_table.at(i, j))
+                        _bounds_table.get(i, j) = _bounds_table.at(i, x) + _bounds_table.at(x, j);
 
-                    if (_bounds_table.get(i, y) + _bounds_table.get(y, j) < _bounds_table.get(i, j))
-                        _bounds_table.get(i, j) = _bounds_table.get(i, y) + _bounds_table.get(y, j);
+                    if (_bounds_table.at(i, y) + _bounds_table.at(y, j) < _bounds_table.at(i, j))
+                        _bounds_table.get(i, j) = _bounds_table.at(i, y) + _bounds_table.at(y, j);
                 }
             }
         }
@@ -92,7 +92,7 @@ namespace dbm {
     }
 
     // x := m
-    void DBM::assign(dim_t x, guard_t m) {
+    void DBM::assign(dim_t x, val_t m) {
         for (dim_t i = 0; i < _bounds_table._number_of_clocks; i++) {
             _bounds_table.get(x, i) = bound_t(m, false) + _bounds_table.get(0, i);
             _bounds_table.get(i, x) = bound_t(-1 * m, false) + _bounds_table.get(i, 0);
@@ -111,7 +111,7 @@ namespace dbm {
         _bounds_table.get(y, x) = bound_t::zero();
     }
 
-    void DBM::shift(dim_t x, guard_t n) {
+    void DBM::shift(dim_t x, val_t n) {
         for (int i = 0; i < this->_bounds_table._number_of_clocks; i++) {
             if (i != x) {
                 this->_bounds_table.get(x, i) = this->_bounds_table.at(x, i) + bound_t(n, false);
@@ -123,7 +123,7 @@ namespace dbm {
     }
 
     // Simple normalisation by a ceiling for all clocks.
-    void DBM::norm(const std::vector<guard_t> &ceiling) {
+    void DBM::norm(const std::vector<val_t> &ceiling) {
         if (this->_bounds_table._number_of_clocks != ceiling.size())
             return; //Todo: throw error or something
 
@@ -132,12 +132,16 @@ namespace dbm {
                 if (!(this->_bounds_table.at(i, j)._inf) && this->_bounds_table.at(i, j) > bound_t(ceiling[i], false)){
                     this->_bounds_table.get(i, j) = bound_t::inf();
                 }
-                else if (!(this->_bounds_table.at(i, j)._inf) && this->_bounds_table.at(i, j) < bound_t(ceiling[j], true)) {
+                else if (!(this->_bounds_table.at(i, j)._inf) && this->_bounds_table.at(i, j) < bound_t(-1 * ceiling[j], true)) {
                     this->_bounds_table.get(i, j) = bound_t(-1 * ceiling[j], true);
                 }
             }
         }
 
         close();
+    }
+
+    std::ostream& operator<<(std::ostream& out, const DBM& D) {
+        return out << D._bounds_table;
     }
 }

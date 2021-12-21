@@ -6,7 +6,7 @@
 
 namespace dbm {
 
-    bound_t::bound_t(guard_t n, bool strict) : _n(n), _strict(strict) {}
+    bound_t::bound_t(val_t n, bool strict) : _n(n), _strict(strict) {}
 
     bound_t bound_t::zero() {
         return bound_t(0, false);
@@ -103,5 +103,17 @@ namespace dbm {
 
     bool bound_t::operator>=(bound_t rhs) const {
         return rhs <= *this;
+    }
+
+    std::ostream& operator<<(std::ostream& out, const bound_t& bound) {
+        if (bound._inf) {
+            out << "inf";
+        }
+        else {
+            std::string s = '(' + std::to_string(bound._n) + ", " + (bound._strict ? "<" : "<=") + ')';
+            out << s;
+        }
+
+        return out;
     }
 }

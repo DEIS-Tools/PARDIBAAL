@@ -24,11 +24,15 @@ namespace dbm {
         void past();
         void restrict(dim_t x, dim_t y, bound_t g);
         void free(dim_t x);
-        void assign(dim_t x, guard_t m);
+        void assign(dim_t x, val_t m);
         void copy(dim_t x, dim_t y);
-        void shift(dim_t x, guard_t n);
-        void norm(const std::vector<guard_t> &ceiling);
+        void shift(dim_t x, val_t n);
+        void norm(const std::vector<val_t> &ceiling);
+
+        friend std::ostream& operator<<(std::ostream& out, const DBM& D);
     };
+
+    std::ostream& operator<<(std::ostream& out, const DBM& D);
 
 }
 

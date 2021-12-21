@@ -6,18 +6,19 @@
 #define BDM_BOUND_T_H
 
 #include <cstdlib>
+#include <ostream>
 
 namespace dbm{
     using dim_t = uint32_t;
-    using guard_t = int64_t;
+    using val_t = int64_t;
 
     struct bound_t {
         bound_t(){};
-        bound_t(guard_t n, bool strict);
+        bound_t(val_t n, bool strict);
         static bound_t inf();
         static bound_t zero();
 
-        guard_t _n = 0;
+        val_t _n = 0;
         bool _strict = false, _inf = false;
 
         static const bound_t& max(const bound_t &a, const bound_t &b);
@@ -43,8 +44,11 @@ namespace dbm{
         bool operator>(bound_t rhs) const;
 
         bool operator>=(bound_t rhs) const;
+
+        friend std::ostream& operator<<(std::ostream& out, const bound_t& bound);
     };
 
+    std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 }
 
 #endif //BDM_BOUND_T_H
