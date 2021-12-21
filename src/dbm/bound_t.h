@@ -6,6 +6,7 @@
 #define BDM_BOUND_T_H
 
 #include <cstdlib>
+#include <cinttypes>
 #include <ostream>
 
 namespace dbm{
