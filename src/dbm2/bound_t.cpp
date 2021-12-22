@@ -22,7 +22,7 @@
 
 #include "bound_t.h"
 
-namespace dbm {
+namespace dbm2 {
 
     bound_t::bound_t(val_t n, bool strict) : _n(n), _strict(strict) {}
 

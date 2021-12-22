@@ -27,7 +27,7 @@
 #include <cinttypes>
 #include <ostream>
 
-namespace dbm{
+namespace dbm2{
     using dim_t = uint32_t;
     using val_t = int64_t;
 

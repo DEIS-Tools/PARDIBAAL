@@ -22,7 +22,7 @@
 
 #include "DBM.h"
 
-namespace dbm {
+namespace dbm2 {
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
 
     bool DBM::is_empty() const {

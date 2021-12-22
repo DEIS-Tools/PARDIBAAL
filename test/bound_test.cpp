@@ -24,7 +24,7 @@
 #include <boost/test/unit_test.hpp>
 #include <dbm2/bound_t.h>
 
-using namespace dbm;
+using namespace dbm2;
 
 BOOST_AUTO_TEST_CASE(Inf_Test_1) {
     bound_t b = bound_t::inf();

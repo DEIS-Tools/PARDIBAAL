@@ -23,7 +23,7 @@
 #include <iomanip>
 #include "bounds_table_t.h"
 
-namespace dbm {
+namespace dbm2 {
 
     bounds_table_t::bounds_table_t(dim_t number_of_clocks) : _number_of_clocks(number_of_clocks) {
         _bounds = std::vector<bound_t>(number_of_clocks * number_of_clocks);

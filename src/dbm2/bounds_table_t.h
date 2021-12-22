@@ -28,7 +28,7 @@
 #include <vector>
 
 
-namespace dbm {
+namespace dbm2 {
 
     struct bounds_table_t {
     public:

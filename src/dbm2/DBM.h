@@ -25,7 +25,7 @@
 
 #include "bounds_table_t.h"
 
-namespace dbm {
+namespace dbm2 {
     class DBM {
     public:
         bounds_table_t _bounds_table;

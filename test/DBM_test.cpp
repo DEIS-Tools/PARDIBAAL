@@ -25,7 +25,7 @@
 #include <boost/test/unit_test.hpp>
 #include <dbm2/DBM.h>
 
-using namespace dbm;
+using namespace dbm2;
 
 BOOST_AUTO_TEST_CASE(Close_Test_1) {
     DBM D(3);

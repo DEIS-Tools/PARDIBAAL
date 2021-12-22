@@ -25,7 +25,7 @@
 #include <boost/test/unit_test.hpp>
 #include <dbm2/bounds_table_t.h>
 
-using namespace dbm;
+using namespace dbm2;
 
 BOOST_AUTO_TEST_CASE(Dummy) {
 
