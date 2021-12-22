@@ -22,9 +22,13 @@ namespace dbm {
 
         [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
 
+        friend std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
+
     private:
         std::vector<bound_t> _bounds;
     };
+
+    std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
 }
 
 #endif //BDM_BOUNDS_TABLE_T_H

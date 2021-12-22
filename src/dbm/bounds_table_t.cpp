@@ -2,6 +2,7 @@
 // Created by Thomas Grosen on 21/10/2021.
 //
 
+#include <iomanip>
 #include "bounds_table_t.h"
 
 namespace dbm {
@@ -32,6 +33,19 @@ namespace dbm {
 #endif
 
         return _bounds[i * _number_of_clocks + j];
+    }
+
+    std::ostream& operator<<(std::ostream& out, const bounds_table_t& table) {
+        for (int i = 0; i < table._number_of_clocks; i++) {
+            for (int j = 0; j < table._number_of_clocks; j++) {
+                bound_t b = table.at(i, j);
+                out << std::left << std::setw(15);
+                out << b;
+            }
+            out << '\n';
+        }
+
+        return out;
     }
 
 }
