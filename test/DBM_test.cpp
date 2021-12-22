@@ -23,7 +23,7 @@
 #define BOOST_TEST_MODULE DBM
 
 #include <boost/test/unit_test.hpp>
-#include <dbm/DBM.h>
+#include <dbm2/DBM.h>
 
 using namespace dbm;
 

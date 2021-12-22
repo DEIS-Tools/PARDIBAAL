@@ -36,7 +36,6 @@ endif (DBM_GetDependencies)
 
 add_subdirectory(src)
 
-set(BUILD_TESTING ON)
 if(BUILD_TESTING AND DBM_BuildTests)
     #testing
     add_subdirectory(test)
