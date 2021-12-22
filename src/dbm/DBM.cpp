@@ -132,7 +132,7 @@ namespace dbm {
                 if (!(this->_bounds_table.at(i, j)._inf) && this->_bounds_table.at(i, j) > bound_t(ceiling[i], false)){
                     this->_bounds_table.get(i, j) = bound_t::inf();
                 }
-                else if (!(this->_bounds_table.at(i, j)._inf) && this->_bounds_table.at(i, j) < bound_t(-1 * ceiling[j], true)) {
+                else if (!(this->_bounds_table.at(i, j)._inf) && this->_bounds_table.at(i, j) < bound_t(-ceiling[j], true)) {
                     this->_bounds_table.get(i, j) = bound_t(-1 * ceiling[j], true);
                 }
             }
