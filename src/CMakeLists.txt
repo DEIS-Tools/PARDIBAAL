@@ -15,4 +15,4 @@ install(TARGETS dbm2
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
-install(FILES ${HEADER_FILES} DESTINATION include/dbm)
+install(FILES ${HEADER_FILES} DESTINATION include/dbm2)
