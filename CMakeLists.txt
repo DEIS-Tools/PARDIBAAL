@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(dbm)
+project(dbm2)
 
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0069 NEW)
@@ -36,7 +36,6 @@ endif (DBM_GetDependencies)
 
 add_subdirectory(src)
 
-set(BUILD_TESTING ON)
 if(BUILD_TESTING AND DBM_BuildTests)
     #testing
     add_subdirectory(test)

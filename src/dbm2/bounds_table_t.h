@@ -1,6 +1,6 @@
 /*
  * Copyright Thomas M. Grosen
- * Created on 14/12/2021.
+ * Created on 21/10/2021.
  */
 
 /*
@@ -20,14 +20,33 @@
  * along with dbm2.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define BOOST_TEST_MODULE DBM
+#ifndef BDM_BOUNDS_TABLE_T_H
+#define BDM_BOUNDS_TABLE_T_H
 
-#include <boost/test/unit_test.hpp>
-#include <dbm2/bounds_table_t.h>
+#include "bound_t.h"
 
-using namespace dbm2;
-
-BOOST_AUTO_TEST_CASE(Dummy) {
+#include <vector>
 
 
+namespace dbm2 {
+
+    struct bounds_table_t {
+    public:
+        const dim_t _number_of_clocks;
+
+        explicit bounds_table_t(dim_t number_of_clocks);
+
+        bound_t &get(dim_t i, dim_t j);
+
+        [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
+
+        friend std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
+
+    private:
+        std::vector<bound_t> _bounds;
+    };
+
+    std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
 }
+
+#endif //BDM_BOUNDS_TABLE_T_H
