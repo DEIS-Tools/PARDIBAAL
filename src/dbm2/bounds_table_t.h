@@ -32,7 +32,7 @@ namespace dbm2 {
 
     struct bounds_table_t {
     public:
-        const dim_t _number_of_clocks;
+        dim_t _number_of_clocks;//TODO: write getter method
 
         explicit bounds_table_t(dim_t number_of_clocks);
 
