@@ -28,6 +28,7 @@ if (DBM_GetDependencies)
     set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
     file(MAKE_DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/include)
+    file(MAKE_DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/lib)
 
     # we can now include external libraries
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
