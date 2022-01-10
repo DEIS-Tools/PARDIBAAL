@@ -66,4 +66,50 @@ namespace dbm2 {
         return out;
     }
 
+    void bounds_table_t::remove_clock(dim_t c) {
+#ifdef DBUG_BOUNDS
+        if (c >= _number_of_clocks) {
+            std::cout << "Out of bounds access on coordinate: " << c << " with max size: " <<
+                    _number_of_clocks * _number_of_clocks << "\n";
+            abort();
+        }
+#endif
+        for (dim_t i = _number_of_clocks-1; i >= 0; i--) {
+            if (i == c)
+                _bounds.erase(std::next(_bounds.begin(), _number_of_clocks * i), std::next(_bounds.begin(), _number_of_clocks * (i + 1) - 1));
+            else
+                _bounds.erase(std::next(_bounds.begin(), c + _number_of_clocks * i));
+        }
+        _number_of_clocks -= 1;
+    }
+
+    void bounds_table_t::swap_clocks(dim_t a, dim_t b) {
+        if (a == b || a >= _number_of_clocks || b >= _number_of_clocks)
+            return; //TODO: throw error?
+        bound_t tmp;
+        for (int i = 0; i < _number_of_clocks; i++) {
+            if (!(i == a || i == b)) {
+                tmp = at(i, a);
+                get(i, a) = at(i, b);
+                get(i, b) = tmp;
+
+                tmp = at(a, i);
+                get(a, i) = at(b, i);
+                get(b, i) = tmp;
+            }
+        }
+        tmp = at(a, b);
+        get(a, b) = at(b, a);
+        get(b, a) = tmp;
+    }
+
+    void bounds_table_t::add_clock_after(dim_t c) {
+        c += 1;
+        for (dim_t i = _number_of_clocks-1; i >= 0; i--) {
+            if (i == c)
+                _bounds.insert(std::next(_bounds.begin(), _number_of_clocks * i + 1), _number_of_clocks, bound_t::zero());
+            else
+                _bounds.insert(std::next(_bounds.begin(), _number_of_clocks * i + c), bound_t::zero());
+        }
+    }
 }

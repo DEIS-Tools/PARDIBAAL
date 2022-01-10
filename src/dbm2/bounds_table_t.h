@@ -40,6 +40,10 @@ namespace dbm2 {
 
         [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
 
+        void remove_clock(dim_t c);
+        void swap_clocks(dim_t a, dim_t b);
+        void add_clock_after(dim_t c);
+
         friend std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
 
     private:
