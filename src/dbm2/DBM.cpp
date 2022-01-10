@@ -21,6 +21,8 @@
  */
 
 #include "DBM.h"
+#include <ostream>
+#include <iostream>
 
 namespace dbm2 {
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
@@ -161,5 +163,44 @@ namespace dbm2 {
 
     std::ostream& operator<<(std::ostream& out, const DBM& D) {
         return out << D._bounds_table;
+    }
+
+    std::vector<int> DBM::reorder(const std::vector<bool>& src_bits, const std::vector<bool>& dest_bits) {
+        /* assume number of '1' bits in src_bits and dest_bits match, and
+         * that the length of src_bits is the same as _number_of_clocks
+         */
+
+        DBM dest_dbm(dest_bits.size());
+        std::vector<int> indir(src_bits.size(), 0), back_dir(src_bits.size(), -1);
+
+        //back_dir (-1 for all indexes in dest_bits)
+
+        int src_cnt = 0;
+        for (int i = 0; i < dest_bits.size(); i++) {
+            if (dest_bits[i]) {
+                while (not src_bits[src_cnt]) ++src_cnt; // increment to first used position
+                indir[i] = src_cnt;
+            }
+            else
+                indir[i] = 0;
+        }
+
+        for (int i = 0; i < dest_bits.size(); i++) {
+            for (int j = 0; j < dest_bits.size(); j++) {
+                if (indir[i] && indir[j])
+                    dest_dbm._bounds_table.get(i, j) = this->_bounds_table.at(indir[i], indir[j]);
+                else
+                    dest_dbm._bounds_table.get(i, j) = bound_t::zero();
+            }
+        }
+
+        // Free new clocks
+        for (int i = 0; i < indir.size(); i++)
+            if (not indir[i])
+                dest_dbm.free(i);
+
+        *this = dest_dbm;
+
+        return indir;
     }
 }

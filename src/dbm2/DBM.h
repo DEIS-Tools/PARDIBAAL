@@ -47,6 +47,8 @@ namespace dbm2 {
         void shift(dim_t x, val_t n);
         void norm(const std::vector<val_t> &ceiling);
 
+        std::vector<int> reorder(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits);
+
         friend std::ostream& operator<<(std::ostream& out, const DBM& D);
     };
 
