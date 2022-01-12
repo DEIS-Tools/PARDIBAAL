@@ -165,42 +165,74 @@ namespace dbm2 {
         return out << D._bounds_table;
     }
 
-    std::vector<int> DBM::reorder(const std::vector<bool>& src_bits, const std::vector<bool>& dest_bits) {
-        /* assume number of '1' bits in src_bits and dest_bits match, and
+    std::vector<int> DBM::resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits) {
+        /* assume number of '1' bits in src_bits and dst_bits match, and
          * that the length of src_bits is the same as _number_of_clocks
          */
 
-        DBM dest_dbm(dest_bits.size());
-        std::vector<int> indir(src_bits.size(), 0), back_dir(src_bits.size(), -1);
+        DBM dest_dbm(dst_bits.size());
 
-        //back_dir (-1 for all indexes in dest_bits)
+        std::vector<int> src_indir(src_bits.size(), 0);
+        int dst_cnt = 0;
 
-        int src_cnt = 0;
-        for (int i = 0; i < dest_bits.size(); i++) {
-            if (dest_bits[i]) {
-                while (not src_bits[src_cnt]) ++src_cnt; // increment to first used position
-                indir[i] = src_cnt;
+        for (int i = 0; i < src_bits.size(); i++) {
+            if (src_bits[i]) {
+                while (not dst_bits[dst_cnt]) ++dst_cnt; // increment to first used position
+                src_indir[i] = dst_cnt++;
             }
             else
-                indir[i] = 0;
+                src_indir[i] = -1;
         }
 
-        for (int i = 0; i < dest_bits.size(); i++) {
-            for (int j = 0; j < dest_bits.size(); j++) {
-                if (indir[i] && indir[j])
-                    dest_dbm._bounds_table.get(i, j) = this->_bounds_table.at(indir[i], indir[j]);
-                else
-                    dest_dbm._bounds_table.get(i, j) = bound_t::zero();
+        // dest(src_indir[i], src_indir[j] = src(i, j);
+        for (int i = 0; i < src_indir.size(); i++) {
+            for (int j = 0; j < src_indir.size(); j++) {
+                if (src_indir[i] != -1 && src_indir[j] != -1)
+                    dest_dbm._bounds_table.get(src_indir[i], src_indir[j]) = this->_bounds_table.at(i, j);
             }
         }
 
+        /* Implementation where the indirection table is from dest to src (easy to see index of new clocks
+        std::vector<int> dst_indir(dst_bits.size(), 0);
+        int src_cnt = 0;
+
+        for (int i = 0; i < dst_bits.size(); i++) {
+            if (dst_bits[i]) {
+                while (not src_bits[src_cnt]) ++src_cnt; // increment to first used position
+                dst_indir[i] = src_cnt++;
+            }
+            else
+                dst_indir[i] = -1;
+        }
+
+
+        // dest(i, j) = src(dst_indir[i], dst_indir[j])
+        for (int i = 0; i < dst_bits.size(); i++) {
+            for (int j = 0; j < dst_bits.size(); j++) {
+                if (dst_indir[i] != -1 && dst_indir[j] != -1)
+                    dest_dbm._bounds_table.get(i, j) = this->_bounds_table.at(dst_indir[i], dst_indir[j]);
+            }
+        }
+        */
+
         // Free new clocks
-        for (int i = 0; i < indir.size(); i++)
-            if (not indir[i])
+        for (int i = 0; i < dst_bits.size(); i++)
+            if (not dst_bits[i])
                 dest_dbm.free(i);
 
         *this = dest_dbm;
 
-        return indir;
+        return src_indir;
+    }
+
+    void DBM::reorder(std::vector<dim_t> order, dim_t new_size) {
+        DBM D(new_size);
+
+        for (int i = 0; i < new_size; i++) {
+            for (int j = 0; j < new_size; j++) {
+                if (order[i] != ~0 && order[j] != ~0)
+                    D._bounds_table.get(i, j) = this->_bounds_table.at(order[i], order[j]);
+            }
+        }
     }
 }

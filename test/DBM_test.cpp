@@ -319,17 +319,52 @@ BOOST_AUTO_TEST_CASE(Trace_2) {
 }
 
 BOOST_AUTO_TEST_CASE(Reorder_1) {
-    DBM D(6);
-    D.future();
-    D.assign(1, 0);
-    D.assign(2, 3);
-    D.assign(5, 10);
+    DBM D(5);
+
+    for (int i = 0; i < 5; i++)
+        D._bounds_table.get(i, 1) = bound_t::inf();
+
+    for (int i = 0; i < 5; i++)
+        D._bounds_table.get(i, 3) = bound_t::inf();
 
     DBM Q = D;
 
-    std::vector<bool> src {false, true, true, false, true, true};
-    std::vector<bool> dst {false, true, false, true, false, true, false, true};
-    std::vector<int> indir = D.reorder(src, dst);
+    std::vector<bool> src {true, true, false, true, true};
+    std::vector<bool> dst {true, true, true, true};
+    std::vector<int> indir = D.resize(src, dst);
+
+    std::cout << "src:\n";
+    for (int i = 0; i < src.size(); i++) {
+        std::cout << (src[i] ? "1" : "0") << ", ";
+    }
+    std::cout << "\n";
+
+    std::cout << "dst:\n";
+    for (int i = 0; i < dst.size(); i++) {
+        std::cout << (dst[i] ? "1" : "0") << ", ";
+    }
+    std::cout << "\n";
+
+    std::cout << "indir:\n";
+    for (int i = 0; i < indir.size(); i++) {
+        std::cout << indir[i] << ", ";
+    }
+    std::cout << "\n";
+    std::cout << "Before:\n" << Q << "\nAfter:\n" << D;
+}
+
+BOOST_AUTO_TEST_CASE(Reorder_2) {
+    DBM D(5);
+    D.future();
+    D.assign(1, 0);
+    D.assign(2, 3);
+    D.assign(4, 10);
+
+    DBM Q = D;
+
+    std::vector<bool> src {true, true, false, true, true};
+    std::vector<bool> dst {true, true, true, true};
+    std::vector<int> indir = D.resize(src, dst);
 
     std::cout << "src:\n";
     for (int i = 0; i < src.size(); i++) {
