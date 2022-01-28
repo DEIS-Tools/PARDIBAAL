@@ -47,7 +47,25 @@ namespace dbm2 {
         void shift(dim_t x, val_t n);
         void norm(const std::vector<val_t> &ceiling);
 
+        /**
+         * Resize the DBM by adding and deleting clocks.
+         * The number of true values in src and dst must be equal.
+         * False in src means a clock is removed. False in dst means
+         * a new clock is added.
+         *
+         * @param src_bits Vector of which clocks that are kept
+         * @param dst_bits Vector of where clocks are added
+         * @return indirection table of moved clocks
+         */
         std::vector<int> resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits);
+
+        /**
+         * Reorder the all clocks i to order[i].
+         * If order[i] is max uint32 value, then the clock is removed
+         *
+         * @param order Vector of ordering
+         * @param new_size Number of clocks (including zero)
+         */
         void reorder(std::vector<dim_t> order, dim_t new_size);
 
         friend std::ostream& operator<<(std::ostream& out, const DBM& D);
