@@ -125,10 +125,10 @@ namespace dbm2 {
 
     std::ostream& operator<<(std::ostream& out, const bound_t& bound) {
         if (bound._inf) {
-            out << "inf";
+            out << "INF";
         }
         else {
-            std::string s = '(' + std::to_string(bound._n) + ", " + (bound._strict ? "<" : "<=") + ')';
+            std::string s = (bound._strict ? "<" : "<=") + std::to_string(bound._n);
             out << s;
         }
 

@@ -57,7 +57,7 @@ namespace dbm2 {
         for (int i = 0; i < table._number_of_clocks; i++) {
             for (int j = 0; j < table._number_of_clocks; j++) {
                 bound_t b = table.at(i, j);
-                out << std::left << std::setw(15);
+                out << std::left << std::setw(8);
                 out << b;
             }
             out << '\n';
