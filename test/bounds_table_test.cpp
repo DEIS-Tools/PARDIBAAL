@@ -23,11 +23,12 @@
 #define BOOST_TEST_MODULE DBM
 
 #include <boost/test/unit_test.hpp>
-#include <dbm2/bounds_table_t.h>
+#include <dbm2/DBM.h>
 
 using namespace dbm2;
 
-BOOST_AUTO_TEST_CASE(Dummy) {
-
-
+BOOST_AUTO_TEST_CASE(Remove_Clock_Test) {
+    DBM D(4);
+    D._bounds_table.remove_clock(2);
+    BOOST_CHECK(D._bounds_table._number_of_clocks == 3);
 }

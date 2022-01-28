@@ -74,7 +74,7 @@ namespace dbm2 {
             abort();
         }
 #endif
-        for (dim_t i = _number_of_clocks-1; i >= 0; i--) {
+        for (int64_t i = _number_of_clocks-1; i >= 0; i--) {
             if (i == c)
                 _bounds.erase(std::next(_bounds.begin(), _number_of_clocks * i), std::next(_bounds.begin(), _number_of_clocks * (i + 1) - 1));
             else
