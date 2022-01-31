@@ -228,11 +228,13 @@ namespace dbm2 {
     void DBM::reorder(std::vector<dim_t> order, dim_t new_size) {
         DBM D(new_size);
 
-        for (int i = 0; i < new_size; i++) {
-            for (int j = 0; j < new_size; j++) {
+        for (int i = 0; i < this->_bounds_table._number_of_clocks; i++) {
+            for (int j = 0; j < this->_bounds_table._number_of_clocks; j++) {
                 if (order[i] != ~0 && order[j] != ~0)
-                    D._bounds_table.get(i, j) = this->_bounds_table.at(order[i], order[j]);
+                    D._bounds_table.get(order[i], order[j]) = this->_bounds_table.at(i, j);
             }
         }
+
+        *this = D;
     }
 }

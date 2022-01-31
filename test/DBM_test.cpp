@@ -385,3 +385,25 @@ BOOST_AUTO_TEST_CASE(Reorder_2) {
     std::cout << "\n";
     std::cout << "Before:\n" << Q << "\nAfter:\n" << D;
 }
+
+BOOST_AUTO_TEST_CASE(Resize_1) {
+    DBM D(5);
+    D.future();
+    D.assign(1, 0);
+    D.assign(2, 3);
+    D.assign(4, 10);
+
+    DBM Q = D;
+    uint32_t t = ~0;
+
+    std::vector<dim_t> order = {0, 1,(dim_t) ~0, 2, 3};
+    D.reorder(order, 4);
+
+    std::cout << "order:\n";
+    for (int i = 0; i < order.size(); i++) {
+        std::cout << (order[i] == ~0 ? "~0" : std::to_string(order[i])) << ", ";
+    }
+    std::cout << "\n";
+
+    std::cout << "Before:\n" << Q << "\nAfter:\n" << D;
+}
