@@ -65,7 +65,7 @@ namespace dbm2 {
          * - max[0] = 0 (reference clock)
          * @post DBM is closed.
          */
-         void diagonal_extrapolation(const std::vector<val_t> &ceiling)
+         void diagonal_extrapolation(const std::vector<val_t> &ceiling);
 
         /**
          * Resize the DBM by adding and deleting clocks.
