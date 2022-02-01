@@ -47,6 +47,26 @@ namespace dbm2 {
         void shift(dim_t x, val_t n);
         void norm(const std::vector<val_t> &ceiling);
 
+        /** Diagonal extrapolation based on maximal bounds.
+         *
+         * Update dbm[i,j] with
+         * - infinity if dbm[i,j] > max_xi
+         * - infinity if dbm[0,i] < -max_xi
+         * - infinity if dbm[0,j] < -max_xj, i != 0
+         * - <-max_xj if dbm[i,j] < -max_xj, i == 0
+         * - dbm[i,j] otherwise
+         *
+         * @param dbm: DBM.
+         * @param dim: dimension.
+         * @param max: table of maximal constants.
+         * @pre
+         * - DBM is closed and non empty
+         * - max is a int32_t[dim]
+         * - max[0] = 0 (reference clock)
+         * @post DBM is closed.
+         */
+         void diagonal_extrapolation(const std::vector<val_t> &ceiling)
+
         /**
          * Resize the DBM by adding and deleting clocks.
          * The number of true values in src and dst must be equal.
