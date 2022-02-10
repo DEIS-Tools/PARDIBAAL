@@ -29,7 +29,7 @@
 
 namespace dbm2{
     using dim_t = uint32_t;
-    using val_t = int64_t;
+    using val_t = int32_t;
 
     struct bound_t {
         bound_t(){};
