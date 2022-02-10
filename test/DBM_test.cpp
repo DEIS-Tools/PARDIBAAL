@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE(Trace_2) {
 
 BOOST_AUTO_TEST_CASE(Reorder_1) {
     DBM D(5);
-
+    //TODO: set boost checks
     for (int i = 0; i < 5; i++)
         D._bounds_table.get(i, 1) = bound_t::inf();
 
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE(Reorder_2) {
     D.assign(4, 10);
 
     DBM Q = D;
-
+    //TODO: set boost checks
     std::vector<bool> src {true, true, false, true, true};
     std::vector<bool> dst {true, true, true, true};
     std::vector<int> indir = D.resize(src, dst);
@@ -394,8 +394,7 @@ BOOST_AUTO_TEST_CASE(Resize_1) {
     D.assign(4, 10);
 
     DBM Q = D;
-    uint32_t t = ~0;
-
+    //TODO: set boost checks
     std::vector<dim_t> order = {0, 1,(dim_t) ~0, 2, 3};
     D.reorder(order, 4);
 
@@ -406,4 +405,27 @@ BOOST_AUTO_TEST_CASE(Resize_1) {
     std::cout << "\n";
 
     std::cout << "Before:\n" << Q << "\nAfter:\n" << D;
+}
+
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_1) {
+    DBM D(3);
+    D._bounds_table.get(1, 0) = bound_t::inf();
+    D._bounds_table.get(2, 0) = bound_t::inf();
+    std::vector<val_t> ceiling = {0, -1073741823, -1073741823};
+
+    std::cout << D;
+    D.diagonal_extrapolation(ceiling);
+    std::cout << D;
+
+    BOOST_CHECK(!D.is_empty());
+    BOOST_CHECK(D._bounds_table.at(0, 0) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(1, 1) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(2, 2) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(0, 1) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(0, 2) == bound_t::zero());
+
+    BOOST_CHECK(D._bounds_table.at(1, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.at(2, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.at(1, 2) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.at(2, 1) == bound_t::inf());
 }

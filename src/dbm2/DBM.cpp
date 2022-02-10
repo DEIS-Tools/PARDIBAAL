@@ -162,24 +162,26 @@ namespace dbm2 {
     }
 
     void DBM::diagonal_extrapolation(const std::vector<val_t> &ceiling) {
-        /*
-        * - infinity if dbm[i,j] > max_xi
-        * - infinity if dbm[0,i] < -max_xi
-        * - infinity if dbm[0,j] < -max_xj, i != 0
-        * - <-max_xj if dbm[i,j] < -max_xj, i == 0
-        * - dbm[i,j] otherwise
-        */
         for (int i = 0; i < this->_bounds_table._number_of_clocks; i++) {
             for (int j = 0; j < this->_bounds_table._number_of_clocks; j++) {
-                if ((!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) > bound_t(ceiling[i], false)) ||
-                    (this->_bounds_table.at(0, i) < bound_t(-ceiling[i], false)) ||
-                    (this->_bounds_table.at(0, j) < bound_t(-ceiling[j], false) && i != 0)){
+                if (i == j) continue;
+                if ((this->_bounds_table.at(i, j)._n > ceiling[i]) ||
+                    (-this->_bounds_table.at(0, i)._n > ceiling[i]) ||
+                    (-this->_bounds_table.at(0, j)._n > ceiling[j] && i != 0)){
 
                     this->_bounds_table.get(i, j) = bound_t::inf();
                 }
-                else if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) < bound_t(-ceiling[j], true)) {
+                else if (-this->_bounds_table.at(i, j)._n > ceiling[j] && i == 0)
                     this->_bounds_table.get(i, j) = bound_t(-ceiling[j], true);
+
+                // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
+                if (i == 0 && this->_bounds_table.at(i, j) > bound_t::zero()) {
+                    this->_bounds_table.get(i, j) = bound_t::zero();
                 }
+                if (j == 0 && this->_bounds_table.at(i, j) < bound_t::zero()) {
+                    this->_bounds_table.get(i, j) = bound_t::zero();
+                }
+
             }
         }
     }

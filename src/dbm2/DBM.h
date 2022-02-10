@@ -47,14 +47,16 @@ namespace dbm2 {
         void shift(dim_t x, val_t n);
         void norm(const std::vector<val_t> &ceiling);
 
-        /** Diagonal extrapolation based on maximal bounds.
+        /** Diagonal extrapolation
          *
          * Update dbm[i,j] with
          * - infinity if dbm[i,j] > max_xi
-         * - infinity if dbm[0,i] < -max_xi
-         * - infinity if dbm[0,j] < -max_xj, i != 0
-         * - <-max_xj if dbm[i,j] < -max_xj, i == 0
+         * - infinity if -dbm[0,i] > max_xi
+         * - infinity if -dbm[0,j] > max_xj, i != 0
+         * - <-max_xj if -dbm[i,j] > max_xj, i == 0
          * - dbm[i,j] otherwise
+         * except for when i = j
+         * also make sure 0, j is not positive and i, 0 is not negative
          *
          * @param dbm: DBM.
          * @param dim: dimension.
