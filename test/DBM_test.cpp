@@ -27,7 +27,7 @@
 
 using namespace dbm2;
 
-BOOST_AUTO_TEST_CASE(Close_Test_1) {
+BOOST_AUTO_TEST_CASE(close_test_1) {
     DBM D(3);
 
     D.future();
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(Close_Test_1) {
             BOOST_CHECK(D._bounds_table.get(i, j) == Q._bounds_table.get(i, j));
 }
 
-BOOST_AUTO_TEST_CASE(Delay_Test_1) {
+BOOST_AUTO_TEST_CASE(delay_test_1) {
     DBM D(10);
 
     D.future();
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(Delay_Test_1) {
         }
 }
 
-BOOST_AUTO_TEST_CASE(Restrict_Test_1) {
+BOOST_AUTO_TEST_CASE(restrict_test_1) {
     DBM D(3);
     bound_t g(5, false);
 
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(Restrict_Test_1) {
             BOOST_CHECK(D._bounds_table.get(i, j) == Q._bounds_table.get(i, j));
 }
 
-BOOST_AUTO_TEST_CASE(Restrict_Test_2) {
+BOOST_AUTO_TEST_CASE(restrict_test_2) {
     DBM D(3);
     bound_t g(-5, false);
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(Restrict_Test_2) {
     BOOST_CHECK(D.is_empty());
 }
 
-BOOST_AUTO_TEST_CASE(Trace_1) {
+BOOST_AUTO_TEST_CASE(trace_1) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 6, 10, 10};
@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(Trace_1) {
     BOOST_CHECK(D._bounds_table.at(x, z) == bound_t(-6, true));
 }
 
-BOOST_AUTO_TEST_CASE(Trace_2) {
+BOOST_AUTO_TEST_CASE(trace_2) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 2, 5, 3};
@@ -318,7 +318,7 @@ BOOST_AUTO_TEST_CASE(Trace_2) {
     BOOST_CHECK(D._bounds_table.at(0, z) == bound_t(-3, false));
 }
 
-BOOST_AUTO_TEST_CASE(Reorder_1) {
+BOOST_AUTO_TEST_CASE(reorder_1) {
     DBM D(5);
     //TODO: set boost checks
     for (int i = 0; i < 5; i++)
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE(Reorder_1) {
     std::cout << "Before:\n" << Q << "\nAfter:\n" << D;
 }
 
-BOOST_AUTO_TEST_CASE(Reorder_2) {
+BOOST_AUTO_TEST_CASE(reorder_2) {
     DBM D(5);
     D.future();
     D.assign(1, 0);
@@ -386,7 +386,7 @@ BOOST_AUTO_TEST_CASE(Reorder_2) {
     std::cout << "Before:\n" << Q << "\nAfter:\n" << D;
 }
 
-BOOST_AUTO_TEST_CASE(Resize_1) {
+BOOST_AUTO_TEST_CASE(resize_1) {
     DBM D(5);
     D.future();
     D.assign(1, 0);

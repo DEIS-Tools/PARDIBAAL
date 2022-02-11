@@ -27,7 +27,7 @@
 
 using namespace dbm2;
 
-BOOST_AUTO_TEST_CASE(Remove_Clock_Test) {
+BOOST_AUTO_TEST_CASE(remove_clock_test) {
     DBM D(4);
     D._bounds_table.get(1, 0) = bound_t::inf();
     D._bounds_table.get(3, 0) = bound_t::inf();
