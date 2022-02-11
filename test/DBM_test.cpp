@@ -429,3 +429,35 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_1) {
     BOOST_CHECK(D._bounds_table.at(1, 2) == bound_t::inf());
     BOOST_CHECK(D._bounds_table.at(2, 1) == bound_t::inf());
 }
+
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_2) {
+    DBM D(4);
+//  Extrapolating: [0, 1, -1073741823, 3]
+//  <=0     <=0     <=0     <=0
+//  <=1     <=0     <=1     <=0
+//  INF     INF     <=0     INF
+//  <=1     <=0     <=1     <=0
+    std::vector<val_t> ceiling = {0, 1, -1073741823, 3};
+
+    D._bounds_table.get(1, 0) = bound_t(1, false);
+    D._bounds_table.get(1, 2) = bound_t(1, false);
+    D._bounds_table.get(3, 0) = bound_t(1, false);
+    D._bounds_table.get(3, 2) = bound_t(1, false);
+    D._bounds_table.get(2, 0) = bound_t::inf();
+    D._bounds_table.get(2, 1) = bound_t::inf();
+    D._bounds_table.get(2, 3) = bound_t::inf();
+
+    D.diagonal_extrapolation(ceiling);
+
+//  <=0     <=0     <=0     <=0
+//  <=1     <=0     <=1     <=0
+//  INF     INF     <=0     INF
+//  <=1     <=0     <=1     <=0
+    BOOST_CHECK(D._bounds_table.get(1, 0) == bound_t(1, false));
+    BOOST_CHECK(D._bounds_table.get(1, 2) == bound_t(1, false));
+    BOOST_CHECK(D._bounds_table.get(3, 0) == bound_t(1, false));
+    BOOST_CHECK(D._bounds_table.get(3, 2) == bound_t(1, false));
+    BOOST_CHECK(D._bounds_table.get(2, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 1) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 3) == bound_t::inf());
+}

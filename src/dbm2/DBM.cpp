@@ -175,6 +175,8 @@ namespace dbm2 {
                     this->_bounds_table.get(i, j) = bound_t(-ceiling[j], true);
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
+                //TODO: We only do this because regular close() does not catch these.
+                // We should propably use a smarter close()
                 if (i == 0 && this->_bounds_table.at(i, j) > bound_t::zero()) {
                     this->_bounds_table.get(i, j) = bound_t::zero();
                 }
@@ -184,6 +186,9 @@ namespace dbm2 {
 
             }
         }
+
+        //TODO: Do something smart where we only close if something changes
+        this->close();
     }
 
     std::ostream& operator<<(std::ostream& out, const DBM& D) {
