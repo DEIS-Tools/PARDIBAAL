@@ -29,6 +29,23 @@ using namespace dbm2;
 
 BOOST_AUTO_TEST_CASE(Remove_Clock_Test) {
     DBM D(4);
+    D._bounds_table.get(1, 0) = bound_t::inf();
+    D._bounds_table.get(3, 0) = bound_t::inf();
+    D._bounds_table.get(1, 2) = bound_t::inf();
+    D._bounds_table.get(3, 2) = bound_t::inf();
+
     D._bounds_table.remove_clock(2);
+
     BOOST_CHECK(D._bounds_table._number_of_clocks == 3);
+
+    BOOST_CHECK(D._bounds_table.at(1, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.at(2, 0) == bound_t::inf());
+
+    BOOST_CHECK(D._bounds_table.at(0, 0) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(0, 1) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(0, 2) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(1, 1) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(1, 2) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(2, 1) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(2, 2) == bound_t::zero());
 }
