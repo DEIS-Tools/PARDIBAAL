@@ -461,3 +461,68 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_2) {
     BOOST_CHECK(D._bounds_table.get(2, 1) == bound_t::inf());
     BOOST_CHECK(D._bounds_table.get(2, 3) == bound_t::inf());
 }
+
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_3) {
+//    <=0     <=-6    <=0     <=0     <=0
+//    INF     <=0     INF     INF     INF
+//    INF     INF     <=0     INF     INF
+//    INF     <=-6    <=0     <=0     <=0
+//    INF     <=-6    <=0     <=0     <=0
+    DBM D(5);
+    std::vector<val_t> ceiling = {0, 3, -1073741823, 3, 3};
+
+    D._bounds_table.get(0, 1) = bound_t(-6, false);
+    D._bounds_table.get(3, 1) = bound_t(-6, false);
+    D._bounds_table.get(4, 1) = bound_t(-6, false);
+
+    D._bounds_table.get(1, 0) = bound_t::inf();
+    D._bounds_table.get(2, 0) = bound_t::inf();
+    D._bounds_table.get(3, 0) = bound_t::inf();
+    D._bounds_table.get(4, 0) = bound_t::inf();
+
+    D._bounds_table.get(2, 1) = bound_t::inf();
+    D._bounds_table.get(1, 2) = bound_t::inf();
+    D._bounds_table.get(1, 3) = bound_t::inf();
+    D._bounds_table.get(2, 3) = bound_t::inf();
+    D._bounds_table.get(1, 4) = bound_t::inf();
+    D._bounds_table.get(2, 4) = bound_t::inf();
+
+    D.diagonal_extrapolation(ceiling);
+
+//    <=0     <-3     <=0     <=0     <=0
+//    INF     <=0     INF     INF     INF
+//    INF     INF     <=0     INF     INF
+//    INF     INF     INF     <=0     <=0
+//    INF     INF     INF     <=0     <=0
+
+    BOOST_CHECK(D._bounds_table.get(0, 0) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(1, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(3, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(4, 0) == bound_t::inf());
+
+    BOOST_CHECK(D._bounds_table.get(0, 1) == bound_t(-3, true));
+    BOOST_CHECK(D._bounds_table.get(1, 1) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(2, 1) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(3, 1) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(4, 1) == bound_t::inf());
+
+    BOOST_CHECK(D._bounds_table.get(0, 2) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(1, 2) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 2) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(3, 2) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(4, 2) == bound_t::inf());
+
+    BOOST_CHECK(D._bounds_table.get(0, 3) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(1, 3) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 3) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(3, 3) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(4, 3) == bound_t::zero());
+
+    BOOST_CHECK(D._bounds_table.get(0, 4) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(1, 4) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 4) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(3, 4) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(4, 4) == bound_t::zero());
+
+}
