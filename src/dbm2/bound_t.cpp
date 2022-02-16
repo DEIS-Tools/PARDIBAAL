@@ -128,8 +128,7 @@ namespace dbm2 {
             out << "INF";
         }
         else {
-            std::string s = (bound._strict ? "<" : "<=") + std::to_string(bound._n);
-            out << s;
+            out << (bound._strict ? "<" : "<=") + std::to_string(bound._n);
         }
 
         return out;
