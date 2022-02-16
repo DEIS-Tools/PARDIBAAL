@@ -33,8 +33,8 @@ namespace dbm2 {
             return true;
 
         // The DBM has to be closed for this to actually work
-        for (int i = 0; i < this->_bounds_table._number_of_clocks; i++) {
-            for (int j = 0; j < this->_bounds_table._number_of_clocks; j++) {
+        for (dim_t i = 0; i < this->_bounds_table._number_of_clocks; i++) {
+            for (dim_t j = 0; j < this->_bounds_table._number_of_clocks; j++) {
                 bound_t i_to_j_to_i = this->_bounds_table.at(i, j) + this->_bounds_table.at(j, i);
 
                 if (i_to_j_to_i < bound_t(0, false))
@@ -59,7 +59,7 @@ namespace dbm2 {
     }
 
     void DBM::close() {
-        const int size = _bounds_table._number_of_clocks;
+        const dim_t size = _bounds_table._number_of_clocks;
 
         for(dim_t k = 0; k < size; k++)
             for(dim_t i = 0; i < size; i++)
@@ -74,9 +74,9 @@ namespace dbm2 {
     }
 
     void DBM::past() {
-        for (int i = 1; i < this->_bounds_table._number_of_clocks; i++) {
+        for (dim_t i = 1; i < this->_bounds_table._number_of_clocks; i++) {
             this->_bounds_table.get(0, i) = bound_t::zero();
-            for (int j = 1; j < this->_bounds_table._number_of_clocks; j++) {
+            for (dim_t j = 1; j < this->_bounds_table._number_of_clocks; j++) {
                 if (this->_bounds_table.at(j, i) < this->_bounds_table.at(0, i)) {
                     this->_bounds_table.get(0, i) = this->_bounds_table.at(j, i);
                 }
@@ -132,7 +132,7 @@ namespace dbm2 {
     }
 
     void DBM::shift(dim_t x, val_t n) {
-        for (int i = 0; i < this->_bounds_table._number_of_clocks; i++) {
+        for (dim_t i = 0; i < this->_bounds_table._number_of_clocks; i++) {
             if (i != x) {
                 this->_bounds_table.get(x, i) = this->_bounds_table.at(x, i) + bound_t(n, false);
                 this->_bounds_table.get(i, x) = this->_bounds_table.at(i, x) + bound_t(-n, false);
@@ -147,8 +147,8 @@ namespace dbm2 {
         if (this->_bounds_table._number_of_clocks != ceiling.size())
             return; //Todo: throw error or something
 
-        for (int i = 0; i < this->_bounds_table._number_of_clocks; i++) {
-            for (int j = 0; j < this->_bounds_table._number_of_clocks; j++) {
+        for (dim_t i = 0; i < this->_bounds_table._number_of_clocks; i++) {
+            for (dim_t j = 0; j < this->_bounds_table._number_of_clocks; j++) {
                 if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) > bound_t(ceiling[i], false)){
                     this->_bounds_table.get(i, j) = bound_t::inf();
                 }
@@ -164,8 +164,8 @@ namespace dbm2 {
     void DBM::diagonal_extrapolation(const std::vector<val_t> &ceiling) {
         DBM D(*this);
 
-        for (int i = 0; i < D._bounds_table._number_of_clocks; i++) {
-            for (int j = 0; j < D._bounds_table._number_of_clocks; j++) {
+        for (dim_t i = 0; i < D._bounds_table._number_of_clocks; i++) {
+            for (dim_t j = 0; j < D._bounds_table._number_of_clocks; j++) {
                 if (i == j) continue;
                 if ((D._bounds_table.at(i, j)._n > ceiling[i]) ||
                     (-D._bounds_table.at(0, i)._n > ceiling[i]) ||
@@ -197,17 +197,17 @@ namespace dbm2 {
         return out << D._bounds_table;
     }
 
-    std::vector<int> DBM::resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits) {
+    std::vector<dim_t> DBM::resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits) {
         /* assume number of '1' bits in src_bits and dst_bits match, and
          * that the length of src_bits is the same as _number_of_clocks
          */
 
         DBM dest_dbm(dst_bits.size());
 
-        std::vector<int> src_indir(src_bits.size(), 0);
-        int dst_cnt = 0;
+        std::vector<dim_t> src_indir(src_bits.size(), 0);
+        dim_t dst_cnt = 0;
 
-        for (int i = 0; i < src_bits.size(); i++) {
+        for (dim_t i = 0; i < src_bits.size(); i++) {
             if (src_bits[i]) {
                 while (not dst_bits[dst_cnt]) ++dst_cnt; // increment to first used position
                 src_indir[i] = dst_cnt++;
@@ -217,18 +217,18 @@ namespace dbm2 {
         }
 
         // dest(src_indir[i], src_indir[j] = src(i, j);
-        for (int i = 0; i < src_indir.size(); i++) {
-            for (int j = 0; j < src_indir.size(); j++) {
+        for (dim_t i = 0; i < src_indir.size(); i++) {
+            for (dim_t j = 0; j < src_indir.size(); j++) {
                 if (src_indir[i] != -1 && src_indir[j] != -1)
                     dest_dbm._bounds_table.get(src_indir[i], src_indir[j]) = this->_bounds_table.at(i, j);
             }
         }
 
         /* Implementation where the indirection table is from dest to src (easy to see index of new clocks
-        std::vector<int> dst_indir(dst_bits.size(), 0);
-        int src_cnt = 0;
+        std::vector<dim_t> dst_indir(dst_bits.size(), 0);
+        dim_t src_cnt = 0;
 
-        for (int i = 0; i < dst_bits.size(); i++) {
+        for (dim_t i = 0; i < dst_bits.size(); i++) {
             if (dst_bits[i]) {
                 while (not src_bits[src_cnt]) ++src_cnt; // increment to first used position
                 dst_indir[i] = src_cnt++;
@@ -239,8 +239,8 @@ namespace dbm2 {
 
 
         // dest(i, j) = src(dst_indir[i], dst_indir[j])
-        for (int i = 0; i < dst_bits.size(); i++) {
-            for (int j = 0; j < dst_bits.size(); j++) {
+        for (dim_t i = 0; i < dst_bits.size(); i++) {
+            for (dim_t j = 0; j < dst_bits.size(); j++) {
                 if (dst_indir[i] != -1 && dst_indir[j] != -1)
                     dest_dbm._bounds_table.get(i, j) = this->_bounds_table.at(dst_indir[i], dst_indir[j]);
             }
@@ -248,7 +248,7 @@ namespace dbm2 {
         */
 
         // Free new clocks
-        for (int i = 0; i < dst_bits.size(); i++)
+        for (dim_t i = 0; i < dst_bits.size(); i++)
             if (not dst_bits[i])
                 dest_dbm.free(i);
 
@@ -260,8 +260,8 @@ namespace dbm2 {
     void DBM::reorder(std::vector<dim_t> order, dim_t new_size) {
         DBM D(new_size);
 
-        for (int i = 0; i < this->_bounds_table._number_of_clocks; i++) {
-            for (int j = 0; j < this->_bounds_table._number_of_clocks; j++) {
+        for (dim_t i = 0; i < this->_bounds_table._number_of_clocks; i++) {
+            for (dim_t j = 0; j < this->_bounds_table._number_of_clocks; j++) {
                 if (order[i] != ~0 && order[j] != ~0)
                     D._bounds_table.get(order[i], order[j]) = this->_bounds_table.at(i, j);
             }

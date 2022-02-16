@@ -54,8 +54,8 @@ namespace dbm2 {
     }
 
     std::ostream& operator<<(std::ostream& out, const bounds_table_t& table) {
-        for (int i = 0; i < table._number_of_clocks; i++) {
-            for (int j = 0; j < table._number_of_clocks; j++) {
+        for (dim_t i = 0; i < table._number_of_clocks; i++) {
+            for (dim_t j = 0; j < table._number_of_clocks; j++) {
                 bound_t b = table.at(i, j);
                 out << std::left << std::setw(8);
                 out << b;
@@ -74,7 +74,7 @@ namespace dbm2 {
             abort();
         }
 #endif
-        for (int64_t i = _number_of_clocks-1; i >= 0; i--) {
+        for (dim_t i = _number_of_clocks-1; i >= 0; i--) {
             if (i == c)
                 _bounds.erase(std::next(_bounds.begin(), _number_of_clocks * i), std::next(_bounds.begin(), _number_of_clocks * (i + 1)));
             else
@@ -87,7 +87,7 @@ namespace dbm2 {
         if (a == b || a >= _number_of_clocks || b >= _number_of_clocks)
             return; //TODO: throw error?
         bound_t tmp;
-        for (int i = 0; i < _number_of_clocks; i++) {
+        for (dim_t i = 0; i < _number_of_clocks; i++) {
             if (!(i == a || i == b)) {
                 tmp = at(i, a);
                 get(i, a) = at(i, b);

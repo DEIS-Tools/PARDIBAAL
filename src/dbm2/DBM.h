@@ -79,7 +79,7 @@ namespace dbm2 {
          * @param dst_bits Vector of where clocks are added
          * @return indirection table of moved clocks
          */
-        std::vector<int> resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits);
+        std::vector<dim_t> resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits);
 
         /**
          * Reorder the all clocks i to order[i].
