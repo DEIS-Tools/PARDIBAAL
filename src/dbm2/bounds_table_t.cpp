@@ -55,8 +55,8 @@ namespace dbm2 {
     }
 
     std::ostream& operator<<(std::ostream& out, const bounds_table_t& table) {
-        for (dim_t i = 0; i < table._number_of_clocks; i++) {
-            for (dim_t j = 0; j < table._number_of_clocks; j++) {
+        for (dim_t i = 0; i < table._number_of_clocks; ++i) {
+            for (dim_t j = 0; j < table._number_of_clocks; ++j) {
                 bound_t b = table.at(i, j);
                 out << std::left << std::setw(8);
                 out << b;
@@ -75,16 +75,16 @@ namespace dbm2 {
             abort();
         }
 #endif
-        std::vector<bound_t> new_bounds(pow(_number_of_clocks-1, 2));
+        std::vector<bound_t> new_bounds((_number_of_clocks-1) * (_number_of_clocks-1));
 
         dim_t i2 = 0;
-        for (dim_t i = 0; i < pow(_number_of_clocks, 2); i++) {
+        for (dim_t i = 0; i < (_number_of_clocks-1) * (_number_of_clocks-1); ++i) {
             if ((i >= c && (i - c) % _number_of_clocks == 0) ||
                 (i >= (c * _number_of_clocks) && i < ((c+1) * _number_of_clocks)))
                 continue; //This index is deleted, so skip
 
             new_bounds[i2] = _bounds[i];
-            i2++;
+            ++i2;
         }
 
         _bounds = new_bounds;
@@ -95,7 +95,7 @@ namespace dbm2 {
         if (a == b || a >= _number_of_clocks || b >= _number_of_clocks)
             return; //TODO: throw error?
         bound_t tmp;
-        for (dim_t i = 0; i < _number_of_clocks; i++) {
+        for (dim_t i = 0; i < _number_of_clocks; ++i) {
             if (!(i == a || i == b)) {
                 tmp = at(i, a);
                 get(i, a) = at(i, b);
