@@ -22,6 +22,7 @@
 
 #include <iomanip>
 #include "bounds_table_t.h"
+#include <math.h>
 
 namespace dbm2 {
 
@@ -74,12 +75,19 @@ namespace dbm2 {
             abort();
         }
 #endif
-        for (dim_t i = _number_of_clocks-1; i >= 0; i--) {
-            if (i == c)
-                _bounds.erase(std::next(_bounds.begin(), _number_of_clocks * i), std::next(_bounds.begin(), _number_of_clocks * (i + 1)));
-            else
-                _bounds.erase(std::next(_bounds.begin(), c + _number_of_clocks * i));
+        std::vector<bound_t> new_bounds(pow(_number_of_clocks-1, 2));
+
+        dim_t i2 = 0;
+        for (dim_t i = 0; i < pow(_number_of_clocks, 2); i++) {
+            if ((i >= c && (i - c) % _number_of_clocks == 0) ||
+                (i >= (c * _number_of_clocks) && i < ((c+1) * _number_of_clocks)))
+                continue; //This index is deleted, so skip
+
+            new_bounds[i2] = _bounds[i];
+            i2++;
         }
+
+        _bounds = new_bounds;
         _number_of_clocks -= 1;
     }
 
