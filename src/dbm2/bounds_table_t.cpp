@@ -22,7 +22,6 @@
 
 #include <iomanip>
 #include "bounds_table_t.h"
-#include <math.h>
 
 namespace dbm2 {
 
@@ -78,7 +77,7 @@ namespace dbm2 {
         std::vector<bound_t> new_bounds((_number_of_clocks-1) * (_number_of_clocks-1));
 
         dim_t i2 = 0;
-        for (dim_t i = 0; i < (_number_of_clocks-1) * (_number_of_clocks-1); ++i) {
+        for (dim_t i = 0; i < ((_number_of_clocks) * (_number_of_clocks)); ++i) {
             if ((i >= c && (i - c) % _number_of_clocks == 0) ||
                 (i >= (c * _number_of_clocks) && i < ((c+1) * _number_of_clocks)))
                 continue; //This index is deleted, so skip
@@ -88,7 +87,7 @@ namespace dbm2 {
         }
 
         _bounds = new_bounds;
-        _number_of_clocks -= 1;
+        --_number_of_clocks;
     }
 
     void bounds_table_t::swap_clocks(dim_t a, dim_t b) {
@@ -111,13 +110,26 @@ namespace dbm2 {
         get(b, a) = tmp;
     }
 
-    void bounds_table_t::add_clock_after(dim_t c) {
-        c += 1;
-        for (dim_t i = _number_of_clocks-1; i >= 0; i--) {
-            if (i == c)
-                _bounds.insert(std::next(_bounds.begin(), _number_of_clocks * i + 1), _number_of_clocks, bound_t::zero());
-            else
-                _bounds.insert(std::next(_bounds.begin(), _number_of_clocks * i + c), bound_t::zero());
+    void bounds_table_t::add_clock_at(dim_t c) {
+        ++_number_of_clocks;
+        std::vector<bound_t> new_bounds(_number_of_clocks * _number_of_clocks);
+        dim_t src = 0;
+
+        for (dim_t dst = 0; dst < _number_of_clocks * _number_of_clocks; ++dst) {
+            if ((dst >= c && (dst - c) % _number_of_clocks == 0) ||
+                (dst >= (c * _number_of_clocks) && dst < ((c+1) * _number_of_clocks)))
+                continue;
+            new_bounds[dst] = _bounds[src++];
+        }
+
+        _bounds = new_bounds;
+
+        //Free the new clock
+        for (dim_t i = 0; i < _number_of_clocks; ++i) {
+            if (i != c) {
+                this->get(c, i) = bound_t::inf();
+                this->get(i, c) = this->at(i, 0);
+            }
         }
     }
 }
