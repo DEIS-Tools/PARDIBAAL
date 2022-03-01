@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(restrict_test_2) {
     BOOST_CHECK(D.is_empty());
 }
 
-BOOST_AUTO_TEST_CASE(trace_1) {
+BOOST_AUTO_TEST_CASE(trace_test_1) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 6, 10, 10};
@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(trace_1) {
     BOOST_CHECK(D._bounds_table.at(x, z) == bound_t(-6, true));
 }
 
-BOOST_AUTO_TEST_CASE(trace_2) {
+BOOST_AUTO_TEST_CASE(trace_test_2) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 2, 5, 3};
@@ -318,96 +318,55 @@ BOOST_AUTO_TEST_CASE(trace_2) {
     BOOST_CHECK(D._bounds_table.at(0, z) == bound_t(-3, false));
 }
 
-BOOST_AUTO_TEST_CASE(reorder_1) {
+BOOST_AUTO_TEST_CASE(resize_test_2) {
     DBM D(5);
-    //TODO: set boost checks
-    for (int i = 0; i < 5; i++)
-        D._bounds_table.get(i, 1) = bound_t::inf();
-
-    for (int i = 0; i < 5; i++)
-        D._bounds_table.get(i, 3) = bound_t::inf();
-
-    DBM Q = D;
+    D.future();
+    D.assign(1, 1);
+    D.assign(2, 2);
+    D.assign(4, 4);
 
     std::vector<bool> src {true, true, false, true, true};
-    std::vector<bool> dst {true, true, true, true};
-    std::vector<int> indir = D.resize(src, dst);
+    std::vector<bool> dst {true, false, true, true, true};
+    std::vector<dim_t> indir = D.resize(src, dst);
 
-    std::cout << "src:\n";
-    for (int i = 0; i < src.size(); i++) {
-        std::cout << (src[i] ? "1" : "0") << ", ";
-    }
-    std::cout << "\n";
 
-    std::cout << "dst:\n";
-    for (int i = 0; i < dst.size(); i++) {
-        std::cout << (dst[i] ? "1" : "0") << ", ";
-    }
-    std::cout << "\n";
+    BOOST_CHECK(D.is_satisfied(1, 0, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfied(0, 1, bound_t::zero()));
 
-    std::cout << "indir:\n";
-    for (int i = 0; i < indir.size(); i++) {
-        std::cout << indir[i] << ", ";
-    }
-    std::cout << "\n";
-    std::cout << "Before:\n" << Q << "\nAfter:\n" << D;
+    BOOST_CHECK(D.is_satisfied(2, 0, bound_t(1, false)));
+    BOOST_CHECK(D.is_satisfied(0, 2, bound_t(1, false)));
+
+    BOOST_CHECK(D.is_satisfied(3, 0, bound_t::inf()));
+    BOOST_CHECK(D.is_satisfied(0, 3, bound_t::zero()));
+
+    BOOST_CHECK(D.is_satisfied(4, 0, bound_t(4, false)));
+    BOOST_CHECK(D.is_satisfied(0, 4, bound_t(4, false)));
 }
 
-BOOST_AUTO_TEST_CASE(reorder_2) {
+BOOST_AUTO_TEST_CASE(reorder_test_1) {
     DBM D(5);
+    std::vector<dim_t> order = {0, 2,(dim_t) ~0, 1, 3};
+
     D.future();
     D.assign(1, 0);
     D.assign(2, 3);
     D.assign(4, 10);
 
-    DBM Q = D;
-    //TODO: set boost checks
-    std::vector<bool> src {true, true, false, true, true};
-    std::vector<bool> dst {true, true, true, true};
-    std::vector<int> indir = D.resize(src, dst);
-
-    std::cout << "src:\n";
-    for (int i = 0; i < src.size(); i++) {
-        std::cout << (src[i] ? "1" : "0") << ", ";
-    }
-    std::cout << "\n";
-
-    std::cout << "dst:\n";
-    for (int i = 0; i < dst.size(); i++) {
-        std::cout << (dst[i] ? "1" : "0") << ", ";
-    }
-    std::cout << "\n";
-
-    std::cout << "indir:\n";
-    for (int i = 0; i < indir.size(); i++) {
-        std::cout << indir[i] << ", ";
-    }
-    std::cout << "\n";
-    std::cout << "Before:\n" << Q << "\nAfter:\n" << D;
-}
-
-BOOST_AUTO_TEST_CASE(resize_1) {
-    DBM D(5);
-    D.future();
-    D.assign(1, 0);
-    D.assign(2, 3);
-    D.assign(4, 10);
-
-    DBM Q = D;
-    //TODO: set boost checks
-    std::vector<dim_t> order = {0, 1,(dim_t) ~0, 2, 3};
     D.reorder(order, 4);
 
-    std::cout << "order:\n";
-    for (int i = 0; i < order.size(); i++) {
-        std::cout << (order[i] == ~0 ? "~0" : std::to_string(order[i])) << ", ";
-    }
-    std::cout << "\n";
+    BOOST_CHECK(D._bounds_table._number_of_clocks == 4);
 
-    std::cout << "Before:\n" << Q << "\nAfter:\n" << D;
+    BOOST_CHECK(D.is_satisfied(1, 0, bound_t(3, false)));
+    BOOST_CHECK(D.is_satisfied(0, 1, bound_t(3, false)));
+
+    BOOST_CHECK(D.is_satisfied(2, 0, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfied(0, 2, bound_t::zero()));
+
+    BOOST_CHECK(D.is_satisfied(3, 0, bound_t::inf()));
+    BOOST_CHECK(D.is_satisfied(0, 3, bound_t::zero()));
 }
 
-BOOST_AUTO_TEST_CASE(diagonal_extrapolation_1) {
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_1) {
     DBM D(3);
     D._bounds_table.get(1, 0) = bound_t::inf();
     D._bounds_table.get(2, 0) = bound_t::inf();
@@ -430,7 +389,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_1) {
     BOOST_CHECK(D._bounds_table.at(2, 1) == bound_t::inf());
 }
 
-BOOST_AUTO_TEST_CASE(diagonal_extrapolation_2) {
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_2) {
     DBM D(4);
 //  Extrapolating: [0, 1, -1073741823, 3]
 //  <=0     <=0     <=0     <=0
@@ -462,7 +421,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_2) {
     BOOST_CHECK(D._bounds_table.get(2, 3) == bound_t::inf());
 }
 
-BOOST_AUTO_TEST_CASE(diagonal_extrapolation_3) {
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
 //    <=0     <=-6    <=0     <=0     <=0
 //    INF     <=0     INF     INF     INF
 //    INF     INF     <=0     INF     INF
