@@ -21,8 +21,6 @@
  */
 
 #include "DBM.h"
-#include <ostream>
-#include <iostream>
 
 namespace dbm2 {
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
@@ -55,7 +53,7 @@ namespace dbm2 {
     }
 
     bool DBM::is_satisfied(dim_t x, dim_t y, bound_t g) const {
-        return bound_t::zero() < (this->_bounds_table.at(y, x) + g);
+        return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
     void DBM::close() {
