@@ -34,7 +34,7 @@ namespace dbm2 {
 
         inline bound_t& at(dim_t i, dim_t j) {return this->_bounds_table.at(i, j);}
         inline bound_t at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
-        inline dim_t dimension() const {return this->_bounds_table._number_of_clocks;}
+        inline dim_t dimension() const {return this->_bounds_table.number_of_clocks();}
 
         [[nodiscard]] bool is_empty() const;
         [[nodiscard]] bool is_included_in(const DBM &d) const;
@@ -50,9 +50,28 @@ namespace dbm2 {
         void copy(dim_t x, dim_t y);
         void shift(dim_t x, val_t n);
         void norm(const std::vector<val_t> &ceiling);
-        inline void remove_clock(dim_t c) {return this->_bounds_table.remove_clock(c);}
-        inline void swap_clocks(dim_t a, dim_t b) {return this->_bounds_table.swap_clocks(a, b);}
-        inline void add_clock_at(dim_t c) {return this->_bounds_table.add_clock_at(c);};
+
+        /** Remove clock at index c
+         *
+         * @param c index of clock to be removed
+         */
+        void remove_clock(dim_t c);
+
+        /** Swaps index of clock a and b
+         *
+         * All bounds of a and b will be relocated to match the new index.
+         * @param a index of clock to be swapped with b
+         * @param b index of clock to be swapped with a
+         */
+        void swap_clocks(dim_t a, dim_t b);
+
+        /** Add a new clock at c.
+         *
+         * All clocks at index i >= c will be at i + 1 afterwards.
+         * All bounds on the new clock are (<, 0).
+         * @param c is the index of the new clock
+         */
+        void add_clock_at(dim_t c);
 
         /** Diagonal extrapolation
          *
