@@ -46,7 +46,7 @@ namespace dbm2 {
     bool DBM::is_included_in(const DBM &d) const {
         for (dim_t i = 0; i < _bounds_table._number_of_clocks; ++i)
             for (dim_t j = 0; j < _bounds_table._number_of_clocks; ++j)
-                if (d._bounds_table.at(i, j) < _bounds_table.at(i, j))
+                if (d.at(i, j) < _bounds_table.at(i, j))
                     return false;
 
         return true;
@@ -162,16 +162,16 @@ namespace dbm2 {
     void DBM::diagonal_extrapolation(const std::vector<val_t> &ceiling) {
         DBM D(*this);
 
-        for (dim_t i = 0; i < D._bounds_table._number_of_clocks; ++i) {
-            for (dim_t j = 0; j < D._bounds_table._number_of_clocks; ++j) {
+        for (dim_t i = 0; i < D.dimension(); ++i) {
+            for (dim_t j = 0; j < D.dimension(); ++j) {
                 if (i == j) continue;
-                if ((D._bounds_table.at(i, j)._n > ceiling[i]) ||
-                    (-D._bounds_table.at(0, i)._n > ceiling[i]) ||
-                    (-D._bounds_table.at(0, j)._n > ceiling[j] && i != 0)){
+                if ((D.at(i, j)._n > ceiling[i]) ||
+                    (-D.at(0, i)._n > ceiling[i]) ||
+                    (-D.at(0, j)._n > ceiling[j] && i != 0)){
 
                     this->_bounds_table.at(i, j) = bound_t::inf();
                 }
-                else if (-D._bounds_table.at(i, j)._n > ceiling[j] && i == 0)
+                else if (-D.at(i, j)._n > ceiling[j] && i == 0)
                     this->_bounds_table.at(i, j) = bound_t(-ceiling[j], true);
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
@@ -217,7 +217,7 @@ namespace dbm2 {
         for (dim_t i = 0; i < src_indir.size(); ++i) {
             for (dim_t j = 0; j < src_indir.size(); ++j) {
                 if (src_indir[i] != -1 && src_indir[j] != -1)
-                    dest_dbm._bounds_table.at(src_indir[i], src_indir[j]) = this->_bounds_table.at(i, j);
+                    dest_dbm.at(src_indir[i], src_indir[j]) = this->_bounds_table.at(i, j);
             }
         }
 
@@ -237,7 +237,7 @@ namespace dbm2 {
         for (dim_t i = 0; i < this->_bounds_table._number_of_clocks; ++i) {
             for (dim_t j = 0; j < this->_bounds_table._number_of_clocks; ++j) {
                 if (order[i] != ~0 && order[j] != ~0)
-                    D._bounds_table.at(order[i], order[j]) = this->_bounds_table.at(i, j);
+                    D.at(order[i], order[j]) = this->_bounds_table.at(i, j);
             }
         }
 
