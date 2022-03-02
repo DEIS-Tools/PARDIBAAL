@@ -35,7 +35,7 @@ namespace dbm2 {
 
         explicit bounds_table_t(dim_t number_of_clocks);
 
-        bound_t &get(dim_t i, dim_t j);
+        bound_t &at(dim_t i, dim_t j);
 
         [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
 

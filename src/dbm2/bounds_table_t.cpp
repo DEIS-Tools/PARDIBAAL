@@ -29,7 +29,7 @@ namespace dbm2 {
         _bounds = std::vector<bound_t>(number_of_clocks * number_of_clocks);
     }
 
-    bound_t &bounds_table_t::get(dim_t i, dim_t j) {
+    bound_t &bounds_table_t::at(dim_t i, dim_t j) {
 #ifdef DBUG_BOUNDS
         if (i >= _number_of_clocks || j >= _number_of_clocks) {
             std::cout << "Out of bounds access on coordinate: " << i << ", " << j << " with max size: " <<
@@ -97,17 +97,17 @@ namespace dbm2 {
         for (dim_t i = 0; i < _number_of_clocks; ++i) {
             if (!(i == a || i == b)) {
                 tmp = at(i, a);
-                get(i, a) = at(i, b);
-                get(i, b) = tmp;
+                at(i, a) = at(i, b);
+                at(i, b) = tmp;
 
                 tmp = at(a, i);
-                get(a, i) = at(b, i);
-                get(b, i) = tmp;
+                at(a, i) = at(b, i);
+                at(b, i) = tmp;
             }
         }
         tmp = at(a, b);
-        get(a, b) = at(b, a);
-        get(b, a) = tmp;
+        at(a, b) = at(b, a);
+        at(b, a) = tmp;
     }
 
     void bounds_table_t::add_clock_at(dim_t c) {
@@ -127,8 +127,8 @@ namespace dbm2 {
         //Free the new clock
         for (dim_t i = 0; i < _number_of_clocks; ++i) {
             if (i != c) {
-                this->get(c, i) = bound_t::inf();
-                this->get(i, c) = this->at(i, 0);
+                this->at(c, i) = bound_t::inf();
+                this->at(i, c) = this->at(i, 0);
             }
         }
     }

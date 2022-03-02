@@ -94,7 +94,6 @@ namespace dbm2 {
     };
 
     std::ostream& operator<<(std::ostream& out, const DBM& D);
-
 }
 
 #endif //BDM_DBM_H
