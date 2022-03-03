@@ -28,17 +28,17 @@
 namespace dbm2 {
     class DBM {
         bounds_table_t _bounds_table;
-    public:
 
+    public:
         DBM(dim_t number_of_clocks);
 
         inline bound_t& at(dim_t i, dim_t j) {return this->_bounds_table.at(i, j);}
         inline bound_t at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
         inline dim_t dimension() const {return this->_bounds_table.number_of_clocks();}
 
-        [[nodiscard]] bool is_empty() const;
-        [[nodiscard]] bool is_included_in(const DBM &d) const;
-        [[nodiscard]] bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
+        bool is_empty() const;
+        bool is_included_in(const DBM &d) const;
+        bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
 
         void close();
 
