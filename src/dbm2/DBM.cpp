@@ -21,6 +21,7 @@
  */
 
 #include "DBM.h"
+#include <errors.h>
 
 namespace dbm2 {
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
@@ -44,6 +45,10 @@ namespace dbm2 {
     }
 
     bool DBM::is_included_in(const DBM &d) const {
+#ifndef NEXCEPTIONS
+        if (this->dimension() != d.dimension())
+            throw base_error("ERROR: Comparing DBMS with different dimensions:\n", *this, "and\n", d);
+#endif
         for (dim_t i = 0; i < this->dimension(); ++i)
             for (dim_t j = 0; j < this->dimension(); ++j)
                 if (d.at(i, j) < _bounds_table.at(i, j))
@@ -142,8 +147,11 @@ namespace dbm2 {
 
     // Simple normalisation by a ceiling for all clocks.
     void DBM::norm(const std::vector<val_t> &ceiling) {
+#ifndef NEXCEPTIONS
         if (this->dimension() != ceiling.size())
-            return; //Todo: throw error or something
+            throw base_error("ERROR: Got max constants vecot of size ", ceiling.size(), " but the DBM has ",
+                             this->dimension(), " clocks");
+#endif
 
         for (dim_t i = 0; i < this->dimension(); ++i) {
             for (dim_t j = 0; j < this->dimension(); ++j) {
@@ -160,6 +168,11 @@ namespace dbm2 {
     }
 
     void DBM::diagonal_extrapolation(const std::vector<val_t> &ceiling) {
+#ifndef NEXCEPTIONS
+        if (this->dimension() != ceiling.size())
+            throw base_error("ERROR: Got max constants vecot of size ", ceiling.size(), " but the DBM has ",
+                             this->dimension(), " clocks");
+#endif
         DBM D(*this);
 
         for (dim_t i = 0; i < D.dimension(); ++i) {
@@ -191,13 +204,91 @@ namespace dbm2 {
         this->close();
     }
 
+    void DBM::remove_clock(dim_t c) {
+#ifndef NEXCEPTIONS
+        if (c == 0)
+            throw base_error("ERROR: Cannot remove the zero clock");
+        if (c >= this->dimension())
+            throw base_error("ERROR: Removing clock ", c, " but the DBM only has clocks from 0 to ", dimension() - 1);
+#endif
+        DBM D(dimension() - 1);
+
+        for (dim_t i = 0, i2 = 0; i < dimension(); ++i, ++i2) {
+            for (dim_t j = 0, j2 = 0; j < dimension(); ++j) {
+                if (i == c && i < dimension() -1) {++i;}
+                if (j == c || i == c) continue;
+
+                D.at(i2, j2++) = this->at(i, j);
+            }
+        }
+
+        *this = D;
+    }
+
+    void DBM::swap_clocks(dim_t a, dim_t b) {
+#ifndef NEXCEPTIONS
+        if (a == 0 || b == 0)
+            throw base_error("ERROR: Cannot swap the zero clock");
+        if (a >= this->dimension() || b >= this->dimension())
+            throw base_error("ERROR: Swapping clock ", a, " and ", b, " but the DBM only has clocks from 0 to ", dimension() - 1);
+#endif
+        if (a == b) return;
+
+        bound_t tmp;
+        for (dim_t i = 0; i < dimension(); ++i) {
+            if (!(i == a || i == b)) {
+                tmp = at(i, a);
+                at(i, a) = at(i, b);
+                at(i, b) = tmp;
+
+                tmp = at(a, i);
+                at(a, i) = at(b, i);
+                at(b, i) = tmp;
+            }
+        }
+
+        tmp = at(a, b);
+        at(a, b) = at(b, a);
+        at(b, a) = tmp;
+    }
+
+    void DBM::add_clock_at(dim_t c) {
+#ifndef NEXCEPTIONS
+        if (c == 0)
+            throw base_error("ERROR: Cannot add a new clock at index zero");
+        if (c > this->dimension())
+            throw base_error("ERROR: Adding clock at index", c, " but the DBM only has clocks from 0 to ", dimension() - 1);
+#endif
+
+        DBM D(dimension() + 1);
+
+        dim_t src = 0;
+        for (dim_t i = 0, i2 = 0; i < D.dimension(); ++i, ++i2) {
+            for (dim_t j = 0, j2 = 0; j < D.dimension(); ++j) {
+                if (i == c && i < D.dimension() - 1) {++i;}
+                if (j == c || i == c) continue;
+                D.at(i, j) = this->at(i2, j2++);
+            }
+        }
+
+        *this = D;
+        free(c);
+    }
+
     std::vector<dim_t> DBM::resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits) {
         /* assume number of '1' bits in src_bits and dst_bits match, and
          * that the length of src_bits is the same as _number_of_clocks
          */
-        assert(src_bits.size() == this->dimension());
-        assert(std::count_if(dst_bits.begin(), dst_bits.end(), [](bool b){return b;}) ==
-               std::count_if(src_bits.begin(), src_bits.end(), [](bool b){return b;}));
+#ifndef NEXCEPTIONS
+        if (src_bits.size() != this->dimension())
+            throw base_error("ERROR: src_bits has size: ", src_bits.size(), " but the dimension of the DBM is: ",
+                             this->dimension(), " but they must be equal");
+
+        int src = std::count_if(dst_bits.begin(), dst_bits.end(), [](bool b){return b;});
+        int dst = std::count_if(src_bits.begin(), src_bits.end(), [](bool b){return b;});
+        if (src != dst)
+            throw base_error("ERROR: Mismatch in number of 1 bits/true values in src ", src, " and dst ", dst);
+#endif
 
         DBM dest_dbm(dst_bits.size());
 
@@ -232,6 +323,17 @@ namespace dbm2 {
     }
 
     void DBM::reorder(std::vector<dim_t> order, dim_t new_size) {
+#ifndef NEXCEPTIONS
+        if (order.size() != this->dimension())
+            throw base_error("ERROR: Order vector has size: ", order.size(), " but the dimension of the DBM is: ",
+                             this->dimension(), " They must be equal");
+
+        int clocks_removed = std::count_if(order.begin(), order.end(), [](dim_t i){return i == ~0;});
+        if (this->dimension() - clocks_removed != new_size)
+            throw base_error("ERROR: new_size does not match the number of clocks removed. new_size is: ", new_size,
+                             " current size: ", this->dimension(), " Clocks removed: ", clocks_removed);
+#endif
+
         DBM D(new_size);
 
         for (dim_t i = 0; i < this->dimension(); ++i) {
@@ -242,66 +344,6 @@ namespace dbm2 {
         }
 
         *this = D;
-    }
-
-    void DBM::remove_clock(dim_t c) {
-#ifdef DBUG_BOUNDS
-        if (c >= _number_of_clocks) {
-            std::cout << "Out of bounds access on coordinate: " << c << " with max size: " <<
-                    _number_of_clocks * _number_of_clocks << "\n";
-            abort();
-        }
-#endif
-        DBM D(dimension() - 1);
-
-        for (dim_t i = 0, i2 = 0; i < dimension(); ++i, ++i2) {
-            for (dim_t j = 0, j2 = 0; j < dimension(); ++j) {
-                if (i == c && i < dimension() -1) {++i;}
-                if (j == c || i == c) continue;
-
-                D.at(i2, j2++) = this->at(i, j);
-            }
-        }
-
-        *this = D;
-    }
-
-    void DBM::swap_clocks(dim_t a, dim_t b) {
-        if (a == b || a >= dimension() || b >= dimension())
-            return; //TODO: throw error?
-
-        bound_t tmp;
-        for (dim_t i = 0; i < dimension(); ++i) {
-            if (!(i == a || i == b)) {
-                tmp = at(i, a);
-                at(i, a) = at(i, b);
-                at(i, b) = tmp;
-
-                tmp = at(a, i);
-                at(a, i) = at(b, i);
-                at(b, i) = tmp;
-            }
-        }
-
-        tmp = at(a, b);
-        at(a, b) = at(b, a);
-        at(b, a) = tmp;
-    }
-
-    void DBM::add_clock_at(dim_t c) {
-        DBM D(dimension() + 1);
-
-        dim_t src = 0;
-        for (dim_t i = 0, i2 = 0; i < D.dimension(); ++i, ++i2) {
-            for (dim_t j = 0, j2 = 0; j < D.dimension(); ++j) {
-                if (i == c && i < D.dimension() - 1) {++i;}
-                if (j == c || i == c) continue;
-                D.at(i, j) = this->at(i2, j2++);
-            }
-        }
-
-        *this = D;
-        free(c);
     }
 
     std::ostream& operator<<(std::ostream& out, const DBM& D) {

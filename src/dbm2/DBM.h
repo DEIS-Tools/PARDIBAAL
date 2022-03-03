@@ -51,28 +51,6 @@ namespace dbm2 {
         void shift(dim_t x, val_t n);
         void norm(const std::vector<val_t> &ceiling);
 
-        /** Remove clock at index c
-         *
-         * @param c index of clock to be removed
-         */
-        void remove_clock(dim_t c);
-
-        /** Swaps index of clock a and b
-         *
-         * All bounds of a and b will be relocated to match the new index.
-         * @param a index of clock to be swapped with b
-         * @param b index of clock to be swapped with a
-         */
-        void swap_clocks(dim_t a, dim_t b);
-
-        /** Add a new clock at c.
-         *
-         * All clocks at index i >= c will be at i + 1 afterwards.
-         * All bounds on the new clock are (<, 0).
-         * @param c is the index of the new clock
-         */
-        void add_clock_at(dim_t c);
-
         /** Diagonal extrapolation
          *
          * Update dbm[i,j] with
@@ -94,6 +72,28 @@ namespace dbm2 {
          * @post DBM is closed.
          */
          void diagonal_extrapolation(const std::vector<val_t> &ceiling);
+
+        /** Remove clock at index c
+        *
+        * @param c index of clock to be removed
+        */
+        void remove_clock(dim_t c);
+
+        /** Swaps index of clock a and b
+         *
+         * All bounds of a and b will be relocated to match the new index.
+         * @param a index of clock to be swapped with b
+         * @param b index of clock to be swapped with a
+         */
+        void swap_clocks(dim_t a, dim_t b);
+
+        /** Add a new clock at c.
+         *
+         * All clocks at index i >= c will be at i + 1 afterwards.
+         * All bounds on the new clock are (<, 0).
+         * @param c is the index of the new clock
+         */
+        void add_clock_at(dim_t c);
 
         /**
          * Resize the DBM by adding and deleting clocks.
