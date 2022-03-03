@@ -35,6 +35,7 @@ if (DBM_GetDependencies)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 endif (DBM_GetDependencies)
 
+include_directories(include)
 add_subdirectory(src)
 
 if(BUILD_TESTING AND DBM_BuildTests)
