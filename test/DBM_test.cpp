@@ -376,7 +376,7 @@ BOOST_AUTO_TEST_CASE(swap_clocks_test_1) {
         }
 }
 
-BOOST_AUTO_TEST_CASE(add_clock_after_test_1) {
+BOOST_AUTO_TEST_CASE(add_clock_test_1) {
     DBM D(4);
     D.at(1, 0) = bound_t::inf();
     D.at(3, 0) = bound_t::inf();
