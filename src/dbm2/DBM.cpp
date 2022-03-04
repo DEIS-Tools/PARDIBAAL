@@ -35,7 +35,7 @@ namespace dbm2 {
             for (dim_t j = 0; j < this->dimension(); ++j) {
                 bound_t i_to_j_to_i = this->_bounds_table.at(i, j) + this->_bounds_table.at(j, i);
 
-                if (i_to_j_to_i < bound_t(0, false))
+                if (i_to_j_to_i < bound_t::non_strict(0))
                     return true;
             }
         }
@@ -84,7 +84,7 @@ namespace dbm2 {
 
     void DBM::restrict(dim_t x, dim_t y, bound_t g) {
         if ((_bounds_table.at(y, x) + g) < bound_t::zero()) // In this case the zone is now empty
-            _bounds_table.at(0, 0) = bound_t(-1, false);
+            _bounds_table.at(0, 0) = bound_t::non_strict(-1);
         else if (g < _bounds_table.at(x, y)) {
             _bounds_table.at(x, y) = g;
             for (dim_t i = 0; i < this->dimension(); ++i) {
@@ -112,8 +112,8 @@ namespace dbm2 {
     // x := m
     void DBM::assign(dim_t x, val_t m) {
         for (dim_t i = 0; i < this->dimension(); ++i) {
-            _bounds_table.at(x, i) = bound_t(m, false) + _bounds_table.at(0, i);
-            _bounds_table.at(i, x) = bound_t(-m, false) + _bounds_table.at(i, 0);
+            _bounds_table.at(x, i) = bound_t::non_strict(m) + _bounds_table.at(0, i);
+            _bounds_table.at(i, x) = bound_t::non_strict(-m) + _bounds_table.at(i, 0);
         }
     }
 
@@ -132,8 +132,8 @@ namespace dbm2 {
     void DBM::shift(dim_t x, val_t n) {
         for (dim_t i = 0; i < this->dimension(); ++i) {
             if (i != x) {
-                this->_bounds_table.at(x, i) = this->_bounds_table.at(x, i) + bound_t(n, false);
-                this->_bounds_table.at(i, x) = this->_bounds_table.at(i, x) + bound_t(-n, false);
+                this->_bounds_table.at(x, i) = this->_bounds_table.at(x, i) + bound_t::non_strict(n);
+                this->_bounds_table.at(i, x) = this->_bounds_table.at(i, x) + bound_t::non_strict(-n);
             }
         }
         this->_bounds_table.at(x, 0) = bound_t::max(this->_bounds_table.at(x, 0), bound_t::zero());
@@ -147,11 +147,11 @@ namespace dbm2 {
 
         for (dim_t i = 0; i < this->dimension(); ++i) {
             for (dim_t j = 0; j < this->dimension(); ++j) {
-                if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) > bound_t(ceiling[i], false)){
+                if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) > bound_t::non_strict(ceiling[i])){
                     this->_bounds_table.at(i, j) = bound_t::inf();
                 }
-                else if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) < bound_t(-ceiling[j], true)) {
-                    this->_bounds_table.at(i, j) = bound_t(-ceiling[j], true);
+                else if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) < bound_t::strict(-ceiling[j])) {
+                    this->_bounds_table.at(i, j) = bound_t::strict(-ceiling[j]);
                 }
             }
         }
@@ -172,7 +172,7 @@ namespace dbm2 {
                     this->_bounds_table.at(i, j) = bound_t::inf();
                 }
                 else if (-D.at(i, j)._n > ceiling[j] && i == 0)
-                    this->_bounds_table.at(i, j) = bound_t(-ceiling[j], true);
+                    this->_bounds_table.at(i, j) = bound_t::strict(-ceiling[j]);
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
