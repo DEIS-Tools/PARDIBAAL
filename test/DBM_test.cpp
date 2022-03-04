@@ -579,3 +579,22 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
     BOOST_CHECK(D.at(4, 4) == bound_t::zero());
 
 }
+
+BOOST_AUTO_TEST_CASE(lt_test_1) {
+    DBM D1(2);
+    DBM D2(2);
+
+    D2.future();
+
+    BOOST_CHECK(D1 <= D2);
+    BOOST_CHECK(D2 >= D1);
+    BOOST_CHECK(!(D2 <= D1));
+    BOOST_CHECK(!(D1 >= D2));
+
+    D1.future();
+
+    BOOST_CHECK(D1 <= D2);
+    BOOST_CHECK(D2 <= D1);
+    BOOST_CHECK(D1 >= D2);
+    BOOST_CHECK(D2 >= D1);
+}
