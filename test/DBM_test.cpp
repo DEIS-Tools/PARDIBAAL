@@ -554,7 +554,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
     BOOST_CHECK(D.at(3, 0) == bound_t::inf());
     BOOST_CHECK(D.at(4, 0) == bound_t::inf());
 
-    BOOST_CHECK(D.at(0, 1) == bound_t::non_strict(-3));
+    BOOST_CHECK(D.at(0, 1) == bound_t::strict(-3));
     BOOST_CHECK(D.at(1, 1) == bound_t::zero());
     BOOST_CHECK(D.at(2, 1) == bound_t::inf());
     BOOST_CHECK(D.at(3, 1) == bound_t::inf());
