@@ -44,19 +44,6 @@ namespace dbm2 {
         return false;
     }
 
-    bool DBM::is_included_in(const DBM &d) const {
-#ifndef NEXCEPTIONS
-        if (this->dimension() != d.dimension())
-            throw base_error("ERROR: Comparing DBMS with different dimensions:\n", *this, "and\n", d);
-#endif
-        for (dim_t i = 0; i < this->dimension(); ++i)
-            for (dim_t j = 0; j < this->dimension(); ++j)
-                if (d.at(i, j) < _bounds_table.at(i, j))
-                    return false;
-
-        return true;
-    }
-
     bool DBM::is_satisfied(dim_t x, dim_t y, bound_t g) const {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
@@ -348,5 +335,17 @@ namespace dbm2 {
 
     std::ostream& operator<<(std::ostream& out, const DBM& D) {
         return out << D._bounds_table;
+    }
+
+    bool DBM::compare(const DBM &dbm, bool (*cmp)(bound_t, bound_t)) {
+#ifndef NEXCEPTIONS
+        if (this->dimension() != dbm.dimension())
+            throw base_error("ERROR: Comparing DBMS with different dimensions:\n", *this, "and\n", dbm);
+#endif
+        for (dim_t i = 0; i < dimension(); ++i)
+            for (dim_t j = 0; j < dimension(); ++j)
+                if (!cmp(this->at(i, j), dbm.at(i, j)))
+                    return false;
+        return true;
     }
 }

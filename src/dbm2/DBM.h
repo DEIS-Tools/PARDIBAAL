@@ -37,7 +37,6 @@ namespace dbm2 {
         inline dim_t dimension() const {return this->_bounds_table.number_of_clocks();}
 
         bool is_empty() const;
-        bool is_included_in(const DBM &d) const;
         bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
 
         void close();
@@ -116,7 +115,13 @@ namespace dbm2 {
          */
         void reorder(std::vector<dim_t> order, dim_t new_size);
 
+        inline bool operator<=(const DBM& rhs) {return this->compare(rhs, bound_t::le);}
+        inline bool operator>=(const DBM& rhs) {return this->compare(rhs, bound_t::ge);}
+
         friend std::ostream& operator<<(std::ostream& out, const DBM& D);
+
+    private:
+        bool compare(const DBM& dbm, bool (*cmp) (bound_t, bound_t));
     };
 
     std::ostream& operator<<(std::ostream& out, const DBM& D);
