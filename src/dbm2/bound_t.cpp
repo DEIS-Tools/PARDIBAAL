@@ -24,10 +24,16 @@
 
 namespace dbm2 {
 
+    bound_t::bound_t(val_t n, strict_t strictness) : _n(n) {_strict = strictness == STRICT ? true : false;}
+
     bound_t::bound_t(val_t n, bool strict) : _n(n), _strict(strict) {}
 
+    bound_t bound_t::strict(val_t n) {return bound_t(n, STRICT);}
+
+    bound_t bound_t::non_strict(val_t n) {return bound_t(n, NON_STRICT);}
+
     bound_t bound_t::zero() {
-        return bound_t(0, false);
+        return non_strict(0);
     }
 
     bound_t bound_t::inf() {
