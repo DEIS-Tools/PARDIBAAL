@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(restrict_test_2) {
     BOOST_CHECK(D.is_empty());
 }
 
-BOOST_AUTO_TEST_CASE(trace_test_1) {
+/*BOOST_AUTO_TEST_CASE(trace_test_1) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 6, 10, 10};
@@ -190,9 +190,9 @@ BOOST_AUTO_TEST_CASE(trace_test_1) {
     // z - y in (6, 10]
     BOOST_CHECK(D.at(z, y) == bound_t::non_strict(10));
     BOOST_CHECK(D.at(x, z) == bound_t::strict(-6));
-}
+}*/
 
-BOOST_AUTO_TEST_CASE(trace_test_2) {
+BOOST_AUTO_TEST_CASE(trace_test_1) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 2, 5, 3};
@@ -598,3 +598,27 @@ BOOST_AUTO_TEST_CASE(lt_test_1) {
     BOOST_CHECK(D1 >= D2);
     BOOST_CHECK(D2 >= D1);
 }
+
+BOOST_AUTO_TEST_CASE(relation_test_1) {
+    DBM D1(2);
+    DBM D2(3);
+
+    BOOST_CHECK(D1.relation(D2) == INCOMPARABLE);
+    BOOST_CHECK(D2.relation(D1) == INCOMPARABLE);
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_2) {
+    DBM D1(2);
+    DBM D2(2);
+
+    D2.future();
+
+    BOOST_CHECK(D1.relation(D2) == SUBSET);
+    BOOST_CHECK(D2.relation(D1) == SUPERSET);
+
+    D1.free(1);
+
+    BOOST_CHECK(D1.relation(D2) == EQUAL);
+    BOOST_CHECK(D2.relation(D1) == EQUAL);
+}
+

@@ -48,6 +48,27 @@ namespace dbm2 {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
+    relation_t DBM::relation(const DBM &dbm) {
+        if (this->dimension() != dbm.dimension())
+            return INCOMPARABLE;
+
+        bool eq, sub = true, super = true;
+
+        for (dim_t i = 0; i < dimension(); ++i)
+            for (dim_t j = 0; j < dimension(); ++j) {
+                sub &= this->at(i, j) <= dbm.at(i, j);
+                super &= this->at(i, j) >= dbm.at(i, j);
+            }
+
+        eq = sub && super;
+
+        if (eq) return EQUAL;
+        if (sub) return SUBSET;
+        if (super) return SUPERSET;
+
+        return DIFFERENT;
+    }
+
     void DBM::close() {
         const dim_t size = this->dimension();
 

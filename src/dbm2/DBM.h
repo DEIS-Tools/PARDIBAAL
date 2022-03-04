@@ -26,6 +26,8 @@
 #include "bounds_table_t.h"
 
 namespace dbm2 {
+    enum relation_t {INCOMPARABLE, EQUAL, SUBSET, SUPERSET, DIFFERENT};
+
     class DBM {
         bounds_table_t _bounds_table;
 
@@ -38,6 +40,7 @@ namespace dbm2 {
 
         bool is_empty() const;
         bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
+        relation_t relation(const DBM& dbm);
 
         void close();
 
