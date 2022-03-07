@@ -39,6 +39,6 @@ add_subdirectory(src)
 
 if(BUILD_TESTING AND DBM_BuildTests)
     #testing
-    add_subdirectory(test)
     enable_testing()
+    add_subdirectory(test)
 endif()
