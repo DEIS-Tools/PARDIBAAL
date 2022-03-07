@@ -21,7 +21,7 @@ jobs:
       - name: Install depends
         run: |
           brew install cmake
-          brew install --without-python boost
+          brew install boost
 
       - name: Test
         run: |
