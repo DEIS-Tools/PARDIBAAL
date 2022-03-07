@@ -26,13 +26,13 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          CC=clang CXX=clang cmake ../ -DCMAKE_BUILD_TYPE=Prebuild -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
+          CC=clang CXX=clang++ cmake ../ -DCMAKE_BUILD_TYPE=Prebuild -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
           make
       - name: Build
         run: |
           mkdir -p build
           cd build
-          CC=clang CXX=clang cmake ../ -DCMAKE_BUILD_TYPE=Debug -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
+          CC=clang CXX=clang++ cmake ../ -DCMAKE_BUILD_TYPE=Debug -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
           make
       - name: Test
         run: |
