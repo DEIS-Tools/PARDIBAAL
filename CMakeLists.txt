@@ -28,6 +28,7 @@ if (DBM_GetDependencies)
     set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
 
     file(MAKE_DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/include)
+    file(MAKE_DIRECTORY ${EXTERNAL_INSTALL_LOCATION}/lib)
 
     # we can now include external libraries
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
@@ -40,7 +41,4 @@ if(BUILD_TESTING AND DBM_BuildTests)
     #testing
     add_subdirectory(test)
     enable_testing()
-    add_test(NAME DBM_test            COMMAND DBM_test)
-    add_test(NAME bounds_table_test   COMMAND bounds_table_test)
-    add_test(NAME bound_test          COMMAND bound_test)
 endif()

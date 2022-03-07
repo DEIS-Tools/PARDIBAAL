@@ -24,7 +24,6 @@
 #define BDM_BOUNDS_TABLE_T_H
 
 #include "bound_t.h"
-
 #include <vector>
 
 
@@ -32,13 +31,35 @@ namespace dbm2 {
 
     struct bounds_table_t {
     public:
-        const dim_t _number_of_clocks;
+        dim_t _number_of_clocks;//TODO: write getter method
 
         explicit bounds_table_t(dim_t number_of_clocks);
 
         bound_t &get(dim_t i, dim_t j);
 
         [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
+
+        /** Remove clock at index c
+         *
+         * @param c index of clock to be removed
+         */
+        void remove_clock(dim_t c);
+
+        /** Swaps index of clock a and b
+         *
+         * All bounds of a and b will be relocated to match the new index.
+         * @param a index of clock to be swapped with b
+         * @param b index of clock to be swapped with a
+         */
+        void swap_clocks(dim_t a, dim_t b);
+
+        /** Add a new clock at c.
+         *
+         * All clocks at index i >= c will be at i + 1 afterwards.
+         * All bounds on the new clock are (<, 0).
+         * @param c is the index of the new clock
+         */
+        void add_clock_at(dim_t c);
 
         friend std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
 

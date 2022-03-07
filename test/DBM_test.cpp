@@ -27,7 +27,7 @@
 
 using namespace dbm2;
 
-BOOST_AUTO_TEST_CASE(Close_Test_1) {
+BOOST_AUTO_TEST_CASE(close_test_1) {
     DBM D(3);
 
     D.future();
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(Close_Test_1) {
             BOOST_CHECK(D._bounds_table.get(i, j) == Q._bounds_table.get(i, j));
 }
 
-BOOST_AUTO_TEST_CASE(Delay_Test_1) {
+BOOST_AUTO_TEST_CASE(delay_test_1) {
     DBM D(10);
 
     D.future();
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(Delay_Test_1) {
         }
 }
 
-BOOST_AUTO_TEST_CASE(Restrict_Test_1) {
+BOOST_AUTO_TEST_CASE(restrict_test_1) {
     DBM D(3);
     bound_t g(5, false);
 
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(Restrict_Test_1) {
             BOOST_CHECK(D._bounds_table.get(i, j) == Q._bounds_table.get(i, j));
 }
 
-BOOST_AUTO_TEST_CASE(Restrict_Test_2) {
+BOOST_AUTO_TEST_CASE(restrict_test_2) {
     DBM D(3);
     bound_t g(-5, false);
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(Restrict_Test_2) {
     BOOST_CHECK(D.is_empty());
 }
 
-BOOST_AUTO_TEST_CASE(Trace_1) {
+BOOST_AUTO_TEST_CASE(trace_test_1) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 6, 10, 10};
@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(Trace_1) {
     BOOST_CHECK(D._bounds_table.at(x, z) == bound_t(-6, true));
 }
 
-BOOST_AUTO_TEST_CASE(Trace_2) {
+BOOST_AUTO_TEST_CASE(trace_test_2) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 2, 5, 3};
@@ -316,4 +316,172 @@ BOOST_AUTO_TEST_CASE(Trace_2) {
     BOOST_CHECK(D._bounds_table.at(0, x) == bound_t(-2, false));
     BOOST_CHECK(D._bounds_table.at(0, y) == bound_t(-4, false));
     BOOST_CHECK(D._bounds_table.at(0, z) == bound_t(-3, false));
+}
+
+BOOST_AUTO_TEST_CASE(resize_test_2) {
+    DBM D(5);
+    D.future();
+    D.assign(1, 1);
+    D.assign(2, 2);
+    D.assign(4, 4);
+
+    std::vector<bool> src {true, true, false, true, true};
+    std::vector<bool> dst {true, false, true, true, true};
+    std::vector<dim_t> indir = D.resize(src, dst);
+
+
+    BOOST_CHECK(D.is_satisfied(1, 0, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfied(0, 1, bound_t::zero()));
+
+    BOOST_CHECK(D.is_satisfied(2, 0, bound_t(1, false)));
+    BOOST_CHECK(D.is_satisfied(0, 2, bound_t(1, false)));
+
+    BOOST_CHECK(D.is_satisfied(3, 0, bound_t::inf()));
+    BOOST_CHECK(D.is_satisfied(0, 3, bound_t::zero()));
+
+    BOOST_CHECK(D.is_satisfied(4, 0, bound_t(4, false)));
+    BOOST_CHECK(D.is_satisfied(0, 4, bound_t(4, false)));
+}
+
+BOOST_AUTO_TEST_CASE(reorder_test_1) {
+    DBM D(5);
+    std::vector<dim_t> order = {0, 2,(dim_t) ~0, 1, 3};
+
+    D.future();
+    D.assign(1, 0);
+    D.assign(2, 3);
+    D.assign(4, 10);
+
+    D.reorder(order, 4);
+
+    BOOST_CHECK(D._bounds_table._number_of_clocks == 4);
+
+    BOOST_CHECK(D.is_satisfied(1, 0, bound_t(3, false)));
+    BOOST_CHECK(D.is_satisfied(0, 1, bound_t(3, false)));
+
+    BOOST_CHECK(D.is_satisfied(2, 0, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfied(0, 2, bound_t::zero()));
+
+    BOOST_CHECK(D.is_satisfied(3, 0, bound_t::inf()));
+    BOOST_CHECK(D.is_satisfied(0, 3, bound_t::zero()));
+}
+
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_1) {
+    DBM D(3);
+    D._bounds_table.get(1, 0) = bound_t::inf();
+    D._bounds_table.get(2, 0) = bound_t::inf();
+    std::vector<val_t> ceiling = {0, -1073741823, -1073741823};
+
+    std::cout << D;
+    D.diagonal_extrapolation(ceiling);
+    std::cout << D;
+
+    BOOST_CHECK(!D.is_empty());
+    BOOST_CHECK(D._bounds_table.at(0, 0) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(1, 1) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(2, 2) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(0, 1) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.at(0, 2) == bound_t::zero());
+
+    BOOST_CHECK(D._bounds_table.at(1, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.at(2, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.at(1, 2) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.at(2, 1) == bound_t::inf());
+}
+
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_2) {
+    DBM D(4);
+//  Extrapolating: [0, 1, -1073741823, 3]
+//  <=0     <=0     <=0     <=0
+//  <=1     <=0     <=1     <=0
+//  INF     INF     <=0     INF
+//  <=1     <=0     <=1     <=0
+    std::vector<val_t> ceiling = {0, 1, -1073741823, 3};
+
+    D._bounds_table.get(1, 0) = bound_t(1, false);
+    D._bounds_table.get(1, 2) = bound_t(1, false);
+    D._bounds_table.get(3, 0) = bound_t(1, false);
+    D._bounds_table.get(3, 2) = bound_t(1, false);
+    D._bounds_table.get(2, 0) = bound_t::inf();
+    D._bounds_table.get(2, 1) = bound_t::inf();
+    D._bounds_table.get(2, 3) = bound_t::inf();
+
+    D.diagonal_extrapolation(ceiling);
+
+//  <=0     <=0     <=0     <=0
+//  <=1     <=0     <=1     <=0
+//  INF     INF     <=0     INF
+//  <=1     <=0     <=1     <=0
+    BOOST_CHECK(D._bounds_table.get(1, 0) == bound_t(1, false));
+    BOOST_CHECK(D._bounds_table.get(1, 2) == bound_t(1, false));
+    BOOST_CHECK(D._bounds_table.get(3, 0) == bound_t(1, false));
+    BOOST_CHECK(D._bounds_table.get(3, 2) == bound_t(1, false));
+    BOOST_CHECK(D._bounds_table.get(2, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 1) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 3) == bound_t::inf());
+}
+
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
+//    <=0     <=-6    <=0     <=0     <=0
+//    INF     <=0     INF     INF     INF
+//    INF     INF     <=0     INF     INF
+//    INF     <=-6    <=0     <=0     <=0
+//    INF     <=-6    <=0     <=0     <=0
+    DBM D(5);
+    std::vector<val_t> ceiling = {0, 3, -1073741823, 3, 3};
+
+    D._bounds_table.get(0, 1) = bound_t(-6, false);
+    D._bounds_table.get(3, 1) = bound_t(-6, false);
+    D._bounds_table.get(4, 1) = bound_t(-6, false);
+
+    D._bounds_table.get(1, 0) = bound_t::inf();
+    D._bounds_table.get(2, 0) = bound_t::inf();
+    D._bounds_table.get(3, 0) = bound_t::inf();
+    D._bounds_table.get(4, 0) = bound_t::inf();
+
+    D._bounds_table.get(2, 1) = bound_t::inf();
+    D._bounds_table.get(1, 2) = bound_t::inf();
+    D._bounds_table.get(1, 3) = bound_t::inf();
+    D._bounds_table.get(2, 3) = bound_t::inf();
+    D._bounds_table.get(1, 4) = bound_t::inf();
+    D._bounds_table.get(2, 4) = bound_t::inf();
+
+    D.diagonal_extrapolation(ceiling);
+
+//    <=0     <-3     <=0     <=0     <=0
+//    INF     <=0     INF     INF     INF
+//    INF     INF     <=0     INF     INF
+//    INF     INF     INF     <=0     <=0
+//    INF     INF     INF     <=0     <=0
+
+    BOOST_CHECK(D._bounds_table.get(0, 0) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(1, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(3, 0) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(4, 0) == bound_t::inf());
+
+    BOOST_CHECK(D._bounds_table.get(0, 1) == bound_t(-3, true));
+    BOOST_CHECK(D._bounds_table.get(1, 1) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(2, 1) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(3, 1) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(4, 1) == bound_t::inf());
+
+    BOOST_CHECK(D._bounds_table.get(0, 2) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(1, 2) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 2) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(3, 2) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(4, 2) == bound_t::inf());
+
+    BOOST_CHECK(D._bounds_table.get(0, 3) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(1, 3) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 3) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(3, 3) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(4, 3) == bound_t::zero());
+
+    BOOST_CHECK(D._bounds_table.get(0, 4) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(1, 4) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(2, 4) == bound_t::inf());
+    BOOST_CHECK(D._bounds_table.get(3, 4) == bound_t::zero());
+    BOOST_CHECK(D._bounds_table.get(4, 4) == bound_t::zero());
+
 }
