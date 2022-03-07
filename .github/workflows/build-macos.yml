@@ -18,6 +18,10 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install depends
+        run: |
+          brew install cmake
+          brew install --without-python boost
 
       - name: Test
         run: |
