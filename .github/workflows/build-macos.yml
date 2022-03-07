@@ -21,13 +21,20 @@ jobs:
       - name: Install depends
         run: |
           brew install cmake
-          brew install boost
-
-      - name: Test
+      - name: Prebuild
+        run: |
+          mkdir -p build
+          cd build
+          CC=gcc-10 CXX=g++-10 cmake ../ -DCMAKE_BUILD_TYPE=Prebuild -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
+          make
+      - name: Build
         run: |
           mkdir -p build
           cd build
           CC=gcc-10 CXX=g++-10 cmake ../ -DCMAKE_BUILD_TYPE=Debug -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
           make
+      - name: Test
+        run: |
+          cd build
           make test
 
