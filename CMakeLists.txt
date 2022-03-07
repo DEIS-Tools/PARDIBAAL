@@ -62,8 +62,9 @@ if (DBM_GetDependencies)
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
 endif (DBM_GetDependencies)
-
-add_subdirectory(src)
+if(NOT CMAKE_BUILD_TYPE MATCHES Prebuild)
+    add_subdirectory(src)
+endif()
 if(BUILD_TESTING AND DBM_BuildTests)
     if (CMAKE_BUILD_TYPE MATCHES Prebuild)
         # dummy for pre-build
