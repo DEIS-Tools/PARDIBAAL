@@ -20,7 +20,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install depends
         run: |
-          xcode-select --install
           brew install cmake
       - name: Prebuild
         run: |
