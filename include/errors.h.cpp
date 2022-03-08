@@ -1,8 +1,8 @@
 /*
- * Copyright Thomas M. Grosen
- * Created on 14/12/2021.
+ * Copyright Thomas Møller Grosen 
+ * Created on 03/03/2022
  */
-
+ 
 /*
  * This file is part of dbm2
  *
@@ -17,14 +17,5 @@
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with dbm2.  If not, see <https://www.gnu.org/licenses/>.
+ * along with dbm2. If not, see <https://www.gnu.org/licenses/>.
  */
-
-#define BOOST_TEST_MODULE DBM
-
-#include <boost/test/unit_test.hpp>
-#include <dbm2/DBM.h>
-
-using namespace dbm2;
-
-BOOST_AUTO_TEST_CASE(dummy) {}

@@ -31,14 +31,22 @@ namespace dbm2{
     using dim_t = uint32_t;
     using val_t = int32_t;
 
+    enum strict_t {STRICT, NON_STRICT};
+
     struct bound_t {
+        val_t _n = 0;
+        bool _strict = false,
+             _inf = false;
+
         bound_t(){};
+        bound_t(val_t n, strict_t strictness);
         bound_t(val_t n, bool strict);
+
+        static bound_t strict(val_t n);
+        static bound_t non_strict(val_t n);
         static bound_t inf();
         static bound_t zero();
 
-        val_t _n = 0;
-        bool _strict = false, _inf = false;
 
         static const bound_t& max(const bound_t &a, const bound_t &b);
         static bound_t max(bound_t &&a, bound_t &&b);

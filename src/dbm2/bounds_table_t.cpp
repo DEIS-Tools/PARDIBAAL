@@ -29,7 +29,7 @@ namespace dbm2 {
         _bounds = std::vector<bound_t>(number_of_clocks * number_of_clocks);
     }
 
-    bound_t &bounds_table_t::get(dim_t i, dim_t j) {
+    bound_t &bounds_table_t::at(dim_t i, dim_t j) {
 #ifdef DBUG_BOUNDS
         if (i >= _number_of_clocks || j >= _number_of_clocks) {
             std::cout << "Out of bounds access on coordinate: " << i << ", " << j << " with max size: " <<
@@ -64,72 +64,5 @@ namespace dbm2 {
         }
 
         return out;
-    }
-
-    void bounds_table_t::remove_clock(dim_t c) {
-#ifdef DBUG_BOUNDS
-        if (c >= _number_of_clocks) {
-            std::cout << "Out of bounds access on coordinate: " << c << " with max size: " <<
-                    _number_of_clocks * _number_of_clocks << "\n";
-            abort();
-        }
-#endif
-        std::vector<bound_t> new_bounds((_number_of_clocks-1) * (_number_of_clocks-1));
-
-        dim_t i2 = 0;
-        for (dim_t i = 0; i < ((_number_of_clocks) * (_number_of_clocks)); ++i) {
-            if ((i >= c && (i - c) % _number_of_clocks == 0) ||
-                (i >= (c * _number_of_clocks) && i < ((c+1) * _number_of_clocks)))
-                continue; //This index is deleted, so skip
-
-            new_bounds[i2] = _bounds[i];
-            ++i2;
-        }
-
-        _bounds = new_bounds;
-        --_number_of_clocks;
-    }
-
-    void bounds_table_t::swap_clocks(dim_t a, dim_t b) {
-        if (a == b || a >= _number_of_clocks || b >= _number_of_clocks)
-            return; //TODO: throw error?
-        bound_t tmp;
-        for (dim_t i = 0; i < _number_of_clocks; ++i) {
-            if (!(i == a || i == b)) {
-                tmp = at(i, a);
-                get(i, a) = at(i, b);
-                get(i, b) = tmp;
-
-                tmp = at(a, i);
-                get(a, i) = at(b, i);
-                get(b, i) = tmp;
-            }
-        }
-        tmp = at(a, b);
-        get(a, b) = at(b, a);
-        get(b, a) = tmp;
-    }
-
-    void bounds_table_t::add_clock_at(dim_t c) {
-        ++_number_of_clocks;
-        std::vector<bound_t> new_bounds(_number_of_clocks * _number_of_clocks);
-        dim_t src = 0;
-
-        for (dim_t dst = 0; dst < _number_of_clocks * _number_of_clocks; ++dst) {
-            if ((dst >= c && (dst - c) % _number_of_clocks == 0) ||
-                (dst >= (c * _number_of_clocks) && dst < ((c+1) * _number_of_clocks)))
-                continue;
-            new_bounds[dst] = _bounds[src++];
-        }
-
-        _bounds = new_bounds;
-
-        //Free the new clock
-        for (dim_t i = 0; i < _number_of_clocks; ++i) {
-            if (i != c) {
-                this->get(c, i) = bound_t::inf();
-                this->get(i, c) = this->at(i, 0);
-            }
-        }
     }
 }

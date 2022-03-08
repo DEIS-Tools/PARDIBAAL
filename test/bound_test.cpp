@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE(equal_test_1) {
 }
 
 BOOST_AUTO_TEST_CASE(equal_test_2) {
-    bound_t a(5, false);
-    bound_t b(5, false);
+    bound_t a(5, NON_STRICT);
+    bound_t b(5, NON_STRICT);
 
     BOOST_CHECK(a == b);
 }
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(comp_test_1) {
 }
 
 BOOST_AUTO_TEST_CASE(comp_test_2) {
-    bound_t a(100, false);
+    bound_t a(100, NON_STRICT);
     bound_t b = bound_t::inf();
 
     BOOST_CHECK(a == bound_t::min(a, b));
@@ -77,8 +77,8 @@ BOOST_AUTO_TEST_CASE(comp_test_2) {
 }
 
 BOOST_AUTO_TEST_CASE(comp_test_3) {
-    bound_t a(1, true);
-    bound_t b(1, false);
+    bound_t a(1, STRICT);
+    bound_t b(1, NON_STRICT);
 
     BOOST_CHECK(a == bound_t::min(a, b));
     BOOST_CHECK(b == bound_t::max(a, b));
@@ -113,21 +113,21 @@ BOOST_AUTO_TEST_CASE(comp_test_5) {
 }
 
 BOOST_AUTO_TEST_CASE(add_test_1) {
-    bound_t a(1, true);
-    bound_t b(3, false);
+    bound_t a(1, STRICT);
+    bound_t b(3, NON_STRICT);
 
-    BOOST_CHECK(a + b == bound_t(4, true));
+    BOOST_CHECK(a + b == bound_t::strict(4));
 }
 
 BOOST_AUTO_TEST_CASE(add_test_2) {
-    bound_t a(1, false);
-    bound_t b(3, false);
+    bound_t a(1, NON_STRICT);
+    bound_t b(3, NON_STRICT);
 
-    BOOST_CHECK(a + b == bound_t(4, false));
+    BOOST_CHECK(a + b == bound_t::non_strict(4));
 }
 
 BOOST_AUTO_TEST_CASE(add_test_3) {
-    bound_t a(1, true);
+    bound_t a(1, STRICT);
     bound_t b = bound_t::inf();
 
     BOOST_CHECK(a + b == bound_t::inf());
