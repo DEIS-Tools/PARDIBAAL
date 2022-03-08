@@ -264,7 +264,6 @@ namespace dbm2 {
 
         DBM D(dimension() + 1);
 
-        dim_t src = 0;
         for (dim_t i = 0, i2 = 0; i < D.dimension(); ++i, ++i2) {
             for (dim_t j = 0, j2 = 0; j < D.dimension(); ++j) {
                 if (i == c && i < D.dimension() - 1) {++i;}
