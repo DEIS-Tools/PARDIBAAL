@@ -20,14 +20,15 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install depends
         run: |
-          brew install cmake
-          brew install boost
-
-      - name: Test
+          brew install cmake boost
+      - name: Build
         run: |
           mkdir -p build
           cd build
-          CC=gcc-10 CXX=g++-10 cmake ../ -DCMAKE_BUILD_TYPE=Debug -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
+          CC=clang CXX=clang++ cmake ../ -DCMAKE_BUILD_TYPE=Debug -DDBM_BuildTests=ON -DBUILD_TESTING=ON -DDBM_GetDependencies=OFF ..
           make
+      - name: Test
+        run: |
+          cd build
           make test
 

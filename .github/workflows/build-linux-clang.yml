@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 concurrency: 
-  group: build-Linux-${{ github.head_ref }}
+  group: build-Linux-Clang-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
@@ -21,17 +21,18 @@ jobs:
       - name: Install Packages
         run: |
           sudo apt-get update
+          sudo apt-get install clang
       - name: Prebuild
         run: |
           mkdir -p build
           cd build
-          CC=gcc-10 CXX=g++-10 cmake ../ -DCMAKE_BUILD_TYPE=Prebuild -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
+          CC=clang CXX=clang++ cmake ../ -DCMAKE_BUILD_TYPE=Prebuild -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
           make
       - name: Build
         run: |
           mkdir -p build
           cd build
-          CC=gcc-10 CXX=g++-10 cmake ../ -DCMAKE_BUILD_TYPE=Debug -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
+          CC=clang CXX=clang++ cmake ../ -DCMAKE_BUILD_TYPE=Debug -DDBM_BuildTests=ON -DBUILD_TESTING=ON  ..
           make
       - name: Test
         run: |
