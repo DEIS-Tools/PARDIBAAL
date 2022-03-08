@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(restrict_test_2) {
     BOOST_CHECK(D.is_empty());
 }
 
-/*BOOST_AUTO_TEST_CASE(trace_test_1) {
+BOOST_AUTO_TEST_CASE(trace_test_1) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 2, 5, 3};
@@ -235,7 +235,6 @@ BOOST_AUTO_TEST_CASE(remove_clock_test_1) {
 }
 
 BOOST_AUTO_TEST_CASE(swap_clocks_test_1) {
-    int check_cnt = 0;
     dim_t size = 5, a = 2, b = 4;
     DBM D(size);
 
@@ -360,7 +359,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_1) {
     std::vector<val_t> ceiling = {0, -1073741823, -1073741823};
 
     std::cout << D;
-    D.diagonal_extrapolation(ceiling);
+    D.extrapolate_diagonal(ceiling);
     std::cout << D;
 
     BOOST_CHECK(!D.is_empty());
@@ -393,7 +392,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_2) {
     D.at(2, 1) = bound_t::inf();
     D.at(2, 3) = bound_t::inf();
 
-    D.diagonal_extrapolation(ceiling);
+    D.extrapolate_diagonal(ceiling);
 
 //  <=0     <=0     <=0     <=0
 //  <=1     <=0     <=1     <=0
@@ -433,7 +432,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
     D.at(1, 4) = bound_t::inf();
     D.at(2, 4) = bound_t::inf();
 
-    D.diagonal_extrapolation(ceiling);
+    D.extrapolate_diagonal(ceiling);
 
 //    <=0     <-3     <=0     <=0     <=0
 //    INF     <=0     INF     INF     INF
