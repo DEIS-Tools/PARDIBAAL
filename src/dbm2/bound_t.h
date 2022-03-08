@@ -73,6 +73,11 @@ namespace dbm2{
         bool operator>=(bound_t rhs) const;
 
         friend std::ostream& operator<<(std::ostream& out, const bound_t& bound);
+
+        inline static bool lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
+        inline static bool le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
+        inline static bool gt(bound_t lhs, bound_t rhs) {return lhs > rhs;}
+        inline static bool ge(bound_t lhs, bound_t rhs) {return lhs >= rhs;}
     };
 
     std::ostream& operator<<(std::ostream& out, const bound_t& bound);
