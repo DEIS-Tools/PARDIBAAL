@@ -23,6 +23,8 @@
 #include "DBM.h"
 #include <errors.h>
 
+#include <cassert>
+
 namespace dbm2 {
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
 
