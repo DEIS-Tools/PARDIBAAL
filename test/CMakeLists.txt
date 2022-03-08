@@ -10,14 +10,9 @@ add_executable(DBM_test DBM_test.cpp)
 add_executable(bounds_table_test bounds_table_test.cpp)
 add_executable(bound_test bound_test.cpp)
 
-
 target_link_libraries(DBM_test ${Boost_LIBRARIES} dbm2)
 target_link_libraries(bounds_table_test ${Boost_LIBRARIES} dbm2)
 target_link_libraries(bound_test ${Boost_LIBRARIES} dbm2)
-
-add_dependencies(DBM_test boost-ext)
-add_dependencies(bounds_table_test boost-ext)
-add_dependencies(bound_test boost-ext)
 
 add_test(NAME DBM_test            COMMAND DBM_test)
 add_test(NAME bounds_table_test   COMMAND bounds_table_test)
