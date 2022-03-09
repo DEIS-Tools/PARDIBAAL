@@ -188,13 +188,13 @@ namespace dbm2 {
         for (dim_t i = 0; i < D.dimension(); ++i) {
             for (dim_t j = 0; j < D.dimension(); ++j) {
                 if (i == j) continue;
-                if ((D.at(i, j)._n > ceiling[i]) ||
-                    (-D.at(0, i)._n > ceiling[i]) ||
-                    (-D.at(0, j)._n > ceiling[j] && i != 0)){
+                if ((D.at(i, j) > bound_t::non_strict(ceiling[i])) ||
+                    (-1 * D.at(0, i) > bound_t::non_strict(ceiling[i])) ||
+                    (-1 * D.at(0, j) > bound_t::non_strict(ceiling[j]) && i != 0)){
 
                     this->at(i, j) = bound_t::inf();
                 }
-                else if (-D.at(i, j)._n > ceiling[j] && i == 0)
+                else if (-1 * D.at(i, j) > bound_t::non_strict(ceiling[j]) && i == 0)
                     this->at(i, j) = bound_t::strict(-ceiling[j]);
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
