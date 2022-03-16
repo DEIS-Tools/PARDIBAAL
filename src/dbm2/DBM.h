@@ -26,6 +26,10 @@
 #include "bounds_table_t.h"
 
 namespace dbm2 {
+    /** Relation Enum
+     * INCOMPARABLE means the dimensions are different
+     * DIFFERENT means that they are neither equal or a sub/superset of each other.
+     */
     enum relation_t {INCOMPARABLE, EQUAL, SUBSET, SUPERSET, DIFFERENT};
 
     class DBM {
