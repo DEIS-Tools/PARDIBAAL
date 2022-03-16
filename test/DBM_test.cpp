@@ -24,6 +24,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <dbm2/DBM.h>
+#include "../include/errors.h"
 
 using namespace dbm2;
 
@@ -85,7 +86,7 @@ BOOST_AUTO_TEST_CASE(restrict_test_2) {
     BOOST_CHECK(D.is_empty());
 }
 
-/*BOOST_AUTO_TEST_CASE(trace_test_1) {
+BOOST_AUTO_TEST_CASE(trace_test_1) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
     std::vector<val_t> ceiling{0, 2, 5, 3};
@@ -234,8 +235,14 @@ BOOST_AUTO_TEST_CASE(remove_clock_test_1) {
     BOOST_CHECK(D.at(2, 2) == bound_t::zero());
 }
 
+BOOST_AUTO_TEST_CASE(remove_clock_test_2) {
+    DBM D(10);
+
+    BOOST_CHECK_THROW(D.remove_clock(0), base_error);
+    BOOST_CHECK_THROW(D.remove_clock(10), base_error);
+}
+
 BOOST_AUTO_TEST_CASE(swap_clocks_test_1) {
-    int check_cnt = 0;
     dim_t size = 5, a = 2, b = 4;
     DBM D(size);
 
@@ -267,6 +274,16 @@ BOOST_AUTO_TEST_CASE(swap_clocks_test_1) {
 
             BOOST_CHECK(D.at(i, j) == bound);
         }
+}
+
+BOOST_AUTO_TEST_CASE(swap_clocks_test_2) {
+    DBM D(7);
+
+    BOOST_CHECK_THROW(D.swap_clocks(0, 5), base_error);
+    BOOST_CHECK_THROW(D.swap_clocks(1, 0), base_error);
+    BOOST_CHECK_THROW(D.swap_clocks(2, 7), base_error);
+    BOOST_CHECK_THROW(D.swap_clocks(7, 5), base_error);
+    BOOST_CHECK_THROW(D.swap_clocks(0, 7), base_error);
 }
 
 BOOST_AUTO_TEST_CASE(add_clock_test_1) {
@@ -305,7 +322,14 @@ BOOST_AUTO_TEST_CASE(add_clock_test_1) {
     BOOST_CHECK(D.at(4, 4) == bound_t::zero());
 }
 
-BOOST_AUTO_TEST_CASE(resize_test_2) {
+BOOST_AUTO_TEST_CASE(add_clock_test_2) {
+    DBM D(9);
+
+    BOOST_CHECK_THROW(D.add_clock_at(0), base_error);
+    BOOST_CHECK_THROW(D.add_clock_at(10), base_error);
+}
+
+BOOST_AUTO_TEST_CASE(resize_test_1) {
     DBM D(5);
     D.future();
     D.assign(1, 1);
@@ -330,6 +354,18 @@ BOOST_AUTO_TEST_CASE(resize_test_2) {
     BOOST_CHECK(D.is_satisfied(0, 4, bound_t::non_strict(4)));
 }
 
+BOOST_AUTO_TEST_CASE(resize_test_2) {
+    DBM D(4);
+    std::vector<bool> src1{true, true, false, true, false};
+    std::vector<bool> dst1{true, true, true, true};
+    std::vector<bool> src2{true, true, true, false};
+    std::vector<bool> dst2{true, true, true, true};
+
+    BOOST_CHECK_THROW(D.resize(src1, dst1), base_error);
+    BOOST_CHECK_THROW(D.resize(src2, dst2), base_error);
+
+}
+
 BOOST_AUTO_TEST_CASE(reorder_test_1) {
     DBM D(5);
     std::vector<dim_t> order = {0, 2,(dim_t) ~0, 1, 3};
@@ -351,6 +387,30 @@ BOOST_AUTO_TEST_CASE(reorder_test_1) {
 
     BOOST_CHECK(D.is_satisfied(3, 0, bound_t::inf()));
     BOOST_CHECK(D.is_satisfied(0, 3, bound_t::zero()));
+}
+
+BOOST_AUTO_TEST_CASE(reorder_test_2) {
+    DBM D(4);
+    std::vector<dim_t> order1{0, 1, 2, 3, 2};
+    std::vector<dim_t> order2{0, (dim_t) ~0, 1, 2};
+    std::vector<dim_t> order3{0, (dim_t) ~0, 3, 2};
+    DBM D1 = D;
+    BOOST_CHECK_THROW(D1.reorder(order1, 4), base_error);
+    D1 = D;
+    BOOST_CHECK_THROW(D1.reorder(order2, 2), base_error);
+    D1 = D;
+    BOOST_CHECK_THROW(D1.reorder(order2, 4), base_error);
+    D1 = D;
+    BOOST_CHECK_NO_THROW(D1.reorder(order2, 3));
+    D1 = D;
+    BOOST_CHECK_THROW(D1.reorder(order3, 3), base_error);
+}
+
+BOOST_AUTO_TEST_CASE(extrapolation_test_1) {
+    DBM D(10);
+    std::vector ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+
+    BOOST_CHECK_THROW(D.norm(ceiling), base_error);
 }
 
 BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_1) {
@@ -473,6 +533,13 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
 
 }
 
+BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_4) {
+    DBM D(10);
+    std::vector ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+
+    BOOST_CHECK_THROW(D.diagonal_extrapolation(ceiling), base_error);
+}
+
 BOOST_AUTO_TEST_CASE(lt_test_1) {
     DBM D1(2);
     DBM D2(2);
@@ -514,4 +581,3 @@ BOOST_AUTO_TEST_CASE(relation_test_2) {
     BOOST_CHECK(D1.relation(D2) == EQUAL);
     BOOST_CHECK(D2.relation(D1) == EQUAL);
 }
-

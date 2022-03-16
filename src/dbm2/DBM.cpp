@@ -21,9 +21,7 @@
  */
 
 #include "DBM.h"
-#include <errors.h>
-
-#include <cassert>
+#include "errors.h"
 
 namespace dbm2 {
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
@@ -232,7 +230,7 @@ namespace dbm2 {
             }
         }
 
-        *this = D;
+        *this = std::move(D);
     }
 
     void DBM::swap_clocks(dim_t a, dim_t b) {
@@ -272,7 +270,6 @@ namespace dbm2 {
 
         DBM D(dimension() + 1);
 
-        dim_t src = 0;
         for (dim_t i = 0, i2 = 0; i < D.dimension(); ++i, ++i2) {
             for (dim_t j = 0, j2 = 0; j < D.dimension(); ++j) {
                 if (i == c && i < D.dimension() - 1) {++i;}
@@ -281,7 +278,7 @@ namespace dbm2 {
             }
         }
 
-        *this = D;
+        *this = std::move(D);
         free(c);
     }
 
@@ -327,7 +324,7 @@ namespace dbm2 {
             if (not dst_bits[i])
                 dest_dbm.free(i);
 
-        *this = dest_dbm;
+        *this = std::move(dest_dbm);
 
         return src_indir;
     }
@@ -342,6 +339,10 @@ namespace dbm2 {
         if (this->dimension() - clocks_removed != new_size)
             throw base_error("ERROR: new_size does not match the number of clocks removed. new_size is: ", new_size,
                              " current size: ", this->dimension(), " Clocks removed: ", clocks_removed);
+        for (const dim_t& i : order)
+            if (i >= new_size && i != (dim_t) -1)
+                throw base_error("ERROR: order has value ", order[i], " on index ", i,
+                                 " which is outside of the new dimension of ", new_size);
 #endif
 
         DBM D(new_size);
@@ -353,7 +354,7 @@ namespace dbm2 {
             }
         }
 
-        *this = D;
+        *this = std::move(D);
     }
 
     std::ostream& operator<<(std::ostream& out, const DBM& D) {

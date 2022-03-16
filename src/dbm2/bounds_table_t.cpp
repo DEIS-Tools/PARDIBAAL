@@ -22,7 +22,7 @@
 
 #include <iomanip>
 #include "bounds_table_t.h"
-#include <errors.h>
+#include "errors.h"
 
 namespace dbm2 {
 
@@ -34,8 +34,7 @@ namespace dbm2 {
 #ifndef NEXCEPTIONS
         if (i >= _number_of_clocks || j >= _number_of_clocks)
             throw base_error("ERROR: Out of bounds access on coordinate: ", i, ", ", j, " with dimensions: ",
-                             _number_of_clocks, ". Accessing index ", i * _number_of_clocks + j,
-                             " of vector with size ", _number_of_clocks * _number_of_clocks);
+                             _number_of_clocks);
 #endif
 
         return _bounds[i * _number_of_clocks + j];
@@ -45,8 +44,7 @@ namespace dbm2 {
 #ifndef NEXCEPTIONS
         if (i >= _number_of_clocks || j >= _number_of_clocks)
             throw base_error("ERROR: Out of bounds access on coordinate: ", i, ", ", j, " with dimensions: ",
-                             _number_of_clocks, ". Accessing index ", i * _number_of_clocks + j,
-                             " of vector with size ", _number_of_clocks * _number_of_clocks);
+                             _number_of_clocks);
 #endif
 
         return _bounds[i * _number_of_clocks + j];
