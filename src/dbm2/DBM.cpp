@@ -332,9 +332,9 @@ namespace dbm2 {
             throw base_error("ERROR: new_size does not match the number of clocks removed. new_size is: ", new_size,
                              " current size: ", this->dimension(), " Clocks removed: ", clocks_removed);
         for (const dim_t& i : order)
-            if (i >= this->dimension() && i != (dim_t) -1)
+            if (i >= new_size && i != (dim_t) -1)
                 throw base_error("ERROR: order has value ", order[i], " on index ", i,
-                                 " which is outside of the dimension ", this->dimension());
+                                 " which is outside of the new dimension of ", new_size);
 #endif
 
         DBM D(new_size);

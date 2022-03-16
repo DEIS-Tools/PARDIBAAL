@@ -399,14 +399,18 @@ BOOST_AUTO_TEST_CASE(reorder_test_1) {
 BOOST_AUTO_TEST_CASE(reorder_test_2) {
     DBM D(4);
     std::vector<dim_t> order1{0, 1, 2, 3, 2};
-    std::vector<dim_t> order2{0, (dim_t) ~0, 3, 2};
-    std::vector<dim_t> order3{0, (dim_t) ~0, 3, 4};
-
-    BOOST_CHECK_THROW(D.reorder(order1, 4), base_error);
-    BOOST_CHECK_THROW(D.reorder(order2, 2), base_error);
-    BOOST_CHECK_THROW(D.reorder(order2, 4), base_error);
-    BOOST_CHECK_NO_THROW(D.reorder(order2, 3));
-    BOOST_CHECK_THROW(D.reorder(order3, 3), base_error);
+    std::vector<dim_t> order2{0, (dim_t) ~0, 1, 2};
+    std::vector<dim_t> order3{0, (dim_t) ~0, 3, 2};
+    DBM D1 = D;
+    BOOST_CHECK_THROW(D1.reorder(order1, 4), base_error);
+    D1 = D;
+    BOOST_CHECK_THROW(D1.reorder(order2, 2), base_error);
+    D1 = D;
+    BOOST_CHECK_THROW(D1.reorder(order2, 4), base_error);
+    D1 = D;
+    BOOST_CHECK_NO_THROW(D1.reorder(order2, 3));
+    D1 = D;
+    BOOST_CHECK_THROW(D1.reorder(order3, 3), base_error);
 }
 
 BOOST_AUTO_TEST_CASE(extrapolation_test_1) {
