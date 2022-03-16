@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(close_test_1) {
             BOOST_CHECK(D.at(i, j) == Q.at(i, j));
 }
 
-BOOST_AUTO_TEST_CASE(delay_test_1) {
+BOOST_AUTO_TEST_CASE(future_test_1) {
     DBM D(10);
 
     D.future();
@@ -512,5 +512,13 @@ BOOST_AUTO_TEST_CASE(relation_test_2) {
 
     BOOST_CHECK(D1.relation(D2) == EQUAL);
     BOOST_CHECK(D2.relation(D1) == EQUAL);
+}
+
+BOOST_AUTO_TEST_CASE(is_unbounded_test_1) {
+    DBM D(3);
+    BOOST_CHECK(!D.is_unbounded());
+
+    D.future();
+    BOOST_CHECK(D.is_unbounded());
 }
 

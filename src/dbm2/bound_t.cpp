@@ -39,6 +39,7 @@ namespace dbm2 {
     bound_t bound_t::inf() {
         bound_t b;
         b._inf = true;
+        b._strict = true;
 
         return b;
     }

@@ -42,6 +42,13 @@ namespace dbm2 {
         bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
         relation_t relation(const DBM& dbm);
 
+        /** Is bounded
+         * Checks whether a point in the DBM can delay any amount, by checking that no
+         * clock as the same relative upper and lower bound.
+         * @return true if any point in the DBM can delay any amount.
+         */
+        bool is_unbounded() const;
+
         void close();
 
         void future();
