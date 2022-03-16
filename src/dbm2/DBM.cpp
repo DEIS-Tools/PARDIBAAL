@@ -224,7 +224,7 @@ namespace dbm2 {
             }
         }
 
-        *this = D;
+        *this = std::move(D);
     }
 
     void DBM::swap_clocks(dim_t a, dim_t b) {
@@ -272,7 +272,7 @@ namespace dbm2 {
             }
         }
 
-        *this = D;
+        *this = std::move(D);
         free(c);
     }
 
@@ -318,7 +318,7 @@ namespace dbm2 {
             if (not dst_bits[i])
                 dest_dbm.free(i);
 
-        *this = dest_dbm;
+        *this = std::move(dest_dbm);
 
         return src_indir;
     }
@@ -344,7 +344,7 @@ namespace dbm2 {
             }
         }
 
-        *this = D;
+        *this = std::move(D);
     }
 
     std::ostream& operator<<(std::ostream& out, const DBM& D) {
