@@ -40,7 +40,7 @@ namespace dbm2 {
 
         bool is_empty() const;
         bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
-        relation_t relation(const DBM& dbm);
+        relation_t relation(const DBM& dbm) const;
 
         void close();
 

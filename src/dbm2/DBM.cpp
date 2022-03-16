@@ -50,7 +50,7 @@ namespace dbm2 {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
-    relation_t DBM::relation(const DBM &dbm) {
+    relation_t DBM::relation(const DBM &dbm) const {
         if (this->dimension() != dbm.dimension())
             return INCOMPARABLE;
 
