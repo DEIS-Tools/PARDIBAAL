@@ -21,9 +21,7 @@
  */
 
 #include "DBM.h"
-#include <errors.h>
-
-#include <cassert>
+#include "errors.h"
 
 namespace dbm2 {
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
@@ -333,6 +331,10 @@ namespace dbm2 {
         if (this->dimension() - clocks_removed != new_size)
             throw base_error("ERROR: new_size does not match the number of clocks removed. new_size is: ", new_size,
                              " current size: ", this->dimension(), " Clocks removed: ", clocks_removed);
+        for (const dim_t& i : order)
+            if (i >= this->dimension() && i != (dim_t) -1)
+                throw base_error("ERROR: order has value ", order[i], " on index ", i,
+                                 " which is outside of the dimension ", this->dimension());
 #endif
 
         DBM D(new_size);
