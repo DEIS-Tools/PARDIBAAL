@@ -22,6 +22,7 @@
 
 #include <iomanip>
 #include "bounds_table_t.h"
+#include "errors.h"
 
 namespace dbm2 {
 
@@ -30,24 +31,20 @@ namespace dbm2 {
     }
 
     bound_t &bounds_table_t::at(dim_t i, dim_t j) {
-#ifdef DBUG_BOUNDS
-        if (i >= _number_of_clocks || j >= _number_of_clocks) {
-            std::cout << "Out of bounds access on coordinate: " << i << ", " << j << " with max size: " <<
-                    _number_of_clocks * _number_of_clocks << "\n";
-            abort();
-        }
+#ifndef NEXCEPTIONS
+        if (i >= _number_of_clocks || j >= _number_of_clocks)
+            throw base_error("ERROR: Out of bounds access on coordinate: ", i, ", ", j, " with dimensions: ",
+                             _number_of_clocks);
 #endif
 
         return _bounds[i * _number_of_clocks + j];
     }
 
     bound_t bounds_table_t::at(dim_t i, dim_t j) const {
-#ifdef DBUG_BOUNDS
-        if (i >= _number_of_clocks || j >= _number_of_clocks) {
-            std::cout << "Out of bounds access on coordinate: " << i << ", " << j << " with max size: " <<
-                    _number_of_clocks * _number_of_clocks << "\n";
-            abort();
-        }
+#ifndef NEXCEPTIONS
+        if (i >= _number_of_clocks || j >= _number_of_clocks)
+            throw base_error("ERROR: Out of bounds access on coordinate: ", i, ", ", j, " with dimensions: ",
+                             _number_of_clocks);
 #endif
 
         return _bounds[i * _number_of_clocks + j];
