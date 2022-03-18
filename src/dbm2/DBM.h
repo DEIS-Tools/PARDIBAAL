@@ -26,7 +26,20 @@
 #include "bounds_table_t.h"
 
 namespace dbm2 {
-    enum relation_t {INCOMPARABLE, EQUAL, SUBSET, SUPERSET, DIFFERENT};
+    /** Relation struct
+     * represents the relation between two DBMs.
+     * different means that they are neither equal or a sub/superset of each other, or the dimensions are different.
+     */
+    struct relation_t {
+        bool _incomparable, _equal, _subset, _superset, _different;
+        relation_t(bool equal, bool subset, bool superset, bool different) :
+            _equal(equal), _subset(subset), _superset(superset), _different(different) {}
+
+        static inline relation_t equal() {return relation_t(true, true, true, false);}
+        static inline relation_t subset() {return relation_t(false, true, false, false);}
+        static inline relation_t superset() {return relation_t(false, false, true, false);}
+        static inline relation_t different() {return relation_t(false, false, false, true);}
+    };
 
     class DBM {
         bounds_table_t _bounds_table;
@@ -40,7 +53,11 @@ namespace dbm2 {
 
         bool is_empty() const;
         bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
-        relation_t relation(const DBM& dbm);
+        relation_t relation(const DBM& dbm) const;
+
+        inline bool equal(const DBM& dbm) const {return this->relation(dbm)._equal;}
+        inline bool subset(const DBM& dbm) const {return this->relation(dbm)._subset;}
+        inline bool superset(const DBM& dbm) const {return this->relation(dbm)._superset;}
 
         /** Is bounded
          * Checks whether a point in the DBM can delay any amount, by checking that no
@@ -130,13 +147,7 @@ namespace dbm2 {
          */
         void reorder(std::vector<dim_t> order, dim_t new_size);
 
-        inline bool operator<=(const DBM& rhs) {return this->compare(rhs, bound_t::le);}
-        inline bool operator>=(const DBM& rhs) {return this->compare(rhs, bound_t::ge);}
-
         friend std::ostream& operator<<(std::ostream& out, const DBM& D);
-
-    private:
-        bool compare(const DBM& dbm, bool (*cmp) (bound_t, bound_t));
     };
 
     std::ostream& operator<<(std::ostream& out, const DBM& D);

@@ -21,9 +21,7 @@
  */
 
 #include "DBM.h"
-#include <errors.h>
-
-#include <cassert>
+#include "errors.h"
 
 namespace dbm2 {
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
@@ -50,9 +48,9 @@ namespace dbm2 {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
-    relation_t DBM::relation(const DBM &dbm) {
+    relation_t DBM::relation(const DBM &dbm) const {
         if (this->dimension() != dbm.dimension())
-            return INCOMPARABLE;
+            return relation_t::different();
 
         bool eq, sub = true, super = true;
 
@@ -60,15 +58,16 @@ namespace dbm2 {
             for (dim_t j = 0; j < dimension(); ++j) {
                 sub &= this->at(i, j) <= dbm.at(i, j);
                 super &= this->at(i, j) >= dbm.at(i, j);
+                if (!sub && !super) return relation_t::different();
             }
 
         eq = sub && super;
 
-        if (eq) return EQUAL;
-        if (sub) return SUBSET;
-        if (super) return SUPERSET;
+        if (eq) return relation_t::equal();
+        if (sub) return relation_t::subset();
+        if (super) return relation_t::superset();
 
-        return DIFFERENT;
+        return relation_t::different();
     }
 
     bool DBM::is_unbounded() const {
@@ -172,7 +171,7 @@ namespace dbm2 {
     void DBM::extrapolate(const std::vector<val_t> &ceiling) {
 #ifndef NEXCEPTIONS
         if (this->dimension() != ceiling.size())
-            throw base_error("ERROR: Got max constants vecot of size ", ceiling.size(), " but the DBM has ",
+            throw base_error("ERROR: Got max constants vector of size ", ceiling.size(), " but the DBM has ",
                              this->dimension(), " clocks");
 #endif
 
@@ -307,7 +306,7 @@ namespace dbm2 {
             }
         }
 
-        *this = D;
+        *this = std::move(D);
     }
 
     void DBM::swap_clocks(dim_t a, dim_t b) {
@@ -355,7 +354,7 @@ namespace dbm2 {
             }
         }
 
-        *this = D;
+        *this = std::move(D);
         free(c);
     }
 
@@ -401,7 +400,7 @@ namespace dbm2 {
             if (not dst_bits[i])
                 dest_dbm.free(i);
 
-        *this = dest_dbm;
+        *this = std::move(dest_dbm);
 
         return src_indir;
     }
@@ -416,6 +415,10 @@ namespace dbm2 {
         if (this->dimension() - clocks_removed != new_size)
             throw base_error("ERROR: new_size does not match the number of clocks removed. new_size is: ", new_size,
                              " current size: ", this->dimension(), " Clocks removed: ", clocks_removed);
+        for (const dim_t& i : order)
+            if (i >= new_size && i != (dim_t) -1)
+                throw base_error("ERROR: order has value ", order[i], " on index ", i,
+                                 " which is outside of the new dimension of ", new_size);
 #endif
 
         DBM D(new_size);
@@ -427,22 +430,10 @@ namespace dbm2 {
             }
         }
 
-        *this = D;
+        *this = std::move(D);
     }
 
     std::ostream& operator<<(std::ostream& out, const DBM& D) {
         return out << D._bounds_table;
-    }
-
-    bool DBM::compare(const DBM &dbm, bool (*cmp)(bound_t, bound_t)) {
-#ifndef NEXCEPTIONS
-        if (this->dimension() != dbm.dimension())
-            throw base_error("ERROR: Comparing DBMS with different dimensions:\n", *this, "and\n", dbm);
-#endif
-        for (dim_t i = 0; i < dimension(); ++i)
-            for (dim_t j = 0; j < dimension(); ++j)
-                if (!cmp(this->at(i, j), dbm.at(i, j)))
-                    return false;
-        return true;
     }
 }
