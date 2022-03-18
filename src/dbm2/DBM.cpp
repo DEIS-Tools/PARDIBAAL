@@ -50,7 +50,7 @@ namespace dbm2 {
 
     relation_t DBM::relation(const DBM &dbm) const {
         if (this->dimension() != dbm.dimension())
-            return INCOMPARABLE;
+            return relation_t::different();
 
         bool eq, sub = true, super = true;
 
@@ -58,15 +58,16 @@ namespace dbm2 {
             for (dim_t j = 0; j < dimension(); ++j) {
                 sub &= this->at(i, j) <= dbm.at(i, j);
                 super &= this->at(i, j) >= dbm.at(i, j);
+                if (!sub && !super) return relation_t::different();
             }
 
         eq = sub && super;
 
-        if (eq) return EQUAL;
-        if (sub) return SUBSET;
-        if (super) return SUPERSET;
+        if (eq) return relation_t::equal();
+        if (sub) return relation_t::subset();
+        if (super) return relation_t::superset();
 
-        return DIFFERENT;
+        return relation_t::different();
     }
 
     void DBM::close() {
@@ -359,17 +360,5 @@ namespace dbm2 {
 
     std::ostream& operator<<(std::ostream& out, const DBM& D) {
         return out << D._bounds_table;
-    }
-
-    bool DBM::compare(const DBM &dbm, bool (*cmp)(bound_t, bound_t)) {
-#ifndef NEXCEPTIONS
-        if (this->dimension() != dbm.dimension())
-            throw base_error("ERROR: Comparing DBMS with different dimensions:\n", *this, "and\n", dbm);
-#endif
-        for (dim_t i = 0; i < dimension(); ++i)
-            for (dim_t j = 0; j < dimension(); ++j)
-                if (!cmp(this->at(i, j), dbm.at(i, j)))
-                    return false;
-        return true;
     }
 }
