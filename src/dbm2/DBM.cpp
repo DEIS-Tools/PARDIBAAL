@@ -44,21 +44,30 @@ namespace dbm2 {
         return false;
     }
 
-    bool DBM::is_included_in(const DBM &d) const {
-#ifndef NEXCEPTIONS
-        if (this->dimension() != d.dimension())
-            throw base_error("ERROR: Comparing DBMS with different dimensions:\n", *this, "and\n", d);
-#endif
-        for (dim_t i = 0; i < this->dimension(); ++i)
-            for (dim_t j = 0; j < this->dimension(); ++j)
-                if (d.at(i, j) < _bounds_table.at(i, j))
-                    return false;
-
-        return true;
-    }
-
     bool DBM::is_satisfied(dim_t x, dim_t y, bound_t g) const {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
+    }
+
+    relation_t DBM::relation(const DBM &dbm) const {
+        if (this->dimension() != dbm.dimension())
+            return relation_t::different();
+
+        bool eq, sub = true, super = true;
+
+        for (dim_t i = 0; i < dimension(); ++i)
+            for (dim_t j = 0; j < dimension(); ++j) {
+                sub &= this->at(i, j) <= dbm.at(i, j);
+                super &= this->at(i, j) >= dbm.at(i, j);
+                if (!sub && !super) return relation_t::different();
+            }
+
+        eq = sub && super;
+
+        if (eq) return relation_t::equal();
+        if (sub) return relation_t::subset();
+        if (super) return relation_t::superset();
+
+        return relation_t::different();
     }
 
     void DBM::close() {
