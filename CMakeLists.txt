@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.17)
-project(dbm2)
+project(pardibaal)
 
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0069 NEW)
@@ -9,10 +9,10 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif (NOT CMAKE_BUILD_TYPE)
 
-option(DBM_BuildTests "Build the unit tests when BUILD_TESTING is enabled." ON)
-option(DBM_GetDependencies "Fetch external dependencies from web." ON)
+option(PARDIBAAL_BuildTests "Build the unit tests when BUILD_TESTING is enabled." ON)
+option(PARDIBAAL_GetDependencies "Fetch external dependencies from web." ON)
 
-if (DBM_BuildTests)
+if (PARDIBAAL_BuildTests)
     set(BUILD_SHARED_LIBS ON)
 endif()
 
@@ -22,7 +22,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-if (DBM_GetDependencies)
+if (PARDIBAAL_GetDependencies)
     # setup for external imports
     include(ExternalProject)
     set(EXTERNAL_INSTALL_LOCATION ${CMAKE_BINARY_DIR}/external)
@@ -51,7 +51,7 @@ if (DBM_GetDependencies)
         set(BOOST_CONFIG_JAM "using gcc : : ${CMAKE_CXX_COMPILER}")
     endif ()
 
-    if(BUILD_TESTING AND DBM_BuildTests)
+    if(BUILD_TESTING AND PARDIBAAL_BuildTests)
         ExternalProject_Add(
             boost-ext
             URL https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/boost_1_78_0.zip
@@ -68,12 +68,12 @@ if (DBM_GetDependencies)
     set(CMAKE_PREFIX_PATH ${EXTERNAL_INSTALL_LOCATION};${CMAKE_PREFIX_PATH})
     include_directories(${EXTERNAL_INSTALL_LOCATION}/include)
     link_directories(${EXTERNAL_INSTALL_LOCATION}/lib)
-endif (DBM_GetDependencies)
+endif (PARDIBAAL_GetDependencies)
 if(NOT CMAKE_BUILD_TYPE MATCHES Prebuild)
     include_directories(include)
     add_subdirectory(src)
 endif()
-if(BUILD_TESTING AND DBM_BuildTests)
+if(BUILD_TESTING AND PARDIBAAL_BuildTests)
     if (CMAKE_BUILD_TYPE MATCHES Prebuild)
         # dummy for pre-build
         add_custom_target( prebuild )
@@ -81,8 +81,8 @@ if(BUILD_TESTING AND DBM_BuildTests)
     else ( )
 
         #testing
-        if (DBM_GetDependencies)
-        endif (DBM_GetDependencies)
+        if (PARDIBAAL_GetDependencies)
+        endif (PARDIBAAL_GetDependencies)
 
         enable_testing()
         add_subdirectory(test)

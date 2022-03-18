@@ -4,28 +4,27 @@
  */
 
 /*
- * This file is part of dbm2
+ * This file is part of PARDIBAAL
  *
- * dbm2 is free software: you can redistribute it and/or modify
+ * PARDIBAAL is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * dbm2 is distributed in the hope that it will be useful,
+ * PARDIBAAL is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public License
- * along with dbm2.  If not, see <https://www.gnu.org/licenses/>.
+ * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <iomanip>
 #include "bounds_table_t.h"
 #include "errors.h"
 
-namespace dbm2 {
-
+namespace pardibaal {
     bounds_table_t::bounds_table_t(dim_t number_of_clocks) : _number_of_clocks(number_of_clocks) {
         _bounds = std::vector<bound_t>(number_of_clocks * number_of_clocks);
     }
