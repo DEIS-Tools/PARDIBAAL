@@ -15,4 +15,4 @@ install(TARGETS pardibaal
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib)
-install(FILES ${HEADER_FILES} DESTINATION include/dbm2)
+install(FILES ${HEADER_FILES} DESTINATION include/pardibaal)
