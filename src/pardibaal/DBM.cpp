@@ -44,21 +44,43 @@ namespace pardibaal {
         return false;
     }
 
-    bool DBM::is_included_in(const DBM &d) const {
-#ifndef NEXCEPTIONS
-        if (this->dimension() != d.dimension())
-            throw base_error("ERROR: Comparing DBMS with different dimensions:\n", *this, "and\n", d);
-#endif
-        for (dim_t i = 0; i < this->dimension(); ++i)
-            for (dim_t j = 0; j < this->dimension(); ++j)
-                if (d.at(i, j) < _bounds_table.at(i, j))
-                    return false;
-
-        return true;
-    }
-
     bool DBM::is_satisfied(dim_t x, dim_t y, bound_t g) const {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
+    }
+
+    relation_t DBM::relation(const DBM &dbm) const {
+        if (this->dimension() != dbm.dimension())
+            return relation_t::different();
+
+        bool eq, sub = true, super = true;
+
+        for (dim_t i = 0; i < dimension(); ++i)
+            for (dim_t j = 0; j < dimension(); ++j) {
+                sub &= this->at(i, j) <= dbm.at(i, j);
+                super &= this->at(i, j) >= dbm.at(i, j);
+                if (!sub && !super) return relation_t::different();
+            }
+
+        eq = sub && super;
+
+        if (eq) return relation_t::equal();
+        if (sub) return relation_t::subset();
+        if (super) return relation_t::superset();
+
+        return relation_t::different();
+    }
+
+    bool DBM::is_unbounded() const {
+        // For each clock:
+        // Check that upper and lower bounds are non-strict and that the bounds are the same (absolute value)
+        for (dim_t i = 1; i < dimension(); ++i) {
+            if (this->at(0, i)._inf != this->at(i, 0)._inf)
+                continue;
+            if (!this->at(0, i)._strict && !this->at(i, 0)._strict && -this->at(0, i)._n == this->at(i, 0)._n)
+                return false;
+        }
+
+        return true;
     }
 
     void DBM::close() {
@@ -146,10 +168,10 @@ namespace pardibaal {
     }
 
     // Simple normalisation by a ceiling for all clocks.
-    void DBM::norm(const std::vector<val_t> &ceiling) {
+    void DBM::extrapolate(const std::vector<val_t> &ceiling) {
 #ifndef NEXCEPTIONS
         if (this->dimension() != ceiling.size())
-            throw base_error("ERROR: Got max constants vecot of size ", ceiling.size(), " but the DBM has ",
+            throw base_error("ERROR: Got max constants vector of size ", ceiling.size(), " but the DBM has ",
                              this->dimension(), " clocks");
 #endif
 
@@ -167,10 +189,10 @@ namespace pardibaal {
         close();
     }
 
-    void DBM::diagonal_extrapolation(const std::vector<val_t> &ceiling) {
+    void DBM::extrapolate_diagonal(const std::vector<val_t> &ceiling) {
 #ifndef NEXCEPTIONS
         if (this->dimension() != ceiling.size())
-            throw base_error("ERROR: Got max constants vecot of size ", ceiling.size(), " but the DBM has ",
+            throw base_error("ERROR: Got max constants vector of size ", ceiling.size(), " but the DBM has ",
                              this->dimension(), " clocks");
 #endif
         DBM D(*this);
@@ -178,25 +200,87 @@ namespace pardibaal {
         for (dim_t i = 0; i < D.dimension(); ++i) {
             for (dim_t j = 0; j < D.dimension(); ++j) {
                 if (i == j) continue;
-                if ((D.at(i, j)._n > ceiling[i]) ||
-                    (-D.at(0, i)._n > ceiling[i]) ||
-                    (-D.at(0, j)._n > ceiling[j] && i != 0)){
+                if ((D.at(i, j) > bound_t::non_strict(ceiling[i])) ||
+                    (-1 * D.at(0, i) > bound_t::non_strict(ceiling[i])) ||
+                    (-1 * D.at(0, j) > bound_t::non_strict(ceiling[j]) && i != 0)){
 
-                    this->_bounds_table.at(i, j) = bound_t::inf();
+                    this->at(i, j) = bound_t::inf();
                 }
-                else if (-D.at(i, j)._n > ceiling[j] && i == 0)
-                    this->_bounds_table.at(i, j) = bound_t::strict(-ceiling[j]);
+                else if (-1 * D.at(i, j) > bound_t::non_strict(ceiling[j]) && i == 0)
+                    this->at(i, j) = bound_t::strict(-ceiling[j]);
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
-                if (i == 0 && this->_bounds_table.at(i, j) > bound_t::zero()) {
-                    this->_bounds_table.at(i, j) = bound_t::zero();
+                if (i == 0 && this->at(i, j) > bound_t::zero()) {
+                    this->at(i, j) = bound_t::zero();
                 }
-                if (j == 0 && this->_bounds_table.at(i, j) < bound_t::zero()) {
-                    this->_bounds_table.at(i, j) = bound_t::zero();
+                if (j == 0 && this->at(i, j) < bound_t::zero()) {
+                    this->at(i, j) = bound_t::zero();
                 }
 
+            }
+        }
+
+        //TODO: Do something smart where we only close if something changes
+        this->close();
+    }
+
+    void DBM::extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
+#ifndef NEXCEPTIONS
+        if (this->dimension() != lower.size() || this->dimension() != upper.size())
+            throw base_error("ERROR: Got LU constants vector of size ", lower.size(), " and ", upper.size(),
+                             " but the DBM has ", this->dimension(), " clocks");
+#endif
+        DBM D(*this);
+
+        for (dim_t i = 0; i < D.dimension(); ++i) {
+            for (dim_t j = 0; j < D.dimension(); ++j) {
+                if (i == j) continue;
+                else if (D.at(i, j) > bound_t::non_strict(lower[i]))
+                    this->at(i, j) = bound_t::inf();
+                else if (D.at(i, j) * -1 > bound_t::non_strict(upper[j]))
+                    this->at(i, j) = bound_t::strict(-upper[j]);
+
+                // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
+                //TODO: We only do this because regular close() does not catch these.
+                // We should propably use a smarter close()
+                if (i == 0 && this->at(i, j) > bound_t::zero())
+                    this->at(i, j) = bound_t::zero();
+                if (j == 0 && this->at(i, j) < bound_t::zero())
+                    this->at(i, j) = bound_t::zero();
+            }
+        }
+
+        //TODO: Do something smart where we only close if something changes
+        this->close();
+    }
+
+    void DBM::extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
+#ifndef NEXCEPTIONS
+        if (this->dimension() != lower.size() || this->dimension() != upper.size())
+            throw base_error("ERROR: Got LU constants vector of size ", lower.size(), " and ", upper.size(),
+                             " but the DBM has ", this->dimension(), " clocks");
+#endif
+        DBM D(*this);
+
+        for (dim_t i = 0; i < D.dimension(); ++i) {
+            for (dim_t j = 0; j < D.dimension(); ++j) {
+                if (i == j) continue;
+                else if (D.at(i, j) > bound_t::non_strict(lower[i]) ||
+                         D.at(0, i) * -1 > bound_t::non_strict(lower[i]) ||
+                         (D.at(0, j) * -1 > bound_t::non_strict(upper[j]) && i != 0))
+                    this->at(i, j) = bound_t::inf();
+                else if (D.at(0, j) * -1 > bound_t::non_strict(upper[j]) && i == 0)
+                    this->at(i, j) = bound_t::strict(-upper[j]);
+
+                // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
+                //TODO: We only do this because regular close() does not catch these.
+                // We should propably use a smarter close()
+                if (i == 0 && this->at(i, j) > bound_t::zero())
+                    this->at(i, j) = bound_t::zero();
+                if (j == 0 && this->at(i, j) < bound_t::zero())
+                    this->at(i, j) = bound_t::zero();
             }
         }
 

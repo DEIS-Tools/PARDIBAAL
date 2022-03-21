@@ -28,13 +28,6 @@
 
 using namespace pardibaal;
 
-BOOST_AUTO_TEST_CASE(is_included_in_test_1) {
-    DBM D(2);
-    DBM Q(3);
-
-    BOOST_CHECK_THROW(D.is_included_in(Q), base_error);
-}
-
 BOOST_AUTO_TEST_CASE(close_test_1) {
     DBM D(3);
 
@@ -53,7 +46,7 @@ BOOST_AUTO_TEST_CASE(close_test_1) {
             BOOST_CHECK(D.at(i, j) == Q.at(i, j));
 }
 
-BOOST_AUTO_TEST_CASE(delay_test_1) {
+BOOST_AUTO_TEST_CASE(future_test_1) {
     DBM D(10);
 
     D.future();
@@ -417,7 +410,7 @@ BOOST_AUTO_TEST_CASE(extrapolation_test_1) {
     DBM D(10);
     std::vector ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
-    BOOST_CHECK_THROW(D.norm(ceiling), base_error);
+    BOOST_CHECK_THROW(D.extrapolate(ceiling), base_error);
 }
 
 BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_1) {
@@ -427,7 +420,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_1) {
     std::vector<val_t> ceiling = {0, -1073741823, -1073741823};
 
     std::cout << D;
-    D.diagonal_extrapolation(ceiling);
+    D.extrapolate_diagonal(ceiling);
     std::cout << D;
 
     BOOST_CHECK(!D.is_empty());
@@ -460,7 +453,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_2) {
     D.at(2, 1) = bound_t::inf();
     D.at(2, 3) = bound_t::inf();
 
-    D.diagonal_extrapolation(ceiling);
+    D.extrapolate_diagonal(ceiling);
 
 //  <=0     <=0     <=0     <=0
 //  <=1     <=0     <=1     <=0
@@ -500,7 +493,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
     D.at(1, 4) = bound_t::inf();
     D.at(2, 4) = bound_t::inf();
 
-    D.diagonal_extrapolation(ceiling);
+    D.extrapolate_diagonal(ceiling);
 
 //    <=0     <-3     <=0     <=0     <=0
 //    INF     <=0     INF     INF     INF
@@ -544,5 +537,83 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_4) {
     DBM D(10);
     std::vector ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
-    BOOST_CHECK_THROW(D.diagonal_extrapolation(ceiling), base_error);
+    BOOST_CHECK_THROW(D.extrapolate_diagonal(ceiling), base_error);
+}
+
+BOOST_AUTO_TEST_CASE(is_unbounded_test_1) {
+    DBM D(3);
+    BOOST_CHECK(!D.is_unbounded());
+
+    D.future();
+    BOOST_CHECK(D.is_unbounded());
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_1) {
+    DBM D1(2);
+    DBM D2(3);
+
+    BOOST_CHECK(D1.relation(D2)._different);
+    BOOST_CHECK(not D1.equal(D2));
+    BOOST_CHECK(not D1.subset(D2));
+    BOOST_CHECK(not D1.superset(D2));
+    BOOST_CHECK(D2.relation(D1)._different);
+    BOOST_CHECK(not D2.equal(D1));
+    BOOST_CHECK(not D2.subset(D1));
+    BOOST_CHECK(not D2.superset(D1));
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_2) {
+    DBM D1(2);
+    DBM D2(2);
+
+    D2.future();
+
+    BOOST_CHECK(D1.relation(D2)._subset);
+    BOOST_CHECK(D1.subset(D2));
+    BOOST_CHECK(D2.relation(D1)._superset);
+    BOOST_CHECK(D2.superset(D1));
+
+    D1.free(1);
+
+    BOOST_CHECK(D1.relation(D2)._equal);
+    BOOST_CHECK(D1.equal(D2));
+    BOOST_CHECK(D2.relation(D1)._equal);
+    BOOST_CHECK(D2.equal(D1));
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_3) {
+    DBM D1(2);
+    DBM D2(2);
+
+    D1.assign(1, 10);
+    D2.assign(1, 5);
+
+    BOOST_CHECK(D1.relation(D2)._different);
+    BOOST_CHECK(not D1.equal(D2));
+    BOOST_CHECK(not D1.subset(D2));
+    BOOST_CHECK(not D1.superset(D2));
+
+    D1.future();
+    D2.future();
+
+    BOOST_CHECK(D1.relation(D2)._subset);
+    BOOST_CHECK(D1.subset(D2));
+    BOOST_CHECK(D2.relation(D1)._superset);
+    BOOST_CHECK(D2.superset(D1));
+    BOOST_CHECK(not D2.relation(D1)._equal);
+    BOOST_CHECK(not D2.equal(D1));
+
+    D1.assign(1, 10);
+
+    BOOST_CHECK(D1.relation(D2)._subset);
+    BOOST_CHECK(D1.subset(D2));
+    BOOST_CHECK(not D1.superset(D2));
+
+    BOOST_CHECK(D2.relation(D1)._superset);
+    BOOST_CHECK(D2.superset(D1));
+    BOOST_CHECK(not D2.subset(D1));
+
+    BOOST_CHECK(!D2.relation(D1)._equal);
+    BOOST_CHECK(not D2.equal(D1));
+    BOOST_CHECK(not D1.equal(D2));
 }

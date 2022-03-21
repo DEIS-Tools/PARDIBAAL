@@ -39,6 +39,7 @@ namespace pardibaal {
     bound_t bound_t::inf() {
         bound_t b;
         b._inf = true;
+        b._strict = true;
 
         return b;
     }
@@ -47,15 +48,15 @@ namespace pardibaal {
         return a < b ? b : a;
     }
 
-    bound_t bound_t::max(bound_t &&a, bound_t &&b) {
+    const bound_t bound_t::max(bound_t &&a, bound_t &&b) {
         return max(a, b);
     }
 
-    bound_t bound_t::max(const bound_t &a, bound_t &&b) {
+    const bound_t bound_t::max(const bound_t &a, bound_t &&b) {
         return max(a, b);
     }
 
-    bound_t bound_t::max(bound_t &&a, const bound_t &b) {
+    const bound_t bound_t::max(bound_t &&a, const bound_t &b) {
         return max(a, b);
     }
 
@@ -63,23 +64,31 @@ namespace pardibaal {
         return a <= b ? a : b;
     }
 
-    bound_t bound_t::min(bound_t &&a, bound_t &&b) {
+    const bound_t bound_t::min(bound_t &&a, bound_t &&b) {
         return bound_t::min(a, b);
     }
 
-    bound_t bound_t::min(const bound_t &a, bound_t &&b) {
+    const bound_t bound_t::min(const bound_t &a, bound_t &&b) {
         return bound_t::min(a, b);
     }
 
-    bound_t bound_t::min(bound_t &&a, const bound_t &b) {
+    const bound_t bound_t::min(bound_t &&a, const bound_t &b) {
         return bound_t::min(a, b);
     }
 
-    bound_t bound_t::operator+(bound_t rhs) const {
+    const bound_t bound_t::operator+(bound_t rhs) const {
         if (this->_inf || rhs._inf)
             return bound_t::inf();
 
         return bound_t(this->_n + rhs._n, this->_strict || rhs._strict);
+    }
+
+    const bound_t bound_t::operator+(val_t rhs) const {
+        return bound_t(this->_n + rhs, this->_strict);
+    }
+
+    const bound_t bound_t::operator*(val_t rhs) const {
+        return bound_t(this->_n * rhs, this->_strict);
     }
 
     bool bound_t::operator<=(bound_t rhs) const {
@@ -127,6 +136,14 @@ namespace pardibaal {
 
     bool bound_t::operator>=(bound_t rhs) const {
         return rhs <= *this;
+    }
+
+    const bound_t operator+(val_t val, const bound_t bound) {
+        return bound + val;
+    }
+
+    const bound_t operator*(val_t val, const bound_t bound) {
+        return bound * val;
     }
 
     std::ostream& operator<<(std::ostream& out, const bound_t& bound) {

@@ -26,6 +26,21 @@
 #include "bounds_table_t.h"
 
 namespace pardibaal {
+    /** Relation struct
+     * represents the relation between two DBMs.
+     * different means that they are neither equal or a sub/superset of each other, or the dimensions are different.
+     */
+    struct relation_t {
+        bool _incomparable, _equal, _subset, _superset, _different;
+        relation_t(bool equal, bool subset, bool superset, bool different) :
+            _equal(equal), _subset(subset), _superset(superset), _different(different) {}
+
+        static inline relation_t equal() {return relation_t(true, true, true, false);}
+        static inline relation_t subset() {return relation_t(false, true, false, false);}
+        static inline relation_t superset() {return relation_t(false, false, true, false);}
+        static inline relation_t different() {return relation_t(false, false, false, true);}
+    };
+
     class DBM {
         bounds_table_t _bounds_table;
 
@@ -37,8 +52,19 @@ namespace pardibaal {
         inline dim_t dimension() const {return this->_bounds_table.number_of_clocks();}
 
         bool is_empty() const;
-        bool is_included_in(const DBM &d) const;
         bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
+        relation_t relation(const DBM& dbm) const;
+
+        inline bool equal(const DBM& dbm) const {return this->relation(dbm)._equal;}
+        inline bool subset(const DBM& dbm) const {return this->relation(dbm)._subset;}
+        inline bool superset(const DBM& dbm) const {return this->relation(dbm)._superset;}
+
+        /** Is bounded
+         * Checks whether a point in the DBM can delay any amount, by checking that no
+         * clock as the same relative upper and lower bound.
+         * @return true if any point in the DBM can delay any amount.
+         */
+        bool is_unbounded() const;
 
         void close();
 
@@ -49,7 +75,8 @@ namespace pardibaal {
         void assign(dim_t x, val_t m);
         void copy(dim_t x, dim_t y);
         void shift(dim_t x, val_t n);
-        void norm(const std::vector<val_t> &ceiling);
+
+        void extrapolate(const std::vector<val_t> &ceiling);
 
         /** Diagonal extrapolation
          *
@@ -71,7 +98,11 @@ namespace pardibaal {
          * - max[0] = 0 (reference clock)
          * @post DBM is closed.
          */
-         void diagonal_extrapolation(const std::vector<val_t> &ceiling);
+        void extrapolate_diagonal(const std::vector<val_t> &ceiling);
+
+        void extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
+
+        void extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
 
         /** Remove clock at index c
         *
