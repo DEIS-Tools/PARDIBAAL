@@ -20,8 +20,8 @@
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BDM_DBM_H
-#define BDM_DBM_H
+#ifndef PARDIBAAL_DBM_H
+#define PARDIBAAL_DBM_H
 
 #include "bounds_table_t.h"
 
@@ -153,4 +153,4 @@ namespace pardibaal {
     std::ostream& operator<<(std::ostream& out, const DBM& D);
 }
 
-#endif //BDM_DBM_H
+#endif //PARDIBAAL_DBM_H

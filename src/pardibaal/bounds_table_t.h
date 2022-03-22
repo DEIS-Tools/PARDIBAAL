@@ -20,8 +20,8 @@
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BDM_BOUNDS_TABLE_T_H
-#define BDM_BOUNDS_TABLE_T_H
+#ifndef PARDIBAAL_BOUNDS_TABLE_T_H
+#define PARDIBAAL_BOUNDS_TABLE_T_H
 
 #include "bound_t.h"
 #include <vector>
@@ -51,4 +51,4 @@ namespace pardibaal {
     std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
 }
 
-#endif //BDM_BOUNDS_TABLE_T_H
+#endif //PARDIBAAL_BOUNDS_TABLE_T_H

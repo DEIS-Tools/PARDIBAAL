@@ -20,8 +20,8 @@
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef BDM_BOUND_T_H
-#define BDM_BOUND_T_H
+#ifndef PARDIBAAL_BOUND_T_H
+#define PARDIBAAL_BOUND_T_H
 
 #include <cstdlib>
 #include <cinttypes>
@@ -88,4 +88,4 @@ namespace pardibaal {
     std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 }
 
-#endif //BDM_BOUND_T_H
+#endif //PARDIBAAL_BOUND_T_H
