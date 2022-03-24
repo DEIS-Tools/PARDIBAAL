@@ -59,6 +59,12 @@ namespace dbm2 {
         inline bool subset(const DBM& dbm) const {return this->relation(dbm)._subset;}
         inline bool superset(const DBM& dbm) const {return this->relation(dbm)._superset;}
 
+        /** Is bounded
+         * Checks whether all upper bounds are infinite
+         * @return true if the DBM is unbounded (has no upper bound)
+         */
+        bool is_unbounded() const;
+
         void close();
 
         void future();
@@ -68,7 +74,8 @@ namespace dbm2 {
         void assign(dim_t x, val_t m);
         void copy(dim_t x, dim_t y);
         void shift(dim_t x, val_t n);
-        void norm(const std::vector<val_t> &ceiling);
+
+        void extrapolate(const std::vector<val_t> &ceiling);
 
         /** Diagonal extrapolation
          *
@@ -90,7 +97,11 @@ namespace dbm2 {
          * - max[0] = 0 (reference clock)
          * @post DBM is closed.
          */
-         void diagonal_extrapolation(const std::vector<val_t> &ceiling);
+        void extrapolate_diagonal(const std::vector<val_t> &ceiling);
+
+        void extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
+
+        void extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
 
         /** Remove clock at index c
         *
