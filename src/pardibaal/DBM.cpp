@@ -89,8 +89,8 @@ namespace pardibaal {
         for(dim_t k = 0; k < size; ++k)
             for(dim_t i = 0; i < size; ++i)
                 for(dim_t j = 0; j < size; ++j)
-                    _bounds_table.at(i, j) = bound_t::min(_bounds_table.at(i, j),
-                                                           _bounds_table.at(i, k) + _bounds_table.at(k, j));
+                    _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j),
+                                                         _bounds_table.at(i, k) + _bounds_table.at(k, j)));
     }
 
     void DBM::future() {
@@ -113,14 +113,14 @@ namespace pardibaal {
         if ((_bounds_table.at(y, x) + g) < bound_t::zero()) // In this case the zone is now empty
             _bounds_table.at(0, 0) = bound_t::non_strict(-1);
         else if (g < _bounds_table.at(x, y)) {
-            _bounds_table.at(x, y) = g;
+            _bounds_table.set(x, y, g);
             for (dim_t i = 0; i < this->dimension(); ++i) {
                 for (dim_t j = 0; j < this->dimension(); ++j) {
                     if (_bounds_table.at(i, x) + _bounds_table.at(x, j) < _bounds_table.at(i, j))
-                        _bounds_table.at(i, j) = _bounds_table.at(i, x) + _bounds_table.at(x, j);
+                        _bounds_table.set(i, j, _bounds_table.at(i, x) + _bounds_table.at(x, j));
 
                     if (_bounds_table.at(i, y) + _bounds_table.at(y, j) < _bounds_table.at(i, j))
-                        _bounds_table.at(i, j) = _bounds_table.at(i, y) + _bounds_table.at(y, j);
+                        _bounds_table.set(i, j, _bounds_table.at(i, y) + _bounds_table.at(y, j));
                 }
             }
         }
@@ -130,8 +130,8 @@ namespace pardibaal {
     void DBM::free(dim_t x) {
         for (dim_t i = 0; i < dimension(); ++i) {
             if (i != x) {
-                _bounds_table.at(x, i) = bound_t::inf();
-                _bounds_table.at(i, x) = _bounds_table.at(i, 0);
+                _bounds_table.set(x, i, bound_t::inf());
+                _bounds_table.set(i, x, _bounds_table.at(i, 0));
             }
         }
     }
@@ -139,8 +139,8 @@ namespace pardibaal {
     // x := m
     void DBM::assign(dim_t x, val_t m) {
         for (dim_t i = 0; i < this->dimension(); ++i) {
-            _bounds_table.at(x, i) = bound_t::non_strict(m) + _bounds_table.at(0, i);
-            _bounds_table.at(i, x) = bound_t::non_strict(-m) + _bounds_table.at(i, 0);
+            _bounds_table.set(x, i, bound_t::non_strict(m) + _bounds_table.at(0, i));
+            _bounds_table.set(i, x, bound_t::non_strict(-m) + _bounds_table.at(i, 0));
         }
     }
 
@@ -148,23 +148,23 @@ namespace pardibaal {
     void DBM::copy(dim_t x, dim_t y) {
         for (dim_t i = 0; i < this->dimension(); ++i) {
             if (i != x) {
-                _bounds_table.at(x, i) = _bounds_table.at(y, i);
-                _bounds_table.at(i, x) = _bounds_table.at(i, y);
+                _bounds_table.set(x, i, _bounds_table.at(y, i));
+                _bounds_table.set(i, x, _bounds_table.at(i, y));
             }
         }
-        _bounds_table.at(x, y) = bound_t::zero();
-        _bounds_table.at(y, x) = bound_t::zero();
+        _bounds_table.set(x, y, bound_t::zero());
+        _bounds_table.set(y, x, bound_t::zero());
     }
 
     void DBM::shift(dim_t x, val_t n) {
         for (dim_t i = 0; i < this->dimension(); ++i) {
             if (i != x) {
-                this->_bounds_table.at(x, i) = this->_bounds_table.at(x, i) + bound_t::non_strict(n);
-                this->_bounds_table.at(i, x) = this->_bounds_table.at(i, x) + bound_t::non_strict(-n);
+                this->_bounds_table.set(x, i, this->_bounds_table.at(x, i) + bound_t::non_strict(n));
+                this->_bounds_table.set(i, x, this->_bounds_table.at(i, x) + bound_t::non_strict(-n));
             }
         }
-        this->_bounds_table.at(x, 0) = bound_t::max(this->_bounds_table.at(x, 0), bound_t::zero());
-        this->_bounds_table.at(0, x) = bound_t::min(this->_bounds_table.at(0, x), bound_t::zero());
+        this->_bounds_table.set(x, 0, bound_t::max(this->_bounds_table.at(x, 0), bound_t::zero()));
+        this->_bounds_table.set(0, x, bound_t::min(this->_bounds_table.at(0, x), bound_t::zero()));
     }
 
     // Simple normalisation by a ceiling for all clocks.
@@ -178,10 +178,10 @@ namespace pardibaal {
         for (dim_t i = 0; i < this->dimension(); ++i) {
             for (dim_t j = 0; j < this->dimension(); ++j) {
                 if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) > bound_t::non_strict(ceiling[i])){
-                    this->_bounds_table.at(i, j) = bound_t::inf();
+                    this->_bounds_table.set(i, j, bound_t::inf());
                 }
                 else if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) < bound_t::strict(-ceiling[j])) {
-                    this->_bounds_table.at(i, j) = bound_t::strict(-ceiling[j]);
+                    this->_bounds_table.set(i, j, bound_t::strict(-ceiling[j]));
                 }
             }
         }
@@ -204,19 +204,19 @@ namespace pardibaal {
                     (-1 * D.at(0, i) > bound_t::non_strict(ceiling[i])) ||
                     (-1 * D.at(0, j) > bound_t::non_strict(ceiling[j]) && i != 0)){
 
-                    this->at(i, j) = bound_t::inf();
+                    this->set(i, j, bound_t::inf());
                 }
                 else if (-1 * D.at(i, j) > bound_t::non_strict(ceiling[j]) && i == 0)
-                    this->at(i, j) = bound_t::strict(-ceiling[j]);
+                    this->set(i, j, bound_t::strict(-ceiling[j]));
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
                 if (i == 0 && this->at(i, j) > bound_t::zero()) {
-                    this->at(i, j) = bound_t::zero();
+                    this->set(i, j, bound_t::zero());
                 }
                 if (j == 0 && this->at(i, j) < bound_t::zero()) {
-                    this->at(i, j) = bound_t::zero();
+                    this->set(i, j, bound_t::zero());
                 }
 
             }
@@ -238,17 +238,17 @@ namespace pardibaal {
             for (dim_t j = 0; j < D.dimension(); ++j) {
                 if (i == j) continue;
                 else if (D.at(i, j) > bound_t::non_strict(lower[i]))
-                    this->at(i, j) = bound_t::inf();
+                    this->set(i, j, bound_t::inf());
                 else if (D.at(i, j) * -1 > bound_t::non_strict(upper[j]))
-                    this->at(i, j) = bound_t::strict(-upper[j]);
+                    this->set(i, j, bound_t::strict(-upper[j]));
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
                 if (i == 0 && this->at(i, j) > bound_t::zero())
-                    this->at(i, j) = bound_t::zero();
+                    this->set(i, j, bound_t::zero());
                 if (j == 0 && this->at(i, j) < bound_t::zero())
-                    this->at(i, j) = bound_t::zero();
+                    this->set(i, j, bound_t::zero());
             }
         }
 
@@ -270,17 +270,17 @@ namespace pardibaal {
                 else if (D.at(i, j) > bound_t::non_strict(lower[i]) ||
                          D.at(0, i) * -1 > bound_t::non_strict(lower[i]) ||
                          (D.at(0, j) * -1 > bound_t::non_strict(upper[j]) && i != 0))
-                    this->at(i, j) = bound_t::inf();
+                    this->set(i, j, bound_t::inf());
                 else if (D.at(0, j) * -1 > bound_t::non_strict(upper[j]) && i == 0)
-                    this->at(i, j) = bound_t::strict(-upper[j]);
+                    this->set(i, j, bound_t::strict(-upper[j]));
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
                 if (i == 0 && this->at(i, j) > bound_t::zero())
-                    this->at(i, j) = bound_t::zero();
+                    this->set(i, j, bound_t::zero());
                 if (j == 0 && this->at(i, j) < bound_t::zero())
-                    this->at(i, j) = bound_t::zero();
+                    this->set(i, j, bound_t::zero());
             }
         }
 
@@ -322,18 +322,18 @@ namespace pardibaal {
         for (dim_t i = 0; i < dimension(); ++i) {
             if (!(i == a || i == b)) {
                 tmp = at(i, a);
-                at(i, a) = at(i, b);
-                at(i, b) = tmp;
+                set(i, a, at(i, b));
+                set(i, b, tmp);
 
                 tmp = at(a, i);
-                at(a, i) = at(b, i);
-                at(b, i) = tmp;
+                set(a, i, at(b, i));
+                set(b, i, tmp);
             }
         }
 
         tmp = at(a, b);
-        at(a, b) = at(b, a);
-        at(b, a) = tmp;
+        set(a, b, at(b, a));
+        set(b, a, tmp);
     }
 
     void DBM::add_clock_at(dim_t c) {
@@ -350,7 +350,7 @@ namespace pardibaal {
             for (dim_t j = 0, j2 = 0; j < D.dimension(); ++j) {
                 if (i == c && i < D.dimension() - 1) {++i;}
                 if (j == c || i == c) continue;
-                D.at(i, j) = this->at(i2, j2++);
+                D.set(i, j, this->at(i2, j2++));
             }
         }
 
@@ -391,7 +391,7 @@ namespace pardibaal {
         for (dim_t i = 0; i < src_indir.size(); ++i) {
             for (dim_t j = 0; j < src_indir.size(); ++j) {
                 if (src_indir[i] != -1 && src_indir[j] != -1)
-                    dest_dbm.at(src_indir[i], src_indir[j]) = this->_bounds_table.at(i, j);
+                    dest_dbm.set(src_indir[i], src_indir[j], this->_bounds_table.at(i, j));
             }
         }
 
@@ -426,7 +426,7 @@ namespace pardibaal {
         for (dim_t i = 0; i < this->dimension(); ++i) {
             for (dim_t j = 0; j < this->dimension(); ++j) {
                 if (order[i] != ~0 && order[j] != ~0)
-                    D.at(order[i], order[j]) = this->_bounds_table.at(i, j);
+                    D.set(order[i], order[j], this->_bounds_table.at(i, j));
             }
         }
 

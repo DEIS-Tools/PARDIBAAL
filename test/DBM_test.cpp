@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(swap_clocks_test_1) {
     for (dim_t i = 0; i < size; ++i)
         for (dim_t j = 0; j < size; ++j) {
             if (i == j) continue;
-            D.at(i, j) = bound_t::non_strict(j + (i * size));
+            D.set(i, j, bound_t::non_strict(j + (i * size)));
         }
 
     D.swap_clocks(a, b);

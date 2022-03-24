@@ -47,8 +47,8 @@ namespace pardibaal {
     public:
         DBM(dim_t number_of_clocks);
 
-        inline bound_t& at(dim_t i, dim_t j) {return this->_bounds_table.at(i, j);}
         inline bound_t at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
+        inline void set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
         inline dim_t dimension() const {return this->_bounds_table.number_of_clocks();}
 
         bool is_empty() const;

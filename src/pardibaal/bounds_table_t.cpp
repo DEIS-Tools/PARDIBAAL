@@ -49,6 +49,15 @@ namespace pardibaal {
         return _bounds[i * _number_of_clocks + j];
     }
 
+    void bounds_table_t::set(dim_t i, dim_t j, bound_t bound) {
+#ifndef NEXCEPTIONS
+        if (i >= _number_of_clocks || j >= _number_of_clocks)
+            throw base_error("ERROR: Out of bounds access on coordinate: ", i, ", ", j, " with dimensions: ",
+                             _number_of_clocks);
+#endif
+        this->_bounds[i * _number_of_clocks + j] = bound;
+    }
+
     std::ostream& operator<<(std::ostream& out, const bounds_table_t& table) {
         for (dim_t i = 0; i < table._number_of_clocks; ++i) {
             for (dim_t j = 0; j < table._number_of_clocks; ++j) {
