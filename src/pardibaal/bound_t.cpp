@@ -77,53 +77,53 @@ namespace pardibaal {
     }
 
     const bound_t bound_t::operator+(bound_t rhs) const {
-        if (this->_inf || rhs._inf)
+        if (this->is_inf() || rhs.is_inf())
             return bound_t::inf();
 
-        return bound_t(this->_n + rhs._n, this->_strict || rhs._strict);
+        return bound_t(this->get_bound() + rhs.get_bound(), this->is_strict() || rhs.is_strict());
     }
 
     const bound_t bound_t::operator+(val_t rhs) const {
-        return bound_t(this->_n + rhs, this->_strict);
+        return bound_t(this->get_bound() + rhs, this->is_strict());
     }
 
     const bound_t bound_t::operator*(val_t rhs) const {
-        return bound_t(this->_n * rhs, this->_strict);
+        return bound_t(this->get_bound() * rhs, this->is_strict());
     }
 
     bool bound_t::operator<=(bound_t rhs) const {
-        if (this->_inf) return rhs._inf;
-        if (rhs._inf) return true;
+        if (this->is_inf()) return rhs.is_inf();
+        if (rhs.is_inf()) return true;
 
-        if (this->_n == rhs._n) {
-            if (rhs._strict)
-                return this->_strict;
+        if (this->get_bound() == rhs.get_bound()) {
+            if (rhs.is_strict())
+                return this->is_strict();
 
             return true;
         }
 
-        return this->_n < rhs._n;
+        return this->get_bound() < rhs.get_bound();
     }
 
     bool bound_t::operator<(bound_t rhs) const {
-        if (this->_inf) return false;
-        if (rhs._inf) return true;
+        if (this->is_inf()) return false;
+        if (rhs.is_inf()) return true;
 
-        if (this->_n == rhs._n) {
-            if (rhs._strict)
+        if (this->get_bound() == rhs.get_bound()) {
+            if (rhs.is_strict())
                 return false;
 
-            return this->_strict;
+            return this->is_strict();
         }
 
-        return this->_n < rhs._n;
+        return this->get_bound() < rhs.get_bound();
     }
 
     bool bound_t::operator==(bound_t rhs) const {
-        if (this->_inf || rhs._inf)
-            return this->_inf && rhs._inf;
+        if (this->is_inf() || rhs.is_inf())
+            return this->is_inf() && rhs.is_inf();
 
-        return (this->_n == rhs._n) && (this->_strict == rhs._strict);
+        return (this->get_bound() == rhs.get_bound()) && (this->is_strict() == rhs.is_strict());
     }
 
     bool bound_t::operator!=(bound_t rhs) const {
@@ -147,11 +147,11 @@ namespace pardibaal {
     }
 
     std::ostream& operator<<(std::ostream& out, const bound_t& bound) {
-        if (bound._inf) {
+        if (bound.is_inf()) {
             out << "INF";
         }
         else {
-            out << (bound._strict ? "<" : "<=") + std::to_string(bound._n);
+            out << (bound.is_strict() ? "<" : "<=") + std::to_string(bound.get_bound());
         }
 
         return out;

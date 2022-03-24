@@ -177,11 +177,11 @@ namespace pardibaal {
 
         for (dim_t i = 0; i < this->dimension(); ++i) {
             for (dim_t j = 0; j < this->dimension(); ++j) {
-                if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) > bound_t::non_strict(ceiling[i])){
-                    this->_bounds_table.set(i, j, bound_t::inf());
+                if (!this->_bounds_table.at(i, j).is_inf() && this->_bounds_table.at(i, j) > bound_t::non_strict(ceiling[i])){
+                    this->_bounds_table.at(i, j) = bound_t::inf();
                 }
-                else if (!this->_bounds_table.at(i, j)._inf && this->_bounds_table.at(i, j) < bound_t::strict(-ceiling[j])) {
-                    this->_bounds_table.set(i, j, bound_t::strict(-ceiling[j]));
+                else if (!this->_bounds_table.at(i, j).is_inf() && this->_bounds_table.at(i, j) < bound_t::strict(-ceiling[j])) {
+                    this->_bounds_table.at(i, j) = bound_t::strict(-ceiling[j]);
                 }
             }
         }

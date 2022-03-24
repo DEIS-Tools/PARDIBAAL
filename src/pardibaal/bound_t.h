@@ -34,10 +34,11 @@ namespace pardibaal {
     enum strict_t {STRICT, NON_STRICT};
 
     struct bound_t {
+    private:
         val_t _n = 0;
         bool _strict = false,
              _inf = false;
-
+    public:
         bound_t(){};
         bound_t(val_t n, strict_t strictness);
         bound_t(val_t n, bool strict);
@@ -47,6 +48,10 @@ namespace pardibaal {
         static bound_t inf();
         static bound_t zero();
 
+        inline val_t get_bound() const {return this->_n;}
+        inline bool is_strict() const {return this->_strict;}
+        inline bool is_non_strict() const {return not this->_strict;}
+        inline bool is_inf() const {return this->_inf;}
 
         static const bound_t& max(const bound_t &a, const bound_t &b);
         static const bound_t max(bound_t &&a, bound_t &&b);
