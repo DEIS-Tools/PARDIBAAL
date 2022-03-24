@@ -72,7 +72,7 @@ namespace dbm2 {
 
     bool DBM::is_unbounded() const {
         for (dim_t i = 1; i < dimension(); ++i)
-            if (not this->at(i, 0).is_inf())
+            if (not this->at(i, 0)._inf)
                 return false;
 
         return true;
