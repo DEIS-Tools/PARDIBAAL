@@ -68,17 +68,13 @@ namespace pardibaal {
 
         const bound_t operator*(val_t rhs) const;
 
-        bool operator<=(bound_t rhs) const;
-
         bool operator<(bound_t rhs) const;
-
         bool operator==(bound_t rhs) const;
 
         bool operator!=(bound_t rhs) const;
-
         bool operator>(bound_t rhs) const;
-
         bool operator>=(bound_t rhs) const;
+        bool operator<=(bound_t rhs) const;
 
         friend std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 

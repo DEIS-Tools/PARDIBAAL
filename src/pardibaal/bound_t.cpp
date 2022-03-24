@@ -32,16 +32,16 @@ namespace pardibaal {
 
     bound_t bound_t::non_strict(val_t n) {return bound_t(n, NON_STRICT);}
 
-    bound_t bound_t::zero() {
-        return non_strict(0);
-    }
-
     bound_t bound_t::inf() {
         bound_t b;
         b._inf = true;
         b._strict = true;
 
         return b;
+    }
+
+    bound_t bound_t::zero() {
+        return non_strict(0);
     }
 
     const bound_t &bound_t::max(const bound_t &a, const bound_t &b) {
@@ -91,20 +91,6 @@ namespace pardibaal {
         return bound_t(this->get_bound() * rhs, this->is_strict());
     }
 
-    bool bound_t::operator<=(bound_t rhs) const {
-        if (this->is_inf()) return rhs.is_inf();
-        if (rhs.is_inf()) return true;
-
-        if (this->get_bound() == rhs.get_bound()) {
-            if (rhs.is_strict())
-                return this->is_strict();
-
-            return true;
-        }
-
-        return this->get_bound() < rhs.get_bound();
-    }
-
     bool bound_t::operator<(bound_t rhs) const {
         if (this->is_inf()) return false;
         if (rhs.is_inf()) return true;
@@ -127,7 +113,7 @@ namespace pardibaal {
     }
 
     bool bound_t::operator!=(bound_t rhs) const {
-        return !(*this == rhs);
+        return not (*this == rhs);
     }
 
     bool bound_t::operator>(bound_t rhs) const {
@@ -135,7 +121,11 @@ namespace pardibaal {
     }
 
     bool bound_t::operator>=(bound_t rhs) const {
-        return rhs <= *this;
+        return not (*this < rhs);
+    }
+
+    bool bound_t::operator<=(bound_t rhs) const {
+        return not (rhs < *this);
     }
 
     const bound_t operator+(val_t val, const bound_t bound) {
