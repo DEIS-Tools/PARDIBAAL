@@ -71,14 +71,9 @@ namespace dbm2 {
     }
 
     bool DBM::is_unbounded() const {
-        // For each clock:
-        // Check that upper and lower bounds are non-strict and that the bounds are the same (absolute value)
-        for (dim_t i = 1; i < dimension(); ++i) {
-            if (this->at(0, i)._inf != this->at(i, 0)._inf)
-                continue;
-            if (!this->at(0, i)._strict && !this->at(i, 0)._strict && -this->at(0, i)._n == this->at(i, 0)._n)
+        for (dim_t i = 1; i < dimension(); ++i)
+            if (this->at(i, 0)._inf)
                 return false;
-        }
 
         return true;
     }

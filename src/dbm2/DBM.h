@@ -60,9 +60,8 @@ namespace dbm2 {
         inline bool superset(const DBM& dbm) const {return this->relation(dbm)._superset;}
 
         /** Is bounded
-         * Checks whether a point in the DBM can delay any amount, by checking that no
-         * clock as the same relative upper and lower bound.
-         * @return true if any point in the DBM can delay any amount.
+         * Checks whether all upper bounds are infinite
+         * @return true if the DBM is unbounded (has no upper bound)
          */
         bool is_unbounded() const;
 
