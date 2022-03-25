@@ -26,9 +26,9 @@ jobs:
           mkdir -p build
           cd build
           CC=gcc-11 CXX=g++-11 cmake ../ -DCMAKE_BUILD_TYPE=Debug -DDBM_BuildTests=ON -DBUILD_TESTING=ON -DDBM_GetDependencies=OFF ..
-          make
+          CC=gcc-11 CXX=g++-11 make
       - name: Test
         run: |
           cd build
-          make test
+          CC=gcc-11 CXX=g++-11 make test
 
