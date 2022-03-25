@@ -1,0 +1,34 @@
+name: Build MacOS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+    types: [synchronize, opened, reopened, ready_for_review]
+  workflow_dispatch:
+
+concurrency: 
+  group: build-MacOS-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: github.event.pull_request.draft == false
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install depends
+        run: |
+          brew install cmake boost
+      - name: Build
+        run: |
+          mkdir -p build
+          cd build
+          CC=gcc-11 CXX=g++-11 cmake ../ -DCMAKE_BUILD_TYPE=Debug -DDBM_BuildTests=ON -DBUILD_TESTING=ON -DDBM_GetDependencies=OFF ..
+          make
+      - name: Test
+        run: |
+          cd build
+          make test
+
