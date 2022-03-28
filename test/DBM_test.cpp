@@ -214,10 +214,10 @@ BOOST_AUTO_TEST_CASE(trace_test_1) {
 
 BOOST_AUTO_TEST_CASE(remove_clock_test_1) {
     DBM D(4);
-    D.at(1, 0) = bound_t::inf();
-    D.at(3, 0) = bound_t::inf();
-    D.at(1, 2) = bound_t::inf();
-    D.at(3, 2) = bound_t::inf();
+    D.set(1, 0, bound_t::inf());
+    D.set(3, 0, bound_t::inf());
+    D.set(1, 2, bound_t::inf());
+    D.set(3, 2, bound_t::inf());
 
     D.remove_clock(2);
 
@@ -288,10 +288,10 @@ BOOST_AUTO_TEST_CASE(swap_clocks_test_2) {
 
 BOOST_AUTO_TEST_CASE(add_clock_test_1) {
     DBM D(4);
-    D.at(1, 0) = bound_t::inf();
-    D.at(3, 0) = bound_t::inf();
-    D.at(1, 2) = bound_t::inf();
-    D.at(3, 2) = bound_t::inf();
+    D.set(1, 0, bound_t::inf());
+    D.set(3, 0, bound_t::inf());
+    D.set(1, 2, bound_t::inf());
+    D.set(3, 2, bound_t::inf());
     std::cout << D << std::endl;
     D.add_clock_at(3);
     std::cout << D << std::endl;
@@ -445,13 +445,13 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_2) {
 //  <=1     <=0     <=1     <=0
     std::vector<val_t> ceiling = {0, 1, -1073741823, 3};
 
-    D.at(1, 0) = bound_t::non_strict(1);
-    D.at(1, 2) = bound_t::non_strict(1);
-    D.at(3, 0) = bound_t::non_strict(1);
-    D.at(3, 2) = bound_t::non_strict(1);
-    D.at(2, 0) = bound_t::inf();
-    D.at(2, 1) = bound_t::inf();
-    D.at(2, 3) = bound_t::inf();
+    D.set(1, 0, bound_t::non_strict(1));
+    D.set(1, 2, bound_t::non_strict(1));
+    D.set(3, 0, bound_t::non_strict(1));
+    D.set(3, 2, bound_t::non_strict(1));
+    D.set(2, 0, bound_t::inf());
+    D.set(2, 1, bound_t::inf());
+    D.set(2, 3, bound_t::inf());
 
     D.extrapolate_diagonal(ceiling);
 
@@ -477,21 +477,21 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
     DBM D(5);
     std::vector<val_t> ceiling = {0, 3, -1073741823, 3, 3};
 
-    D.at(0, 1) = bound_t::non_strict(-6);
-    D.at(3, 1) = bound_t::non_strict(-6);
-    D.at(4, 1) = bound_t::non_strict(-6);
+    D.set(0, 1, bound_t::non_strict(-6));
+    D.set(3, 1, bound_t::non_strict(-6));
+    D.set(4, 1, bound_t::non_strict(-6));
 
-    D.at(1, 0) = bound_t::inf();
-    D.at(2, 0) = bound_t::inf();
-    D.at(3, 0) = bound_t::inf();
-    D.at(4, 0) = bound_t::inf();
+    D.set(1, 0, bound_t::inf());
+    D.set(2, 0, bound_t::inf());
+    D.set(3, 0, bound_t::inf());
+    D.set(4, 0, bound_t::inf());
 
-    D.at(2, 1) = bound_t::inf();
-    D.at(1, 2) = bound_t::inf();
-    D.at(1, 3) = bound_t::inf();
-    D.at(2, 3) = bound_t::inf();
-    D.at(1, 4) = bound_t::inf();
-    D.at(2, 4) = bound_t::inf();
+    D.set(2, 1, bound_t::inf());
+    D.set(1, 2, bound_t::inf());
+    D.set(1, 3, bound_t::inf());
+    D.set(2, 3, bound_t::inf());
+    D.set(1, 4, bound_t::inf());
+    D.set(2, 4, bound_t::inf());
 
     D.extrapolate_diagonal(ceiling);
 

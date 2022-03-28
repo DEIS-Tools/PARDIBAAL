@@ -74,9 +74,9 @@ namespace pardibaal {
         // For each clock:
         // Check that upper and lower bounds are non-strict and that the bounds are the same (absolute value)
         for (dim_t i = 1; i < dimension(); ++i) {
-            if (this->at(0, i)._inf != this->at(i, 0)._inf)
+            if (this->at(0, i).is_inf() != this->at(i, 0).is_inf())
                 continue;
-            if (!this->at(0, i)._strict && !this->at(i, 0)._strict && -this->at(0, i)._n == this->at(i, 0)._n)
+            if (this->at(0, i).is_non_strict() && this->at(i, 0).is_non_strict() && -this->at(0, i).get_bound() == this->at(i, 0).get_bound())
                 return false;
         }
 
@@ -95,15 +95,15 @@ namespace pardibaal {
 
     void DBM::future() {
         for (dim_t i = 1; i < this->dimension(); ++i)
-            _bounds_table.at(i, 0) = bound_t::inf();
+            _bounds_table.set(i, 0, bound_t::inf());
     }
 
     void DBM::past() {
         for (dim_t i = 1; i < this->dimension(); ++i) {
-            this->_bounds_table.at(0, i) = bound_t::zero();
+            this->_bounds_table.set(0, i, bound_t::zero());
             for (dim_t j = 1; j < this->dimension(); ++j) {
                 if (this->_bounds_table.at(j, i) < this->_bounds_table.at(0, i)) {
-                    this->_bounds_table.at(0, i) = this->_bounds_table.at(j, i);
+                    this->_bounds_table.set(0, i, this->_bounds_table.at(j, i));
                 }
             }
         }
@@ -111,7 +111,7 @@ namespace pardibaal {
 
     void DBM::restrict(dim_t x, dim_t y, bound_t g) {
         if ((_bounds_table.at(y, x) + g) < bound_t::zero()) // In this case the zone is now empty
-            _bounds_table.at(0, 0) = bound_t::non_strict(-1);
+            _bounds_table.set(0, 0, bound_t::non_strict(-1));
         else if (g < _bounds_table.at(x, y)) {
             _bounds_table.set(x, y, g);
             for (dim_t i = 0; i < this->dimension(); ++i) {
@@ -178,10 +178,10 @@ namespace pardibaal {
         for (dim_t i = 0; i < this->dimension(); ++i) {
             for (dim_t j = 0; j < this->dimension(); ++j) {
                 if (!this->_bounds_table.at(i, j).is_inf() && this->_bounds_table.at(i, j) > bound_t::non_strict(ceiling[i])){
-                    this->_bounds_table.at(i, j) = bound_t::inf();
+                    this->_bounds_table.set(i, j, bound_t::inf());
                 }
                 else if (!this->_bounds_table.at(i, j).is_inf() && this->_bounds_table.at(i, j) < bound_t::strict(-ceiling[j])) {
-                    this->_bounds_table.at(i, j) = bound_t::strict(-ceiling[j]);
+                    this->_bounds_table.set(i, j, bound_t::strict(-ceiling[j]));
                 }
             }
         }
@@ -302,7 +302,7 @@ namespace pardibaal {
                 if (i == c && i < dimension() -1) {++i;}
                 if (j == c || i == c) continue;
 
-                D.at(i2, j2++) = this->at(i, j);
+                D.set(i2, j2++, this->at(i, j));
             }
         }
 
