@@ -406,17 +406,101 @@ BOOST_AUTO_TEST_CASE(reorder_test_2) {
     BOOST_CHECK_THROW(D1.reorder(order3, 3), base_error);
 }
 
-BOOST_AUTO_TEST_CASE(extrapolation_test_1) {
+BOOST_AUTO_TEST_CASE(extrapolate_test_1) {
     DBM D(10);
     std::vector ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
     BOOST_CHECK_THROW(D.extrapolate(ceiling), base_error);
 }
 
-BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_1) {
+BOOST_AUTO_TEST_CASE(extrapolate_test_2) {
+    /* Classical Extrapolation
+     * Example from Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
+     * Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
+     *
+     *   M 8-|                               M 8-|
+     *     7-|              @                  7-|              @  .  .
+     *     6-|           @  @                  6-|           @  @  .
+     *     5-|        @  @  @         ----\    5-|        @  @  @
+     *     4-|     @  @  @            ----/    4-|     @  @  @
+     *     3-|     @  @                        3-|  .  @  @
+     *     2-|     @                           2-|  .  @
+     *     1-|                                 1-|
+     *       |_____________________              |_____________________
+     *          |  |  |  |  |  |  |                 |  |  |  |  |  |  |
+     *          1  2  3  4  5  6  7                 1  2  3  4  5  6  7
+     *          M                                   M
+     */
+
     DBM D(3);
-    D.at(1, 0) = bound_t::inf();
-    D.at(2, 0) = bound_t::inf();
+    D.set(0, 1, bound_t::non_strict(-2));
+    D.set(0, 2, bound_t::non_strict(-2));
+    D.set(1, 0, bound_t::non_strict(5));
+    D.set(1, 2, bound_t::non_strict(0));
+    D.set(2, 0, bound_t::non_strict(7));
+    D.set(2, 1, bound_t::non_strict(2));
+
+    std::vector<val_t> max {0, 1, 7};
+
+    D.extrapolate(max);
+
+    BOOST_CHECK(D.at(0, 0) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(0, 1) == bound_t::strict(-1));
+    BOOST_CHECK(D.at(0, 2) == bound_t::non_strict(-2));
+    BOOST_CHECK(D.at(1, 0) == bound_t::non_strict(7));
+    BOOST_CHECK(D.at(1, 1) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(1, 2) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(2, 0) == bound_t::non_strict(7));
+    BOOST_CHECK(D.at(2, 1) == bound_t::non_strict(2));
+    BOOST_CHECK(D.at(2, 2) == bound_t::non_strict(0));
+}
+
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_1) {
+    /* Diagonal Extrapolation
+     * Example from Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
+     * Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
+     *   M 8-|                                M 8-|
+     *     7-|              @                   7-|  .  .  .  .  @  .  .  ..
+     *     6-|           @  @                   6-|  .  .  .  @  @  .  .  ..
+     *     5-|        @  @  @         ----\     5-|  .  .  @  @  @  .  .  ..
+     *     4-|     @  @  @            ----/     4-|  .  @  @  @  .  .  .  ..
+     *     3-|     @  @                         3-|  .  @  @  .  .  .  .  ..
+     *     2-|     @                            2-|  .  @  .  .  .  .  .  ..
+     *     1-|                                  1-|
+     *       |_____________________               |_____________________
+     *          |  |  |  |  |  |  |                  |  |  |  |  |  |  |
+     *          1  2  3  4  5  6  7                  1  2  3  4  5  6  7
+     *          M                                    M
+     */
+    DBM D(3);
+    D.set(0, 1, bound_t::non_strict(-2));
+    D.set(0, 2, bound_t::non_strict(-2));
+    D.set(1, 0, bound_t::non_strict(5));
+    D.set(1, 2, bound_t::non_strict(0));
+    D.set(2, 0, bound_t::non_strict(7));
+    D.set(2, 1, bound_t::non_strict(2));
+
+    std::vector<val_t> max {0, 1, 7};
+
+    std::cout << D << "\n";
+    D.extrapolate_diagonal(max);
+    std::cout << D << "\n";
+
+    BOOST_CHECK(D.at(0, 0) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(0, 1) == bound_t::strict(-1));
+    BOOST_CHECK(D.at(0, 2) == bound_t::non_strict(-2));
+    BOOST_CHECK(D.at(1, 0) == bound_t::inf());
+    BOOST_CHECK(D.at(1, 1) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(1, 2) == bound_t::inf());
+    BOOST_CHECK(D.at(2, 0) == bound_t::non_strict(7));
+    BOOST_CHECK(D.at(2, 1) == bound_t::strict(6));
+    BOOST_CHECK(D.at(2, 2) == bound_t::non_strict(0));
+}
+
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_2) {
+    DBM D(3);
+    D.set(1, 0, bound_t::inf());
+    D.set(2, 0, bound_t::inf());
     std::vector<val_t> ceiling = {0, -1073741823, -1073741823};
 
     std::cout << D;
@@ -436,7 +520,7 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_1) {
     BOOST_CHECK(D.at(2, 1) == bound_t::inf());
 }
 
-BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_2) {
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_3) {
     DBM D(4);
 //  Extrapolating: [0, 1, -1073741823, 3]
 //  <=0     <=0     <=0     <=0
@@ -468,7 +552,7 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_2) {
     BOOST_CHECK(D.at(2, 3) == bound_t::inf());
 }
 
-BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_3) {
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_4) {
 //    <=0     <=-6    <=0     <=0     <=0
 //    INF     <=0     INF     INF     INF
 //    INF     INF     <=0     INF     INF
@@ -533,11 +617,95 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_3) {
 
 }
 
-BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_4) {
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_5) {
     DBM D(10);
     std::vector ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
     BOOST_CHECK_THROW(D.extrapolate_diagonal(ceiling), base_error);
+}
+
+BOOST_AUTO_TEST_CASE(extrapolate_lu_test_1) {
+    /* LU Extrapolation
+     * Example from Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
+     * Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
+     *                                               :  :  :  :  :  :  :  :
+     *   U 8-|                                U 8-|  .  .  .  .  .  .  .  .
+     *     7-|              @                   7-|  .  .  .  .  @  .  .
+     *     6-|           @  @                   6-|  .  .  .  @  @  .
+     *     5-|        @  @  @         ----\     5-|  .  .  @  @  @
+     *     4-|     @  @  @            ----/     4-|  .  @  @  @
+     *     3-|     @  @                         3-|  .  @  @
+     *     2-|     @                            2-|  .  @
+     *   L 1-|                                L 1-|
+     *       |_____________________               |_____________________
+     *          |  |  |  |  |  |  |                  |  |  |  |  |  |  |
+     *          1  2  3  4  5  6  7                  1  2  3  4  5  6  7
+     *         L/U                                  L/U
+     */
+    DBM D(3);
+    D.set(0, 1, bound_t::non_strict(-2));
+    D.set(0, 2, bound_t::non_strict(-2));
+    D.set(1, 0, bound_t::non_strict(5));
+    D.set(1, 2, bound_t::non_strict(0));
+    D.set(2, 0, bound_t::non_strict(7));
+    D.set(2, 1, bound_t::non_strict(2));
+
+    std::vector<val_t> upper {0, 1, 7};
+    std::vector<val_t> lower {0, 1, 1};
+
+    D.extrapolate_lu(lower, upper);
+
+    BOOST_CHECK(D.at(0, 0) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(0, 1) == bound_t::strict(-1));
+    BOOST_CHECK(D.at(0, 2) == bound_t::non_strict(-2));
+    BOOST_CHECK(D.at(1, 0) == bound_t::inf());
+    BOOST_CHECK(D.at(1, 1) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(1, 2) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(2, 0) == bound_t::inf());
+    BOOST_CHECK(D.at(2, 1) == bound_t::inf());
+    BOOST_CHECK(D.at(2, 2) == bound_t::non_strict(0));
+}
+
+BOOST_AUTO_TEST_CASE(extrapolate_lu_diagonal_test_1) {
+    /* Diagonal LU Extrapolation
+     * Example from Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
+     * Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
+     *                                               :  :  :  :  :  :  :  :.
+     *   U 8-|                                U 8-|  .  .  .  .  .  .  .  ..
+     *     7-|              @                   7-|  .  .  .  .  @  .  .  ..
+     *     6-|           @  @                   6-|  .  .  .  @  @  .  .  ..
+     *     5-|        @  @  @         ----\     5-|  .  .  @  @  @  .  .  ..
+     *     4-|     @  @  @            ----/     4-|  .  @  @  @  .  .  .  ..
+     *     3-|     @  @                         3-|  .  @  @  .  .  .  .  ..
+     *     2-|     @                            2-|  .  @  .  .  .  .  .  ..
+     *   L 1-|                                L 1-|
+     *       |_____________________               |_____________________
+     *          |  |  |  |  |  |  |                  |  |  |  |  |  |  |
+     *          1  2  3  4  5  6  7                  1  2  3  4  5  6  7
+     *         L/U                                  L/U
+     */
+    DBM D(3);
+    D.set(0, 1, bound_t::non_strict(-2));
+    D.set(0, 2, bound_t::non_strict(-2));
+    D.set(1, 0, bound_t::non_strict(5));
+    D.set(1, 2, bound_t::non_strict(0));
+    D.set(2, 0, bound_t::non_strict(7));
+    D.set(2, 1, bound_t::non_strict(2));
+
+    std::vector<val_t> upper {0, 1, 7};
+    std::vector<val_t> lower {0, 1, 1};
+
+    D.extrapolate_lu_diagonal(lower, upper);
+
+    BOOST_CHECK(D.at(0, 0) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(0, 1) == bound_t::strict(-1));
+    BOOST_CHECK(D.at(0, 2) == bound_t::non_strict(-2));
+    BOOST_CHECK(D.at(1, 0) == bound_t::inf());
+    BOOST_CHECK(D.at(1, 1) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(1, 2) == bound_t::inf());
+    BOOST_CHECK(D.at(2, 0) == bound_t::inf());
+    BOOST_CHECK(D.at(2, 1) == bound_t::inf());
+    BOOST_CHECK(D.at(2, 2) == bound_t::non_strict(0));
 }
 
 BOOST_AUTO_TEST_CASE(is_unbounded_test_1) {
