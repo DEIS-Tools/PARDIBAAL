@@ -35,10 +35,10 @@ namespace pardibaal {
         relation_t(bool equal, bool subset, bool superset, bool different) :
             _equal(equal), _subset(subset), _superset(superset), _different(different) {}
 
-        static inline relation_t equal() {return relation_t(true, true, true, false);}
-        static inline relation_t subset() {return relation_t(false, true, false, false);}
-        static inline relation_t superset() {return relation_t(false, false, true, false);}
-        static inline relation_t different() {return relation_t(false, false, false, true);}
+        [[nodiscard]] static inline relation_t equal() {return relation_t(true, true, true, false);}
+        [[nodiscard]] static inline relation_t subset() {return relation_t(false, true, false, false);}
+        [[nodiscard]] static inline relation_t superset() {return relation_t(false, false, true, false);}
+        [[nodiscard]] static inline relation_t different() {return relation_t(false, false, false, true);}
     };
 
     class DBM {
@@ -47,23 +47,23 @@ namespace pardibaal {
     public:
         DBM(dim_t number_of_clocks);
 
-        inline bound_t at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
+        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
         inline void set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
-        inline dim_t dimension() const {return this->_bounds_table.number_of_clocks();}
+        [[nodiscard]] inline dim_t dimension() const {return this->_bounds_table.number_of_clocks();}
 
-        bool is_empty() const;
-        bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
-        relation_t relation(const DBM& dbm) const;
+        [[nodiscard]] bool is_empty() const;
+        [[nodiscard]] bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
+        [[nodiscard]] relation_t relation(const DBM& dbm) const;
 
-        inline bool equal(const DBM& dbm) const {return this->relation(dbm)._equal;}
-        inline bool subset(const DBM& dbm) const {return this->relation(dbm)._subset;}
-        inline bool superset(const DBM& dbm) const {return this->relation(dbm)._superset;}
+        [[nodiscard]] inline bool equal(const DBM& dbm) const {return this->relation(dbm)._equal;}
+        [[nodiscard]] inline bool subset(const DBM& dbm) const {return this->relation(dbm)._subset;}
+        [[nodiscard]] inline bool superset(const DBM& dbm) const {return this->relation(dbm)._superset;}
 
         /** Is bounded
          * Checks whether all upper bounds are infinite
          * @return true if the DBM is unbounded (has no upper bound)
          */
-        bool is_unbounded() const;
+        [[nodiscard]] bool is_unbounded() const;
 
         void close();
 
