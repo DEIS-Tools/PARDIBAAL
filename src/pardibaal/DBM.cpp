@@ -216,7 +216,7 @@ namespace pardibaal {
                     this->set(i, j, bound_t::inf());
                 }
                 else if (D.at(i, j) < bound_t::non_strict(-ceiling[j]) && i == 0)
-                    this->at(i, j) = bound_t::strict(-ceiling[j]);
+                    this->set(i, j, bound_t::strict(-ceiling[j]));
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
@@ -247,9 +247,9 @@ namespace pardibaal {
             for (dim_t j = 0; j < D.dimension(); ++j) {
                 if (i == j) continue;
                 else if (D.at(i, j) > bound_t::non_strict(lower[i]))
-                    this->at(i, j) = bound_t::inf();
+                    this->set(i, j, bound_t::inf());
                 else if (D.at(i, j) < bound_t::non_strict(-upper[j]))
-                    this->at(i, j) = bound_t::strict(-upper[j]);
+                    this->set(i, j, bound_t::strict(-upper[j]));
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
@@ -279,9 +279,9 @@ namespace pardibaal {
                 else if (D.at(i, j) > bound_t::non_strict(lower[i]) ||
                          D.at(0, i) < bound_t::non_strict(-lower[i]) ||
                          (D.at(0, j) < bound_t::non_strict(-upper[j]) && i != 0))
-                    this->at(i, j) = bound_t::inf();
+                    this->set(i, j, bound_t::inf());
                 else if (D.at(0, j) < bound_t::non_strict(-upper[j]) && i == 0)
-                    this->at(i, j) = bound_t::strict(-upper[j]);
+                    this->set(i, j, bound_t::strict(-upper[j]));
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
