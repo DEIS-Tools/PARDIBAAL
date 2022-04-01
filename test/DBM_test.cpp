@@ -413,7 +413,7 @@ BOOST_AUTO_TEST_CASE(extrapolation_test_1) {
     BOOST_CHECK_THROW(D.extrapolate(ceiling), base_error);
 }
 
-BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_1) {
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_1) {
     DBM D(3);
     D.at(1, 0) = bound_t::inf();
     D.at(2, 0) = bound_t::inf();
@@ -436,7 +436,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_1) {
     BOOST_CHECK(D.at(2, 1) == bound_t::inf());
 }
 
-BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_2) {
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_2) {
     DBM D(4);
 //  Extrapolating: [0, 1, -1073741823, 3]
 //  <=0     <=0     <=0     <=0
@@ -468,7 +468,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_2) {
     BOOST_CHECK(D.at(2, 3) == bound_t::inf());
 }
 
-BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_3) {
 //    <=0     <=-6    <=0     <=0     <=0
 //    INF     <=0     INF     INF     INF
 //    INF     INF     <=0     INF     INF
@@ -533,7 +533,7 @@ BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_3) {
 
 }
 
-BOOST_AUTO_TEST_CASE(diagonal_extrapolation_test_4) {
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_4) {
     DBM D(10);
     std::vector ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
