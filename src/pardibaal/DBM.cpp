@@ -24,7 +24,17 @@
 #include "errors.h"
 
 namespace pardibaal {
+
+    relation_t relation_t::equal() {return relation_t(true, true, true, false);}
+    relation_t relation_t::subset() {return relation_t(false, true, false, false);}
+    relation_t relation_t::superset() {return relation_t(false, false, true, false);}
+    relation_t relation_t::different() {return relation_t(false, false, false, true);}
+
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
+
+    bound_t DBM::at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
+    void DBM::set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
+    dim_t DBM::dimension() const {return this->_bounds_table.number_of_clocks();}
 
     bool DBM::is_empty() const {
         // Check if 0 - 0 is less than 0 (used for quicker identification of empty zone
@@ -69,6 +79,10 @@ namespace pardibaal {
 
         return relation_t::different();
     }
+
+    bool DBM::equal(const DBM& dbm) const {return this->relation(dbm)._equal;}
+    bool DBM::subset(const DBM& dbm) const {return this->relation(dbm)._subset;}
+    bool DBM::superset(const DBM& dbm) const {return this->relation(dbm)._superset;}
 
     bool DBM::is_unbounded() const {
         for (dim_t i = 1; i < dimension(); ++i)

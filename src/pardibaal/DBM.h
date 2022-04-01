@@ -35,10 +35,10 @@ namespace pardibaal {
         relation_t(bool equal, bool subset, bool superset, bool different) :
             _equal(equal), _subset(subset), _superset(superset), _different(different) {}
 
-        [[nodiscard]] static inline relation_t equal() {return relation_t(true, true, true, false);}
-        [[nodiscard]] static inline relation_t subset() {return relation_t(false, true, false, false);}
-        [[nodiscard]] static inline relation_t superset() {return relation_t(false, false, true, false);}
-        [[nodiscard]] static inline relation_t different() {return relation_t(false, false, false, true);}
+        [[nodiscard]] static relation_t equal();
+        [[nodiscard]] static relation_t subset();
+        [[nodiscard]] static relation_t superset();
+        [[nodiscard]] static relation_t different();
     };
 
     class DBM {
@@ -47,17 +47,17 @@ namespace pardibaal {
     public:
         DBM(dim_t number_of_clocks);
 
-        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
-        inline void set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
-        [[nodiscard]] inline dim_t dimension() const {return this->_bounds_table.number_of_clocks();}
+        [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
+        void set(dim_t i, dim_t j, bound_t bound);
+        [[nodiscard]] dim_t dimension() const;
 
         [[nodiscard]] bool is_empty() const;
         [[nodiscard]] bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
 
-        [[nodiscard]] inline bool equal(const DBM& dbm) const {return this->relation(dbm)._equal;}
-        [[nodiscard]] inline bool subset(const DBM& dbm) const {return this->relation(dbm)._subset;}
-        [[nodiscard]] inline bool superset(const DBM& dbm) const {return this->relation(dbm)._superset;}
+        [[nodiscard]] bool equal(const DBM& dbm) const;
+        [[nodiscard]] bool subset(const DBM& dbm) const;
+        [[nodiscard]] bool superset(const DBM& dbm) const;
 
         /** Is bounded
          * Checks whether all upper bounds are infinite

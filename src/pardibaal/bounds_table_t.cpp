@@ -29,6 +29,8 @@ namespace pardibaal {
         _bounds = std::vector<bound_t>(number_of_clocks * number_of_clocks);
     }
 
+    dim_t bounds_table_t::number_of_clocks() const {return this->_number_of_clocks;}
+
     bound_t bounds_table_t::at(dim_t i, dim_t j) const {
 #ifndef NEXCEPTIONS
         if (i >= _number_of_clocks || j >= _number_of_clocks)

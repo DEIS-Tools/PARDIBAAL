@@ -48,25 +48,25 @@ namespace pardibaal {
         [[nodiscard]] static bound_t inf();
         [[nodiscard]] static bound_t zero();
 
-        [[nodiscard]] inline val_t get_bound() const {return this->_n;}
-        [[nodiscard]] inline bool is_strict() const {return this->_strict;}
-        [[nodiscard]] inline bool is_non_strict() const {return not this->_strict;}
-        [[nodiscard]] inline bool is_inf() const {return this->_inf;}
+        [[nodiscard]] val_t get_bound() const;
+        [[nodiscard]] bool is_strict() const;
+        [[nodiscard]] bool is_non_strict() const;
+        [[nodiscard]] bool is_inf() const;
 
         [[nodiscard]] static const bound_t& max(const bound_t &a, const bound_t &b);
-        [[nodiscard]] static const bound_t max(bound_t &&a, bound_t &&b);
-        [[nodiscard]] static const bound_t max(const bound_t &a, bound_t &&b);
-        [[nodiscard]] static const bound_t max(bound_t &&a, const bound_t &b);
+        [[nodiscard]] static bound_t max(bound_t &&a, bound_t &&b);
+        [[nodiscard]] static bound_t max(const bound_t &a, bound_t &&b);
+        [[nodiscard]] static bound_t max(bound_t &&a, const bound_t &b);
 
         [[nodiscard]] static const bound_t& min(const bound_t &a, const bound_t &b);
-        [[nodiscard]] static const bound_t min(bound_t &&a, bound_t &&b);
-        [[nodiscard]] static const bound_t min(const bound_t &a, bound_t &&b);
-        [[nodiscard]] static const bound_t min(bound_t &&a, const bound_t &b);
+        [[nodiscard]] static bound_t min(bound_t &&a, bound_t &&b);
+        [[nodiscard]] static bound_t min(const bound_t &a, bound_t &&b);
+        [[nodiscard]] static bound_t min(bound_t &&a, const bound_t &b);
 
-        [[nodiscard]] const bound_t operator+(bound_t rhs) const;
-        [[nodiscard]] const bound_t operator+(val_t rhs) const;
+        [[nodiscard]] bound_t operator+(bound_t rhs) const;
+        [[nodiscard]] bound_t operator+(val_t rhs) const;
 
-        [[nodiscard]] const bound_t operator*(val_t rhs) const;
+        [[nodiscard]] bound_t operator*(val_t rhs) const;
 
         [[nodiscard]] bool operator<(bound_t rhs) const;
         [[nodiscard]] bool operator==(bound_t rhs) const;
@@ -78,14 +78,14 @@ namespace pardibaal {
 
         friend std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 
-        [[nodiscard]] inline static bool lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
-        [[nodiscard]] inline static bool le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
-        [[nodiscard]] inline static bool gt(bound_t lhs, bound_t rhs) {return lhs > rhs;}
-        [[nodiscard]] inline static bool ge(bound_t lhs, bound_t rhs) {return lhs >= rhs;}
+        [[nodiscard]] static bool lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
+        [[nodiscard]] static bool le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
+        [[nodiscard]] static bool gt(bound_t lhs, bound_t rhs) {return lhs > rhs;}
+        [[nodiscard]] static bool ge(bound_t lhs, bound_t rhs) {return lhs >= rhs;}
     };
 
-    [[nodiscard]] const bound_t operator+(val_t val, const bound_t bound);
-    [[nodiscard]] const bound_t operator*(val_t val, const bound_t bound);
+    [[nodiscard]] bound_t operator+(val_t val, bound_t bound);
+    [[nodiscard]] bound_t operator*(val_t val, bound_t bound);
     std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 }
 
