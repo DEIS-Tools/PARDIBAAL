@@ -36,10 +36,10 @@ namespace pardibaal {
          * same as the dimension of the "matrix"
          * @return number of clocks including the zero clock
          */
-        inline dim_t number_of_clocks() const {return this->_number_of_clocks;}
+        [[nodiscard]] dim_t number_of_clocks() const;
 
-        bound_t &at(dim_t i, dim_t j);
         [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
+        void set(dim_t i, dim_t j, bound_t bound);
 
         friend std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
 

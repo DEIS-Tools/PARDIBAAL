@@ -34,57 +34,58 @@ namespace pardibaal {
     enum strict_t {STRICT, NON_STRICT};
 
     struct bound_t {
+    private:
         val_t _n = 0;
         bool _strict = false,
              _inf = false;
-
+    public:
         bound_t(){};
         bound_t(val_t n, strict_t strictness);
         bound_t(val_t n, bool strict);
 
-        static bound_t strict(val_t n);
-        static bound_t non_strict(val_t n);
-        static bound_t inf();
-        static bound_t zero();
+        [[nodiscard]] static bound_t strict(val_t n);
+        [[nodiscard]] static bound_t non_strict(val_t n);
+        [[nodiscard]] static bound_t inf();
+        [[nodiscard]] static bound_t zero();
 
+        [[nodiscard]] val_t get_bound() const;
+        [[nodiscard]] bool is_strict() const;
+        [[nodiscard]] bool is_non_strict() const;
+        [[nodiscard]] bool is_inf() const;
 
-        static const bound_t& max(const bound_t &a, const bound_t &b);
-        static const bound_t max(bound_t &&a, bound_t &&b);
-        static const bound_t max(const bound_t &a, bound_t &&b);
-        static const bound_t max(bound_t &&a, const bound_t &b);
+        [[nodiscard]] static const bound_t& max(const bound_t &a, const bound_t &b);
+        [[nodiscard]] static bound_t max(bound_t &&a, bound_t &&b);
+        [[nodiscard]] static bound_t max(const bound_t &a, bound_t &&b);
+        [[nodiscard]] static bound_t max(bound_t &&a, const bound_t &b);
 
-        static const bound_t& min(const bound_t &a, const bound_t &b);
-        static const bound_t min(bound_t &&a, bound_t &&b);
-        static const bound_t min(const bound_t &a, bound_t &&b);
-        static const bound_t min(bound_t &&a, const bound_t &b);
+        [[nodiscard]] static const bound_t& min(const bound_t &a, const bound_t &b);
+        [[nodiscard]] static bound_t min(bound_t &&a, bound_t &&b);
+        [[nodiscard]] static bound_t min(const bound_t &a, bound_t &&b);
+        [[nodiscard]] static bound_t min(bound_t &&a, const bound_t &b);
 
-        const bound_t operator+(bound_t rhs) const;
-        const bound_t operator+(val_t rhs) const;
+        [[nodiscard]] bound_t operator+(bound_t rhs) const;
+        [[nodiscard]] bound_t operator+(val_t rhs) const;
 
-        const bound_t operator*(val_t rhs) const;
+        [[nodiscard]] bound_t operator*(val_t rhs) const;
 
-        bool operator<=(bound_t rhs) const;
+        [[nodiscard]] bool operator<(bound_t rhs) const;
+        [[nodiscard]] bool operator==(bound_t rhs) const;
 
-        bool operator<(bound_t rhs) const;
-
-        bool operator==(bound_t rhs) const;
-
-        bool operator!=(bound_t rhs) const;
-
-        bool operator>(bound_t rhs) const;
-
-        bool operator>=(bound_t rhs) const;
+        [[nodiscard]] bool operator!=(bound_t rhs) const;
+        [[nodiscard]] bool operator>(bound_t rhs) const;
+        [[nodiscard]] bool operator>=(bound_t rhs) const;
+        [[nodiscard]] bool operator<=(bound_t rhs) const;
 
         friend std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 
-        inline static bool lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
-        inline static bool le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
-        inline static bool gt(bound_t lhs, bound_t rhs) {return lhs > rhs;}
-        inline static bool ge(bound_t lhs, bound_t rhs) {return lhs >= rhs;}
+        [[nodiscard]] static bool lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
+        [[nodiscard]] static bool le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
+        [[nodiscard]] static bool gt(bound_t lhs, bound_t rhs) {return lhs > rhs;}
+        [[nodiscard]] static bool ge(bound_t lhs, bound_t rhs) {return lhs >= rhs;}
     };
 
-    const bound_t operator+(val_t val, const bound_t bound);
-    const bound_t operator*(val_t val, const bound_t bound);
+    [[nodiscard]] bound_t operator+(val_t val, bound_t bound);
+    [[nodiscard]] bound_t operator*(val_t val, bound_t bound);
     std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 }
 

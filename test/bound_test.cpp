@@ -28,14 +28,14 @@ using namespace pardibaal;
 
 BOOST_AUTO_TEST_CASE(inf_test_1) {
     bound_t b = bound_t::inf();
-    BOOST_CHECK(b._inf);
+    BOOST_CHECK(b.is_inf());
 }
 
 BOOST_AUTO_TEST_CASE(zero_test_1) {
     bound_t b = bound_t::zero();
-    BOOST_CHECK(!b._inf);
-    BOOST_CHECK(!b._strict);
-    BOOST_CHECK(b._n == 0);
+    BOOST_CHECK(not b.is_inf());
+    BOOST_CHECK(b.is_non_strict());
+    BOOST_CHECK(b.get_bound() == 0);
 }
 
 BOOST_AUTO_TEST_CASE(equal_test_1) {
