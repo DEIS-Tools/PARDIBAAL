@@ -31,7 +31,7 @@ namespace pardibaal {
      * different means that they are neither equal or a sub/superset of each other, or the dimensions are different.
      */
     struct relation_t {
-        bool _incomparable, _equal, _subset, _superset, _different;
+        bool _equal, _subset, _superset, _different;
         relation_t(bool equal, bool subset, bool superset, bool different) :
             _equal(equal), _subset(subset), _superset(superset), _different(different) {}
 
