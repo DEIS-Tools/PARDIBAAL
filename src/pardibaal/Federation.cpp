@@ -1,5 +1,5 @@
 /*
- * Copyright Thomas Møller Grosen 
+ * Copyright Thomas M. Grosen
  * Created on 01/04/2022
  */
 
@@ -25,9 +25,8 @@
 
 namespace pardibaal {
 
-    void Federation::compute_on_zones(void (*comp)(DBM &)) {
-        for (auto& dbm : zones)
-            comp(dbm);
+    void Federation::make_consistent() {
+        std::erase_if(zones, [](DBM& dbm){return dbm.is_empty();});
     }
 
     auto Federation::begin() const {return zones.begin();}
@@ -43,6 +42,13 @@ namespace pardibaal {
     }
 
     void Federation::add(DBM dbm) {
+#ifndef NEXCEPTIONS
+        if (!zones.empty()) {
+            if (dimension() != dbm.dimension())
+                throw base_error("ERROR: Adding dbm with dimension: ", dbm.dimension(),
+                                 " to a federation with dimension: ", dimension());
+        }
+#endif
         zones.push_back(dbm);
     }
 
@@ -55,6 +61,13 @@ namespace pardibaal {
         zones.erase(std::next(zones.begin(), index));
     }
 
+    dim_t Federation::size() const { return zones.size();}
+
+    dim_t Federation::dimension() const {
+        return zones.size() >= 1 ? zones[0].dimension() : 0;
+    }
+
+    //TODO: If the federation is always consistent, then we just have to check size() == 0
     bool Federation::is_empty() const {
         for (const auto& dbm : zones) {
             if (not dbm.is_empty())
@@ -72,6 +85,9 @@ namespace pardibaal {
     }
 
     relation_t Federation::relation(const DBM &dbm) const {
+        if (this->is_empty())
+            return dbm.is_empty() ? relation_t::equal() : relation_t::subset();
+
         bool eq = false, sub = false;
 
         for (const auto& e : zones) {
@@ -89,6 +105,9 @@ namespace pardibaal {
     }
 
     relation_t Federation::relation(const Federation &fed) const {
+        if (this->is_empty())
+            return fed.is_empty() ? relation_t::equal() : relation_t::subset();
+
         bool eq = false, sup = false;
 
             for (const auto& e : fed) {
@@ -147,6 +166,7 @@ namespace pardibaal {
 
     void Federation::restrict(dim_t x, dim_t y, bound_t g) {
         for (DBM& dbm : zones) dbm.restrict(x, y, g);
+        make_consistent();
     }
 
     void Federation::free(dim_t x) {
@@ -155,6 +175,7 @@ namespace pardibaal {
 
     void Federation::assign(dim_t x, val_t m) {
         for (DBM& dbm : zones) dbm.assign(x, m);
+        make_consistent();
     }
 
     void Federation::copy(dim_t x, dim_t y) {
@@ -163,6 +184,7 @@ namespace pardibaal {
 
     void Federation::shift(dim_t x, val_t n) {
         for (DBM& dbm : zones) dbm.shift(x, n);
+        make_consistent();
     }
 
     void Federation::extrapolate(const std::vector<val_t> &ceiling) {

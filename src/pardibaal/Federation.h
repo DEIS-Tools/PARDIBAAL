@@ -1,5 +1,5 @@
 /*
- * Copyright Thomas Møller Grosen
+ * Copyright Thomas M. Grosen
  * Created on 01/04/2022
  */
 
@@ -22,26 +22,65 @@
 #ifndef PARDIBAAL_FEDERATION_H
 #define PARDIBAAL_FEDERATION_H
 
+#include <utility>
+
+
 #include "DBM.h"
 namespace pardibaal {
 
     class Federation {
         std::vector<DBM> zones;
 
-        void compute_on_zones(void (*comp) (DBM&));
+        /**
+         * Makes the federation consistent, by deleting all empty zones.
+         * A federation is consistent if all zones are nonempty.
+         */
+        void make_consistent();
 
     public:
+        // Creates a federation with a single zone where all clocks are zero
         Federation(dim_t dimension){zones = std::vector<DBM>{DBM(dimension)};}
+
+        // Creates a federation with a given zone
+        Federation(DBM dbm) : zones{std::move(dbm)} {}
 
         auto begin() const;
         auto end() const;
 
         [[nodiscard]] const DBM& at(dim_t index) const;
+
         void add(DBM dbm);
         void remove(dim_t index);
 
+        /**
+         * Number of DBMs stored in the federation
+         *
+         * @return Number of DBMs (zones) stored in the federation
+         */
+        [[nodiscard]] dim_t size() const;
+
+        /**
+         * The dimension of the DBMs in this federation.
+         * Zero per default if the federation is empty.
+         *
+         * @return The number of clocks including the zero clock
+         */
+        [[nodiscard]] dim_t dimension() const;
+
+        /**
+         * @return true if the size is 0 or all zones are empty
+         */
         [[nodiscard]] bool is_empty() const;
+
+        /**
+         * Checks whether a specific bound is satisfied by any of the zones.
+         *
+         * @param x, y Clock indexes where the bound is applied
+         * @param g The bound (value and strictness) that is checked for
+         * @return True if any of the zones satisfy the bound
+         */
         [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
+
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
         [[nodiscard]] relation_t relation(const Federation& fed) const;
 
@@ -52,7 +91,8 @@ namespace pardibaal {
         [[nodiscard]] bool superset(const DBM& dbm) const;
         [[nodiscard]] bool superset(const Federation& fed) const;
 
-        /** Is unbounded
+        /**
+         * Checks if the any of the zones have upper bounds
          * @return true if one of the zones in the federation is unbounded
          */
         [[nodiscard]] bool is_unbounded() const;

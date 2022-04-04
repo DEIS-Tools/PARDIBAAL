@@ -22,7 +22,7 @@
 #define BOOST_TEST_MODULE DBM
 
 #include <boost/test/unit_test.hpp>
-#include <pardibaal/bound_t.h>
+#include "pardibaal/bound_t.h"
 
 using namespace pardibaal;
 
