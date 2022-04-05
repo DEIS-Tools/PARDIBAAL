@@ -54,6 +54,13 @@ namespace pardibaal {
 
         [[nodiscard]] const DBM& at(dim_t index) const;
 
+        /**
+         * Add a new dbm to the federation.
+         * Is only added if it is not already included.
+         * If the new dbm includes the federation,
+         * then all other dbms are removed.
+         * @param dbm The dbm that is added to the federation
+         */
         void add(DBM dbm);
         void remove(dim_t index);
 

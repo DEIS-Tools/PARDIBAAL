@@ -55,7 +55,11 @@ namespace pardibaal {
                                  " to a federation with dimension: ", dimension());
         }
 #endif
-        zones.push_back(dbm);
+        auto r = this->relation(dbm);
+        if (r._subset)
+            *this = Federation(dbm);
+        if (r._different)
+            zones.push_back(dbm);
     }
 
     void Federation::remove(dim_t index) {
