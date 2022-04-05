@@ -20,7 +20,12 @@
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <vector>
+#include <ostream>
+
+#include "bound_t.h"
 #include "DBM.h"
+#include "Federation.h"
 #include "errors.h"
 
 namespace pardibaal {
@@ -80,9 +85,22 @@ namespace pardibaal {
         return relation_t::different();
     }
 
-    bool DBM::equal(const DBM& dbm) const {return this->relation(dbm)._equal;}
-    bool DBM::subset(const DBM& dbm) const {return this->relation(dbm)._subset;}
-    bool DBM::superset(const DBM& dbm) const {return this->relation(dbm)._superset;}
+    relation_t DBM::relation(const Federation &fed) const {
+        auto r = fed.relation(*this);
+
+        if (r._equal) return relation_t::equal();
+        if (r._superset) return relation_t::subset();
+        if (r._subset) return relation_t::superset();
+
+        return relation_t::different();
+    }
+
+    bool DBM::equal(const DBM& dbm) const           {return this->relation(dbm)._equal;}
+    bool DBM::equal(const Federation &fed) const    {return this->relation(fed)._equal;}
+    bool DBM::subset(const DBM& dbm) const          {return this->relation(dbm)._subset;}
+    bool DBM::subset(const Federation &fed) const   {return this->relation(fed)._subset;}
+    bool DBM::superset(const DBM& dbm) const        {return this->relation(dbm)._superset;}
+    bool DBM::superset(const Federation &fed) const {return this->relation(fed)._superset;}
 
     bool DBM::is_unbounded() const {
         for (dim_t i = 1; i < dimension(); ++i)

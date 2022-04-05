@@ -23,15 +23,20 @@
 #ifndef PARDIBAAL_DBM_H
 #define PARDIBAAL_DBM_H
 
+#include <vector>
+#include <ostream>
+
+#include "bound_t.h"
 #include "bounds_table_t.h"
 
 namespace pardibaal {
+    class Federation;
     /** Relation struct
      * represents the relation between two DBMs.
      * different means that they are neither equal or a sub/superset of each other, or the dimensions are different.
      */
     struct relation_t {
-        bool _incomparable, _equal, _subset, _superset, _different;
+        bool _equal, _subset, _superset, _different;
         relation_t(bool equal, bool subset, bool superset, bool different) :
             _equal(equal), _subset(subset), _superset(superset), _different(different) {}
 
@@ -54,10 +59,14 @@ namespace pardibaal {
         [[nodiscard]] bool is_empty() const;
         [[nodiscard]] bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
+        [[nodiscard]] relation_t relation(const Federation& fed) const;
 
         [[nodiscard]] bool equal(const DBM& dbm) const;
+        [[nodiscard]] bool equal(const Federation& fed) const;
         [[nodiscard]] bool subset(const DBM& dbm) const;
+        [[nodiscard]] bool subset(const Federation& fed) const;
         [[nodiscard]] bool superset(const DBM& dbm) const;
+        [[nodiscard]] bool superset(const Federation& fed) const;
 
         /** Is bounded
          * Checks whether all upper bounds are infinite

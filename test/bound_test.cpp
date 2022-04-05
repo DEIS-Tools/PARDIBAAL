@@ -19,10 +19,11 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
-#define BOOST_TEST_MODULE DBM
+
+#define BOOST_TEST_MODULE PARDIBAAL
 
 #include <boost/test/unit_test.hpp>
-#include <pardibaal/bound_t.h>
+#include "pardibaal/bound_t.h"
 
 using namespace pardibaal;
 

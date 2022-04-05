@@ -20,11 +20,11 @@
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#define BOOST_TEST_MODULE DBM
+#define BOOST_TEST_MODULE PARDIBAAL
 
 #include <boost/test/unit_test.hpp>
-#include <pardibaal/DBM.h>
-#include "../include/errors.h"
+#include "pardibaal/DBM.h"
+#include "errors.h"
 
 using namespace pardibaal;
 
@@ -716,6 +716,16 @@ BOOST_AUTO_TEST_CASE(is_unbounded_test_1) {
     BOOST_CHECK(D.is_unbounded());
 }
 
+BOOST_AUTO_TEST_CASE(is_unbounded_test_2) {
+    DBM dbm(1);
+
+    BOOST_CHECK(dbm.is_unbounded());
+
+    dbm.future();
+
+    BOOST_CHECK(dbm.is_unbounded());
+}
+
 BOOST_AUTO_TEST_CASE(relation_test_1) {
     DBM D1(2);
     DBM D2(3);
@@ -784,4 +794,12 @@ BOOST_AUTO_TEST_CASE(relation_test_3) {
     BOOST_CHECK(!D2.relation(D1)._equal);
     BOOST_CHECK(not D2.equal(D1));
     BOOST_CHECK(not D1.equal(D2));
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_4) {
+    DBM a(1), b(1);
+
+    a.future();
+
+    BOOST_CHECK(a.equal(b));
 }

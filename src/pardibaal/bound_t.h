@@ -23,9 +23,9 @@
 #ifndef PARDIBAAL_BOUND_T_H
 #define PARDIBAAL_BOUND_T_H
 
-#include <cstdlib>
-#include <cinttypes>
 #include <ostream>
+#include <cinttypes>
+
 
 namespace pardibaal {
     using dim_t = uint32_t;

@@ -20,8 +20,12 @@
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <vector>
+#include <ostream>
 #include <iomanip>
+
 #include "bounds_table_t.h"
+#include "bound_t.h"
 #include "errors.h"
 
 namespace pardibaal {
@@ -51,6 +55,7 @@ namespace pardibaal {
     }
 
     std::ostream& operator<<(std::ostream& out, const bounds_table_t& table) {
+        out << '\n';
         for (dim_t i = 0; i < table._number_of_clocks; ++i) {
             for (dim_t j = 0; j < table._number_of_clocks; ++j) {
                 bound_t b = table.at(i, j);
