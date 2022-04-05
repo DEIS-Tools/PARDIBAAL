@@ -124,16 +124,16 @@ namespace pardibaal {
 
         bool eq = false, sup = false;
 
-            for (const auto& e : fed) {
-                auto relation = this->relation(e);
-                if (relation._subset && not relation._equal) return relation_t::subset();
+        for (const auto& dbm : fed) {
+            auto relation = this->relation(dbm);
+            if (relation._subset && not relation._equal) return relation_t::subset();
 
-                eq |= relation._equal;
-                sup &= relation._superset;
-            }
+            eq |= relation._equal;
+            sup &= relation._superset;
+        }
 
-            if (eq && sup) return relation_t::equal();
-            if (sup) return relation_t::superset();
+        if (eq && sup) return relation_t::equal();
+        if (sup) return relation_t::superset();
 
         return relation_t::different();
     }
@@ -155,7 +155,7 @@ namespace pardibaal {
     }
 
     bool Federation::superset(const DBM &dbm) const {
-        return this->relation(dbm)._subset;
+        return this->relation(dbm)._superset;
     }
 
     bool Federation::superset(const Federation &fed) const {
