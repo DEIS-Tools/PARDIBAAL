@@ -40,11 +40,14 @@ namespace pardibaal {
         void make_consistent();
 
     public:
+        // Creates an empty federation with no zones
+        Federation();
+
         // Creates a federation with a single zone where all clocks are zero
-        Federation(dim_t dimension){zones = std::vector<DBM>{DBM(dimension)};}
+        Federation(dim_t dimension);
 
         // Creates a federation with a given zone
-        Federation(DBM dbm) : zones{std::move(dbm)} {}
+        Federation(DBM dbm);
 
         auto begin() const;
         auto end() const;

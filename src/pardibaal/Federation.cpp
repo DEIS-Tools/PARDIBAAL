@@ -29,6 +29,12 @@ namespace pardibaal {
         std::erase_if(zones, [](DBM& dbm){return dbm.is_empty();});
     }
 
+    Federation::Federation() : zones() {}
+
+    Federation::Federation(dim_t dimension) : zones{DBM(dimension)} {}
+
+    Federation::Federation(DBM dbm) : zones() {this->add(std::move(dbm));}
+
     auto Federation::begin() const {return zones.begin();}
     auto Federation::end() const {return zones.end();}
 
@@ -87,6 +93,8 @@ namespace pardibaal {
     relation_t Federation::relation(const DBM &dbm) const {
         if (this->is_empty())
             return dbm.is_empty() ? relation_t::equal() : relation_t::subset();
+        if (dbm.is_empty())
+            return relation_t::superset();
 
         bool eq = false, sub = false;
 
@@ -107,6 +115,8 @@ namespace pardibaal {
     relation_t Federation::relation(const Federation &fed) const {
         if (this->is_empty())
             return fed.is_empty() ? relation_t::equal() : relation_t::subset();
+        if (fed.is_empty())
+            return relation_t::superset();
 
         bool eq = false, sup = false;
 
