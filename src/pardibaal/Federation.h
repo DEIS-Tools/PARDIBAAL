@@ -93,14 +93,72 @@ namespace pardibaal {
          */
         [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
 
+        /**
+         * Relation between this and a dbm.
+         * The relation is an under-approximation.
+         * Can possibly return different, even though it is equal/subset/superset.
+         * If it returns equal, subset, or superset it is always true.
+         * @param dbm the rhs of the relation expression.
+         * @return relation_t representing this in relation to dbm.
+         */
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
+
+        /**
+         * Relation between this and another federation.
+         * The relation is an under-approximation.
+         * If it returns different, it might actually be equal subset, or superset.
+         * If it returns equal, subset, or superset it is always true.
+         * @param fed the rhs (federation) of the relation expression.
+         * @return relation_t representing this in relation to fed.
+         */
         [[nodiscard]] relation_t relation(const Federation& fed) const;
 
+        /**
+         * Checks if this is equal to the dbm.
+         * This is an under-approximation, see Federation::relation
+         * @param dbm rhs of the equality.
+         * @return true if the dbm and federation includes the same space.
+         */
         [[nodiscard]] bool equal(const DBM& dbm) const;
+
+        /**
+         * Checks if the federations are equal.
+         * This is an under-approximation, see Federation::relation
+         * @param fed rhs of the equality.
+         * @return true if the federations includes the same space.
+         */
         [[nodiscard]] bool equal(const Federation& fed) const;
+
+        /**
+         * Checks if this is a subset of or included in the dbm.
+         * This is an under-approximation, see Federation::relation
+         * @param dbm rhs of the relation.
+         * @return true if this is included in the dbm
+         */
         [[nodiscard]] bool subset(const DBM& dbm) const;
+
+        /**
+         * Checks if this is a subset of or included in the federation.
+         * This is an under-approximation, see Federation::relation
+         * @param fed rhs of the relation.
+         * @return true if this is included in fed
+         */
         [[nodiscard]] bool subset(const Federation& fed) const;
+
+        /**
+         * Checks if this is a superset of or includes the dbm.
+         * This is an under-approximation, see Federation::relation
+         * @param dbm rhs of the relation.
+         * @return true if this includes the dbm
+         */
         [[nodiscard]] bool superset(const DBM& dbm) const;
+
+        /**
+         * Checks if this is a superset of or includes the federation.
+         * This is an under-approximation, see Federation::relation
+         * @param fed rhs of the relation.
+         * @return true if this includes fed
+         */
         [[nodiscard]] bool superset(const Federation& fed) const;
 
         /**
