@@ -234,4 +234,13 @@ namespace pardibaal {
         for (DBM& dbm : zones) dbm.reorder(order, new_size);
     }
 
+    std::ostream& operator<<(std::ostream& out, const Federation& fed) {
+        bool first = true;
+        out << "\n<<<<<<\n";
+        for (const DBM& dbm : fed) {
+            if (first) {out << dbm; first = false;}
+            else out << "&&" << dbm;
+        }
+        out << ">>>>>>\n";
+    }
 }
