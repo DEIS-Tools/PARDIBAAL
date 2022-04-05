@@ -23,6 +23,10 @@
 #ifndef PARDIBAAL_DBM_H
 #define PARDIBAAL_DBM_H
 
+#include <vector>
+#include <ostream>
+
+#include "bound_t.h"
 #include "bounds_table_t.h"
 
 namespace pardibaal {

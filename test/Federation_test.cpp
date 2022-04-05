@@ -1,8 +1,8 @@
 /*
- * Copyright Thomas Møller Grosen 
+ * Copyright Thomas M. Grosen
  * Created on 04/04/2022
  */
- 
+
 /*
  * This file is part of pardibaal
  *

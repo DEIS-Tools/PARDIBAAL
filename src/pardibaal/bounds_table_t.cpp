@@ -20,8 +20,12 @@
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <vector>
+#include <ostream>
 #include <iomanip>
+
 #include "bounds_table_t.h"
+#include "bound_t.h"
 #include "errors.h"
 
 namespace pardibaal {

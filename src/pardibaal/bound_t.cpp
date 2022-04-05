@@ -20,6 +20,8 @@
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#include <ostream>
+
 #include "bound_t.h"
 
 namespace pardibaal {

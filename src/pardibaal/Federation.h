@@ -22,10 +22,12 @@
 #ifndef PARDIBAAL_FEDERATION_H
 #define PARDIBAAL_FEDERATION_H
 
-#include <utility>
+#include <vector>
+#include <ostream>
 
-
+#include "bound_t.h"
 #include "DBM.h"
+
 namespace pardibaal {
 
     class Federation {
