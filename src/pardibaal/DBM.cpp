@@ -71,8 +71,8 @@ namespace pardibaal {
 
         for (dim_t i = 0; i < dimension(); ++i)
             for (dim_t j = 0; j < dimension(); ++j) {
-                sub &= this->at(i, j) <= dbm.at(i, j);
-                super &= this->at(i, j) >= dbm.at(i, j);
+                sub = sub && this->at(i, j) <= dbm.at(i, j);
+                super = super && this->at(i, j) >= dbm.at(i, j);
                 if (!sub && !super) return relation_t::different();
             }
 
