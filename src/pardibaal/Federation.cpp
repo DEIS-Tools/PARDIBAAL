@@ -29,11 +29,15 @@ namespace pardibaal {
         std::erase_if(zones, [](DBM& dbm){return dbm.is_empty();});
     }
 
-    Federation::Federation() : zones() {}
+    Federation::Federation() : zones{} {}
 
-    Federation::Federation(dim_t dimension) : zones{DBM(dimension)} {}
+    Federation::Federation(dim_t dimension) : zones{DBM::zero(dimension)} {}
 
-    Federation::Federation(DBM dbm) : zones() {this->add(std::move(dbm));}
+    Federation::Federation(const DBM& dbm) : zones{dbm} {}
+
+    Federation Federation::zero(dim_t dimension) {return Federation(DBM::zero(dimension));}
+
+    Federation Federation::unconstrained(dim_t dimension) {return Federation(DBM::unconstrained(dimension));}
 
     auto Federation::begin() const {return zones.begin();}
     auto Federation::end() const {return zones.end();}
@@ -47,7 +51,7 @@ namespace pardibaal {
         return zones[index];
     }
 
-    void Federation::add(DBM dbm) {
+    void Federation::add(const DBM& dbm) {
 #ifndef NEXCEPTIONS
         if (!zones.empty()) {
             if (dimension() != dbm.dimension())
@@ -100,14 +104,14 @@ namespace pardibaal {
         if (dbm.is_empty())
             return relation_t::superset();
 
-        bool eq = false, sub = false;
+        bool eq = false, sub = true;
 
         for (const auto& e : zones) {
             auto relation = e.relation(dbm);
             if (relation._superset && not relation._equal) return relation;
 
-            eq |= relation._equal;
-            sub &= relation._subset;
+            eq = eq || relation._equal;
+            sub = sub && relation._subset;
         }
 
         if (eq && sub) return relation_t::equal();
@@ -122,14 +126,14 @@ namespace pardibaal {
         if (fed.is_empty())
             return relation_t::superset();
 
-        bool eq = false, sup = false;
+        bool eq = false, sup = true;
 
         for (const auto& dbm : fed) {
             auto relation = this->relation(dbm);
             if (relation._subset && not relation._equal) return relation_t::subset();
 
-            eq |= relation._equal;
-            sup &= relation._superset;
+            eq = eq || relation._equal;
+            sup = sup && relation._superset;
         }
 
         if (eq && sup) return relation_t::equal();
@@ -165,7 +169,7 @@ namespace pardibaal {
     bool Federation::is_unbounded() const {
         bool rtn = true;
         for (const DBM& dbm : zones)
-            rtn &= dbm.is_unbounded();
+            rtn = rtn && dbm.is_unbounded();
 
         return rtn;
     }
@@ -256,5 +260,6 @@ namespace pardibaal {
             else out << "&&" << dbm;
         }
         out << ">>>>>>\n";
+        return out;
     }
 }
