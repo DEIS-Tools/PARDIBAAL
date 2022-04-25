@@ -47,7 +47,13 @@ namespace pardibaal {
         Federation(dim_t dimension);
 
         // Creates a federation with a given zone
-        Federation(DBM dbm);
+        Federation(const DBM& dbm);
+
+        // Returns a federation with single zero bounded dbm
+        static Federation zero(dim_t dimension);
+
+        // Returns a federation with a single unconstrained dbm
+        static Federation unconstrained(dim_t dimension);
 
         auto begin() const;
         auto end() const;
@@ -61,7 +67,7 @@ namespace pardibaal {
          * then all other dbms are removed.
          * @param dbm The dbm that is added to the federation
          */
-        void add(DBM dbm);
+        void add(const DBM& dbm);
         void remove(dim_t index);
 
         /**

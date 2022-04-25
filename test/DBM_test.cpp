@@ -803,3 +803,28 @@ BOOST_AUTO_TEST_CASE(relation_test_4) {
 
     BOOST_CHECK(a.equal(b));
 }
+
+BOOST_AUTO_TEST_CASE(zero_test_1) {
+    dim_t dimension = 10;
+    DBM dbm(dimension);
+    for (dim_t i = 0; i < dimension; ++i)
+        for (dim_t j = 0; j < dimension; ++j)
+            dbm.set(i, j, bound_t::non_strict(0));
+
+    BOOST_CHECK(DBM::zero(dimension).equal(dbm));
+}
+
+BOOST_AUTO_TEST_CASE(unconstrained_test_1) {
+    dim_t dimension = 10;
+    DBM dbm(dimension);
+    for (dim_t i = 0; i < dimension; ++i) {
+        for (dim_t j = 0; j < dimension; ++j) {
+            if (j == i || i == 0)
+                dbm.set(i, j, bound_t::non_strict(0));
+            else
+                dbm.set(i, j, bound_t::inf());
+        }
+    }
+
+    BOOST_CHECK(DBM::unconstrained(dimension).equal(dbm));
+}

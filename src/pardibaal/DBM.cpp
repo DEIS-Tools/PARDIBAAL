@@ -37,6 +37,16 @@ namespace pardibaal {
 
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
 
+    DBM DBM::zero(dim_t dimension) {return DBM(dimension);}
+
+    DBM DBM::unconstrained(dim_t dimension) {
+        DBM dbm(dimension);
+
+        for (dim_t i = 1; i < dimension; ++i)
+            dbm.free(i);
+        return dbm;
+    }
+
     bound_t DBM::at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
     void DBM::set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
     dim_t DBM::dimension() const {return this->_bounds_table.number_of_clocks();}

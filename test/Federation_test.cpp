@@ -162,6 +162,7 @@ BOOST_AUTO_TEST_CASE(is_unbounded_test_1){
     Federation fed(3);
     DBM dbm(3);
 
+    dbm.assign(2, 5);
     dbm.future();
 
     BOOST_CHECK(not fed.is_unbounded());
@@ -171,6 +172,19 @@ BOOST_AUTO_TEST_CASE(is_unbounded_test_1){
     BOOST_CHECK(not fed.is_unbounded());
 
     fed.remove(0);
+
+    BOOST_CHECK(fed.is_unbounded());
+}
+
+BOOST_AUTO_TEST_CASE(is_unbounded_test_2){
+    Federation fed(3);
+    DBM dbm(3);
+
+    dbm.future();
+
+    BOOST_CHECK(not fed.is_unbounded());
+
+    fed.add(dbm);
 
     BOOST_CHECK(fed.is_unbounded());
 }
@@ -207,4 +221,20 @@ BOOST_AUTO_TEST_CASE(add_clock_at_test_1){
     fed.add_clock_at(2);
 
     BOOST_CHECK(fed.dimension() == 4);
+}
+
+BOOST_AUTO_TEST_CASE(zero_test_1) {
+    dim_t dim = 10;
+    auto fed = Federation();
+    fed.add(DBM::zero(dim));
+
+    BOOST_CHECK(fed.equal(Federation::zero(dim)));
+}
+
+BOOST_AUTO_TEST_CASE(unconstrained_test_1) {
+    dim_t dim = 10;
+    auto fed = Federation();
+    fed.add(DBM::unconstrained(dim));
+
+    BOOST_CHECK(fed.equal(Federation::unconstrained(dim)));
 }

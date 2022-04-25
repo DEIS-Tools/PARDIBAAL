@@ -29,11 +29,15 @@ namespace pardibaal {
         std::erase_if(zones, [](DBM& dbm){return dbm.is_empty();});
     }
 
-    Federation::Federation() : zones() {}
+    Federation::Federation() : zones{} {}
 
-    Federation::Federation(dim_t dimension) : zones{DBM(dimension)} {}
+    Federation::Federation(dim_t dimension) : zones{DBM::zero(dimension)} {}
 
-    Federation::Federation(DBM dbm) : zones() {this->add(std::move(dbm));}
+    Federation::Federation(const DBM& dbm) : zones{dbm} {}
+
+    Federation Federation::zero(dim_t dimension) {return Federation(DBM::zero(dimension));}
+
+    Federation Federation::unconstrained(dim_t dimension) {return Federation(DBM::unconstrained(dimension));}
 
     auto Federation::begin() const {return zones.begin();}
     auto Federation::end() const {return zones.end();}
@@ -47,7 +51,7 @@ namespace pardibaal {
         return zones[index];
     }
 
-    void Federation::add(DBM dbm) {
+    void Federation::add(const DBM& dbm) {
 #ifndef NEXCEPTIONS
         if (!zones.empty()) {
             if (dimension() != dbm.dimension())
@@ -256,5 +260,6 @@ namespace pardibaal {
             else out << "&&" << dbm;
         }
         out << ">>>>>>\n";
+        return out;
     }
 }
