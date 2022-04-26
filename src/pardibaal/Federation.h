@@ -65,7 +65,7 @@ namespace pardibaal {
          * Is only added if it is not already included.
          * If the new dbm includes the federation,
          * then all other dbms are removed.
-         * @param dbm The dbm that is added to the federation
+         * @param dbm The dbm that is added to the federation.
          */
         void add(const DBM& dbm);
 
@@ -73,6 +73,18 @@ namespace pardibaal {
          * Add a federation of DBMs to this federation.
          */
         void add(const Federation& fed);
+
+        /**
+         * Subtract a dbm from this federation.
+         * @param dbm to be subtracted.
+         */
+        void subtract(const DBM& dbm);
+
+        /**
+         * Subtract a federation from this federation.
+         * @param fed The federation to be subtracted.
+         */
+        void subtract(const Federation& fed);
         void remove(dim_t index);
 
 

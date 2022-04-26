@@ -71,6 +71,33 @@ namespace pardibaal {
             this->add(dbm);
     }
 
+    void Federation::subtract(const DBM &dbm) {
+#ifndef NEXCEPTIONS
+        if (!zones.empty()) {
+            if (dimension() != dbm.dimension())
+                throw base_error("ERROR: Subtracting dbm with dimension: ", dbm.dimension(),
+                                 " from a federation with dimension: ", dimension());
+        }
+#endif
+        auto fed = Federation();
+        for (auto z : zones) {
+            for (dim_t i = 0; i < dimension(); ++i) {
+                for (dim_t j = 0; j < dimension(); ++j) {
+                    if (z.at(i, j) > dbm.at(i, j)) {
+                        z.restrict(j, i, bound_t(-dbm.at(i, j).get_bound(), dbm.at(i, j).is_non_strict()));
+                        fed.add(z);
+                    }
+                }
+            }
+        }
+        *this = fed;
+    }
+
+    void Federation::subtract(const Federation &fed) {
+        for (const auto& dbm : fed)
+            this->subtract(dbm);
+    }
+
     void Federation::remove(dim_t index) {
 #ifndef NEXCEPTIONS
         if (index >= zones.size())

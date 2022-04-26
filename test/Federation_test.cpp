@@ -70,6 +70,25 @@ BOOST_AUTO_TEST_CASE(add_test_2){
     BOOST_CHECK(fed2.size() == 1);
 }
 
+BOOST_AUTO_TEST_CASE(subtract_test_1) {
+    auto fed = Federation::unconstrained(3);
+    auto dbm = DBM::unconstrained(3);
+
+    dbm.restrict(1, 0, bound_t::strict(10));
+
+    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(11)));
+    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(10)));
+    BOOST_CHECK(fed.satisfies(1, 0, bound_t::strict(10)));
+    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(5)));
+
+    fed.subtract(dbm);
+
+    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(11)));
+    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(10)));
+    BOOST_CHECK(not fed.satisfies(1, 0, bound_t::strict(10)));
+    BOOST_CHECK(not fed.satisfies(1, 0, bound_t::non_strict(5)));
+}
+
 BOOST_AUTO_TEST_CASE(remove_test_1){
     Federation fed(3);
 
