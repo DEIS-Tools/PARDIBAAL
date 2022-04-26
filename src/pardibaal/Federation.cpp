@@ -66,6 +66,11 @@ namespace pardibaal {
             zones.push_back(dbm);
     }
 
+    void Federation::add(const Federation& fed) {
+        for (const auto& dbm : fed)
+            this->add(dbm);
+    }
+
     void Federation::remove(dim_t index) {
 #ifndef NEXCEPTIONS
         if (index >= zones.size())

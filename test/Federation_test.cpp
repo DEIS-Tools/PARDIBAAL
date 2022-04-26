@@ -32,8 +32,8 @@ using namespace pardibaal;
 BOOST_AUTO_TEST_CASE(at_test_1){
     Federation fed(3);
 
-//    BOOST_CHECK_THROW(fed.at(1), base_error);
-//    BOOST_CHECK_THROW(fed.at(-1), base_error);
+    BOOST_CHECK_THROW(fed.at(1), base_error);
+    BOOST_CHECK_THROW(fed.at(-1), base_error);
 
     BOOST_CHECK(fed.at(0).equal(DBM(3)));
 }
@@ -43,6 +43,31 @@ BOOST_AUTO_TEST_CASE(add_test_1){
     DBM dbm(3);
 
     fed.add(dbm);
+
+    BOOST_CHECK(fed.size() == 1);
+}
+
+BOOST_AUTO_TEST_CASE(add_test_2){
+    auto fed = Federation::unconstrained(3);
+    auto fed2 = Federation::zero(3);
+    auto fed3 = Federation::zero(3);
+    DBM dbm(3);
+    dbm.assign(2, 5);
+
+    fed2.add(dbm);
+
+    BOOST_CHECK(fed.size() == 1);
+    BOOST_CHECK(fed2.size() == 2);
+    BOOST_CHECK(fed3.size() == 1);
+
+    fed3.add(fed2);
+    BOOST_CHECK(fed3.size() == 2);
+
+    fed.add(fed2);
+    BOOST_CHECK(fed.size() == 1);
+
+    fed2.add(fed);
+    BOOST_CHECK(fed2.size() == 1);
 }
 
 BOOST_AUTO_TEST_CASE(remove_test_1){

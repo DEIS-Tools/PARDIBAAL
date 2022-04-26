@@ -68,7 +68,13 @@ namespace pardibaal {
          * @param dbm The dbm that is added to the federation
          */
         void add(const DBM& dbm);
+
+        /**
+         * Add a federation of DBMs to this federation.
+         */
+        void add(const Federation& fed);
         void remove(dim_t index);
+
 
         /**
          * Number of DBMs stored in the federation
