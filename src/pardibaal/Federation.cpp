@@ -85,7 +85,8 @@ namespace pardibaal {
                 for (dim_t j = 0; j < dimension(); ++j) {
                     if (z.at(i, j) > dbm.at(i, j)) {
                         z.restrict(j, i, bound_t(-dbm.at(i, j).get_bound(), dbm.at(i, j).is_non_strict()));
-                        fed.add(z);
+                        if (z.at(0, 0) >= bound_t::zero())
+                            fed.add(z);
                     }
                 }
             }
