@@ -118,7 +118,7 @@ namespace pardibaal {
             throw(base_error("ERROR: Cannot measure intersection of two dbms with different dimensions. ",
                              "Got dimensions ", dbm.dimension(), " and ", dimension()));
 #endif
-
+        if (this->is_empty()) return false;
         for (dim_t i = 0; i < dimension(); ++i) {
             for (dim_t j = 0; j < dimension(); ++j) {
                 bound_t b1 = this->at(i, j);
