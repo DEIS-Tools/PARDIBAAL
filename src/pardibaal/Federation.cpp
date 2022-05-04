@@ -262,6 +262,28 @@ namespace pardibaal {
         for (DBM& dbm : zones) dbm.extrapolate_lu_diagonal(lower, upper);
     }
 
+    void Federation::intersection(const DBM& dbm) {
+        auto fed = Federation();
+        for (auto& z : zones) {
+            z.intersection(dbm);
+            fed.add(z);
+        }
+
+        *this = fed;
+    }
+
+    void Federation::intersection(const Federation &fed) {
+        auto union_fed = Federation();
+        auto tmp_fed = Federation();
+        for (const auto& z : fed) {
+            tmp_fed = *this;
+            tmp_fed.intersection(fed);
+            union_fed.add(tmp_fed);
+        }
+
+        *this = union_fed;
+    }
+
     void Federation::remove_clock(dim_t c) {
         for (DBM& dbm : zones) dbm.remove_clock(c);
     }
