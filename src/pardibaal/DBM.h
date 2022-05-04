@@ -73,13 +73,13 @@ namespace pardibaal {
         [[nodiscard]] bool superset(const Federation& fed) const;
 
         /**
-         * Checks if two DBMs intersect ie. if the union is non-empty
+         * Checks if two DBMs intersect ie. if the intersection is non-empty
          * @return true if this intersects with dbm
          */
         [[nodiscard]] bool intersects(const DBM& dbm) const;
 
         /**
-         * Checks if a DBM intersect with a federation ie. if the union is non-empty
+         * Checks if a DBM intersect with a federation ie. if the intersection is non-empty
          * @return true if this intersects with fed
          */
         [[nodiscard]] bool intersects(const Federation& fed) const;
