@@ -354,6 +354,19 @@ namespace pardibaal {
         this->close();
     }
 
+    void DBM::intersection(const DBM &dbm) {
+#ifndef NEXCEPTIONS
+        if (dbm.dimension() != dimension())
+            throw(base_error("ERROR: Cannot take intersection of two dbms with different dimensions. ",
+                             "Got dimensions ", dbm.dimension(), " and ", dimension()));
+#endif
+        for (dim_t i = 0; i < dimension(); ++i)
+            for (dim_t j = 0; j < dimension(); ++j)
+                this->_bounds_table.set(i, j, bound_t::min(this->at(i, j), dbm.at(i, j)));
+
+        this->close();
+    }
+
     void DBM::remove_clock(dim_t c) {
 #ifndef NEXCEPTIONS
         if (c == 0)

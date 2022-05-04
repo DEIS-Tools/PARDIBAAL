@@ -704,6 +704,53 @@ BOOST_AUTO_TEST_CASE(extrapolate_lu_diagonal_test_1) {
     BOOST_CHECK(D.at(2, 2) == bound_t::non_strict(0));
 }
 
+BOOST_AUTO_TEST_CASE(intersection_test_1) {
+    auto dbm1 = DBM::zero(3);
+    auto dbm2 = DBM::zero(3);
+
+    dbm1.intersection(dbm2);
+
+    BOOST_CHECK(dbm1.equal(dbm2));
+}
+
+BOOST_AUTO_TEST_CASE(intersection_test_2) {
+    auto dbm1 = DBM::unconstrained(3);
+    auto dbm2 = DBM::zero(3);
+
+    dbm1.restrict(0, 1, bound_t::strict(-2));
+    dbm2.future();
+
+    BOOST_CHECK(dbm1.intersects(dbm2));
+
+    dbm1.intersection(dbm2);
+
+    BOOST_CHECK(dbm1.is_satisfied(0, 1, bound_t::strict(-2)));
+    BOOST_CHECK(not dbm1.is_satisfied(1, 0, bound_t::non_strict(-2)));
+    BOOST_CHECK(dbm1.is_satisfied(1, 0, bound_t::inf()));
+}
+
+BOOST_AUTO_TEST_CASE(intersection_test_3) {
+    auto dbm1 = DBM::unconstrained(3);
+    auto dbm2 = DBM::unconstrained(3);
+
+    dbm1.restrict(1, 0, bound_t::non_strict(10));
+    dbm2.restrict(0, 1, bound_t::strict(-10));
+
+    BOOST_CHECK(not dbm1.intersects(dbm2));
+
+    dbm1.intersection(dbm2);
+
+    BOOST_CHECK(dbm1.is_empty());
+    BOOST_CHECK(not dbm1.intersects(dbm2));
+    BOOST_CHECK(not dbm2.intersects(dbm1));
+
+    dbm2.intersection(dbm1);
+
+    BOOST_CHECK(dbm2.is_empty());
+    BOOST_CHECK(not dbm1.intersects(dbm2));
+    BOOST_CHECK(not dbm2.intersects(dbm1));
+}
+
 BOOST_AUTO_TEST_CASE(is_unbounded_test_1) {
     DBM D(3);
     BOOST_CHECK(!D.is_unbounded());

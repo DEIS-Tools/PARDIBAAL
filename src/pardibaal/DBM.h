@@ -128,6 +128,13 @@ namespace pardibaal {
 
         void extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
 
+        /**
+         * Sets this to the intersection between this and dbm
+         * this = this intersect dbm
+         * @param dbm intersected with
+         */
+        void intersection(const DBM& dbm);
+
         /** Remove clock at index c
         *
         * @param c index of clock to be removed
