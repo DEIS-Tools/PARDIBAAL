@@ -202,6 +202,81 @@ BOOST_AUTO_TEST_CASE(relation_test_3){
     BOOST_CHECK(fed2.subset(fed1));
 }
 
+BOOST_AUTO_TEST_CASE(intersects_test_1) {
+    auto fed = Federation::zero(3);
+    auto dbm = DBM::zero(3);
+
+    BOOST_CHECK(fed.intersects(dbm));
+    BOOST_CHECK(dbm.intersects(fed));
+
+    fed.future();
+
+    BOOST_CHECK(fed.intersects(dbm));
+    BOOST_CHECK(dbm.intersects(fed));
+
+    auto dbm2 = DBM::unconstrained(3);
+    dbm2.restrict(0, 1, bound_t::strict(-2));
+    dbm2.restrict(0, 2, bound_t::strict(-3));
+    fed.add(dbm2);
+
+    BOOST_CHECK(fed.size() == 2);
+    BOOST_CHECK(fed.intersects(dbm));
+    BOOST_CHECK(dbm.intersects(fed));
+
+    dbm.future();
+
+    BOOST_CHECK(fed.intersects(dbm));
+    BOOST_CHECK(dbm.intersects(fed));
+
+    dbm.shift(1, 1);
+
+    BOOST_CHECK(fed.intersects(dbm));
+    BOOST_CHECK(dbm.intersects(fed));
+
+    dbm.restrict(1, 0, bound_t::strict(2));
+
+    BOOST_CHECK(not fed.intersects(dbm));
+    BOOST_CHECK(not dbm.intersects(fed));
+}
+
+BOOST_AUTO_TEST_CASE(intersects_test_2) {
+    auto fed1 = Federation::zero(3);
+    auto fed2 = Federation::zero(3);
+
+    BOOST_CHECK(fed1.intersects(fed2));
+    BOOST_CHECK(fed2.intersects(fed1));
+
+    fed1.future();
+
+    BOOST_CHECK(fed1.intersects(fed2));
+    BOOST_CHECK(fed2.intersects(fed1));
+
+    auto dbm = DBM::unconstrained(3);
+    dbm.restrict(0, 1, bound_t::strict(-2));
+    dbm.restrict(0, 2, bound_t::strict(-3));
+    fed1.add(dbm);
+
+    BOOST_CHECK(fed1.size() == 2);
+    BOOST_CHECK(fed1.intersects(fed2));
+    BOOST_CHECK(fed2.intersects(fed1));
+
+    fed2.future();
+
+    BOOST_CHECK(fed1.intersects(fed2));
+    BOOST_CHECK(fed2.intersects(fed1));
+
+    fed2.shift(1, 1);
+
+    BOOST_CHECK(fed1.intersects(fed2));
+    BOOST_CHECK(fed2.intersects(fed1));
+    BOOST_CHECK(fed1.intersects(fed2.at(0)));
+
+    fed2.restrict(1, 0, bound_t::strict(2));
+
+    BOOST_CHECK(not fed1.intersects(fed2));
+    BOOST_CHECK(not fed2.intersects(fed1));
+}
+
 BOOST_AUTO_TEST_CASE(is_unbounded_test_1){
     Federation fed(3);
     DBM dbm(3);

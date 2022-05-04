@@ -185,6 +185,9 @@ namespace pardibaal {
          */
         [[nodiscard]] bool superset(const Federation& fed) const;
 
+        [[nodiscard]] bool intersects(const DBM& dbm) const;
+        [[nodiscard]] bool intersects(const Federation& fed) const;
+
         /**
          * Checks if the any of the zones have upper bounds
          * @return true if one of the zones in the federation is unbounded

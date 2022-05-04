@@ -199,6 +199,14 @@ namespace pardibaal {
         return this->relation(fed)._superset;
     }
 
+    bool Federation::intersects(const DBM &dbm) const {
+        return std::any_of(this->begin(), this->end(), [&dbm](const DBM& z){return z.intersects(dbm);});
+    }
+
+    bool Federation::intersects(const Federation& fed) const {
+        return std::any_of(fed.begin(), fed.end(), [this](const DBM& dbm){return this->intersects(dbm);});
+    }
+
     bool Federation::is_unbounded() const {
         bool rtn = true;
         for (const DBM& dbm : zones)
