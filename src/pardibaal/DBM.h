@@ -61,7 +61,7 @@ namespace pardibaal {
         [[nodiscard]] dim_t dimension() const;
 
         [[nodiscard]] bool is_empty() const;
-        [[nodiscard]] bool is_satisfied(dim_t x, dim_t y, bound_t g) const;
+        [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
         [[nodiscard]] relation_t relation(const Federation& fed) const;
 

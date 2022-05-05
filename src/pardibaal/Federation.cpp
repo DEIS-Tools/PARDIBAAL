@@ -125,7 +125,7 @@ namespace pardibaal {
 
     bool Federation::satisfies(dim_t x, dim_t y, bound_t g) const {
         for (const auto& dbm : zones) {
-            if (dbm.is_satisfied(x, y, g))
+            if (dbm.satisfies(x, y, g))
                 return true;
         }
         return false;
@@ -277,7 +277,7 @@ namespace pardibaal {
         auto tmp_fed = Federation();
         for (const auto& z : fed) {
             tmp_fed = *this;
-            tmp_fed.intersection(fed);
+            tmp_fed.intersection(z);
             union_fed.add(tmp_fed);
         }
 

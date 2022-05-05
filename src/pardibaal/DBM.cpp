@@ -69,7 +69,7 @@ namespace pardibaal {
         return false;
     }
 
-    bool DBM::is_satisfied(dim_t x, dim_t y, bound_t g) const {
+    bool DBM::satisfies(dim_t x, dim_t y, bound_t g) const {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
