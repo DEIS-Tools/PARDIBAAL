@@ -112,6 +112,36 @@ namespace pardibaal {
     bool DBM::superset(const DBM& dbm) const        {return this->relation(dbm)._superset;}
     bool DBM::superset(const Federation &fed) const {return this->relation(fed)._superset;}
 
+    bool DBM::intersects(const DBM &dbm) const {
+#ifndef NEXCEPTIONS
+        if (dbm.dimension() != dimension())
+            throw(base_error("ERROR: Cannot measure intersection of two dbms with different dimensions. ",
+                             "Got dimensions ", dbm.dimension(), " and ", dimension()));
+#endif
+        if (this->is_empty()) return false;
+        for (dim_t i = 0; i < dimension(); ++i) {
+            for (dim_t j = 0; j < dimension(); ++j) {
+                bound_t b1 = this->at(i, j);
+                bound_t b2 = dbm.at(j, i);
+
+                // For opposite diagonal bounds: if they are both + or -, then they overlap
+                // Upper bounds can be inf; if upper bound is inf, then it overlaps with any opposite lower bound
+                if ((b1 > bound_t::zero() && b2 > bound_t::zero()) ||
+                    (b1 < bound_t::zero() && b2 < bound_t::zero()) ||
+                    (b1.is_inf() || b2.is_inf()))
+                    continue;
+                else if (((b1.is_strict() || b2.is_strict()) && (not (b1 * -1 < b2))) || (not (b1 * -1 <= b2)))
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool DBM::intersects(const Federation& fed) const {
+        return fed.intersects(*this);
+    }
+
     bool DBM::is_unbounded() const {
         for (dim_t i = 1; i < dimension(); ++i)
             if (not this->at(i, 0).is_inf())

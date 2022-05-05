@@ -72,6 +72,18 @@ namespace pardibaal {
         [[nodiscard]] bool superset(const DBM& dbm) const;
         [[nodiscard]] bool superset(const Federation& fed) const;
 
+        /**
+         * Checks if two DBMs intersect ie. if the intersection is non-empty
+         * @return true if this intersects with dbm
+         */
+        [[nodiscard]] bool intersects(const DBM& dbm) const;
+
+        /**
+         * Checks if a DBM intersect with a federation ie. if the intersection is non-empty
+         * @return true if this intersects with fed
+         */
+        [[nodiscard]] bool intersects(const Federation& fed) const;
+
         /** Is bounded
          * Checks whether all upper bounds are infinite
          * @return true if the DBM is unbounded (has no upper bound)

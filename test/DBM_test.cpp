@@ -292,9 +292,9 @@ BOOST_AUTO_TEST_CASE(add_clock_test_1) {
     D.set(3, 0, bound_t::inf());
     D.set(1, 2, bound_t::inf());
     D.set(3, 2, bound_t::inf());
-    std::cout << D << std::endl;
+
     D.add_clock_at(3);
-    std::cout << D << std::endl;
+
     BOOST_CHECK(D.dimension() == 5);
 
     BOOST_CHECK(D.at(1, 0) == bound_t::inf());
@@ -482,9 +482,7 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_1) {
 
     std::vector<val_t> max {0, 1, 7};
 
-    std::cout << D << "\n";
     D.extrapolate_diagonal(max);
-    std::cout << D << "\n";
 
     BOOST_CHECK(D.at(0, 0) == bound_t::non_strict(0));
     BOOST_CHECK(D.at(0, 1) == bound_t::strict(-1));
@@ -503,9 +501,7 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_2) {
     D.set(2, 0, bound_t::inf());
     std::vector<val_t> ceiling = {0, -1073741823, -1073741823};
 
-    std::cout << D;
     D.extrapolate_diagonal(ceiling);
-    std::cout << D;
 
     BOOST_CHECK(!D.is_empty());
     BOOST_CHECK(D.at(0, 0) == bound_t::zero());
@@ -802,6 +798,52 @@ BOOST_AUTO_TEST_CASE(relation_test_4) {
     a.future();
 
     BOOST_CHECK(a.equal(b));
+}
+
+BOOST_AUTO_TEST_CASE(intersects_test_1) {
+    DBM dbm1(3);
+    DBM dbm2(3);
+
+    BOOST_CHECK(dbm1.intersects(dbm2));
+    BOOST_CHECK(dbm2.intersects(dbm1));
+    dbm1.future();
+
+    BOOST_CHECK(dbm1.intersects(dbm2));
+    BOOST_CHECK(dbm2.intersects(dbm1));
+
+    dbm1.free(1);
+    dbm1.free(2);
+
+    BOOST_CHECK(dbm1.intersects(dbm2));
+    BOOST_CHECK(dbm2.intersects(dbm1));
+
+    dbm1.restrict(0, 1, bound_t::strict(-2));
+    dbm1.restrict(0, 2, bound_t::strict(-3));
+
+    BOOST_CHECK(not dbm1.intersects(dbm2));
+    BOOST_CHECK(not dbm2.intersects(dbm1));
+}
+
+BOOST_AUTO_TEST_CASE(intersects_test_2) {
+    DBM dbm1(3);
+    DBM dbm2(3);
+
+    dbm1.future();
+    dbm2.restrict(0, 1, bound_t::strict(-1));
+
+    BOOST_CHECK(not dbm1.intersects(dbm2));
+    BOOST_CHECK(not dbm2.intersects(dbm1));
+}
+
+BOOST_AUTO_TEST_CASE(intersects_test_3) {
+    auto dbm1 = DBM::unconstrained(3);
+    auto dbm2 = DBM::unconstrained(3);
+
+    dbm1.restrict(1, 0, bound_t::strict(1));
+    dbm2.restrict(0, 1, bound_t::strict(-1));
+    
+    BOOST_CHECK(not dbm1.intersects(dbm2));
+    BOOST_CHECK(not dbm2.intersects(dbm1));
 }
 
 BOOST_AUTO_TEST_CASE(zero_test_1) {
