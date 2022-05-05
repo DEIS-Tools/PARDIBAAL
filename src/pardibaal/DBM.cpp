@@ -130,7 +130,8 @@ namespace pardibaal {
                     (b1 < bound_t::zero() && b2 < bound_t::zero()) ||
                     (b1.is_inf() || b2.is_inf()))
                     continue;
-                else if (not (b1 * -1 <= b2)) return false;
+                else if (((b1.is_strict() || b2.is_strict()) && (not (b1 * -1 < b2))) || (not (b1 * -1 <= b2)))
+                    return false;
             }
         }
 

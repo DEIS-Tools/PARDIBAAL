@@ -835,6 +835,17 @@ BOOST_AUTO_TEST_CASE(intersects_test_2) {
     BOOST_CHECK(not dbm2.intersects(dbm1));
 }
 
+BOOST_AUTO_TEST_CASE(intersects_test_3) {
+    auto dbm1 = DBM::unconstrained(3);
+    auto dbm2 = DBM::unconstrained(3);
+
+    dbm1.restrict(1, 0, bound_t::strict(1));
+    dbm2.restrict(0, 1, bound_t::strict(-1));
+    
+    BOOST_CHECK(not dbm1.intersects(dbm2));
+    BOOST_CHECK(not dbm2.intersects(dbm1));
+}
+
 BOOST_AUTO_TEST_CASE(zero_test_1) {
     dim_t dimension = 10;
     DBM dbm(dimension);
