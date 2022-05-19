@@ -269,7 +269,7 @@ namespace pardibaal {
             fed.add(z);
         }
 
-        *this = fed;
+        *this = std::move(fed);
     }
 
     void Federation::intersection(const Federation &fed) {
@@ -281,7 +281,7 @@ namespace pardibaal {
             union_fed.add(tmp_fed);
         }
 
-        *this = union_fed;
+        *this = std::move(union_fed);
     }
 
     void Federation::remove_clock(dim_t c) {
