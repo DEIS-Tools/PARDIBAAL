@@ -176,12 +176,12 @@ BOOST_AUTO_TEST_CASE(trace_test_1) {
     BOOST_CHECK(D.at(0, z) == bound_t::zero());
 
     // To goal
-    BOOST_CHECK(D.is_satisfied(x, 0, bound_t::non_strict(2)));
-    BOOST_CHECK(D.is_satisfied(0, x, bound_t::non_strict(-2)));
-    BOOST_CHECK(D.is_satisfied(y, 0, bound_t::non_strict(4)));
-    BOOST_CHECK(D.is_satisfied(0, y, bound_t::non_strict(-4)));
-    BOOST_CHECK(D.is_satisfied(z, 0, bound_t::non_strict(3)));
-    BOOST_CHECK(D.is_satisfied(0, z, bound_t::non_strict(-3)));
+    BOOST_CHECK(D.satisfies(x, 0, bound_t::non_strict(2)));
+    BOOST_CHECK(D.satisfies(0, x, bound_t::non_strict(-2)));
+    BOOST_CHECK(D.satisfies(y, 0, bound_t::non_strict(4)));
+    BOOST_CHECK(D.satisfies(0, y, bound_t::non_strict(-4)));
+    BOOST_CHECK(D.satisfies(z, 0, bound_t::non_strict(3)));
+    BOOST_CHECK(D.satisfies(0, z, bound_t::non_strict(-3)));
 
     D.restrict(x, 0, bound_t::non_strict(2));
     D.restrict(0, x, bound_t::non_strict(-2));
@@ -341,17 +341,17 @@ BOOST_AUTO_TEST_CASE(resize_test_1) {
     std::vector<dim_t> indir = D.resize(src, dst);
 
 
-    BOOST_CHECK(D.is_satisfied(1, 0, bound_t::zero()));
-    BOOST_CHECK(D.is_satisfied(0, 1, bound_t::zero()));
+    BOOST_CHECK(D.satisfies(1, 0, bound_t::zero()));
+    BOOST_CHECK(D.satisfies(0, 1, bound_t::zero()));
 
-    BOOST_CHECK(D.is_satisfied(2, 0, bound_t::non_strict(1)));
-    BOOST_CHECK(D.is_satisfied(0, 2, bound_t::non_strict(1)));
+    BOOST_CHECK(D.satisfies(2, 0, bound_t::non_strict(1)));
+    BOOST_CHECK(D.satisfies(0, 2, bound_t::non_strict(1)));
 
-    BOOST_CHECK(D.is_satisfied(3, 0, bound_t::inf()));
-    BOOST_CHECK(D.is_satisfied(0, 3, bound_t::zero()));
+    BOOST_CHECK(D.satisfies(3, 0, bound_t::inf()));
+    BOOST_CHECK(D.satisfies(0, 3, bound_t::zero()));
 
-    BOOST_CHECK(D.is_satisfied(4, 0, bound_t::non_strict(4)));
-    BOOST_CHECK(D.is_satisfied(0, 4, bound_t::non_strict(4)));
+    BOOST_CHECK(D.satisfies(4, 0, bound_t::non_strict(4)));
+    BOOST_CHECK(D.satisfies(0, 4, bound_t::non_strict(4)));
 }
 
 BOOST_AUTO_TEST_CASE(resize_test_2) {
@@ -379,14 +379,14 @@ BOOST_AUTO_TEST_CASE(reorder_test_1) {
 
     BOOST_CHECK(D.dimension() == 4);
 
-    BOOST_CHECK(D.is_satisfied(1, 0, bound_t::non_strict(3)));
-    BOOST_CHECK(D.is_satisfied(0, 1, bound_t::non_strict(3)));
+    BOOST_CHECK(D.satisfies(1, 0, bound_t::non_strict(3)));
+    BOOST_CHECK(D.satisfies(0, 1, bound_t::non_strict(3)));
 
-    BOOST_CHECK(D.is_satisfied(2, 0, bound_t::zero()));
-    BOOST_CHECK(D.is_satisfied(0, 2, bound_t::zero()));
+    BOOST_CHECK(D.satisfies(2, 0, bound_t::zero()));
+    BOOST_CHECK(D.satisfies(0, 2, bound_t::zero()));
 
-    BOOST_CHECK(D.is_satisfied(3, 0, bound_t::inf()));
-    BOOST_CHECK(D.is_satisfied(0, 3, bound_t::zero()));
+    BOOST_CHECK(D.satisfies(3, 0, bound_t::inf()));
+    BOOST_CHECK(D.satisfies(0, 3, bound_t::zero()));
 }
 
 BOOST_AUTO_TEST_CASE(reorder_test_2) {

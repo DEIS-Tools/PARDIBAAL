@@ -69,8 +69,12 @@ namespace pardibaal {
         return false;
     }
 
-    bool DBM::is_satisfied(dim_t x, dim_t y, bound_t g) const {
+    bool DBM::satisfies(dim_t x, dim_t y, bound_t g) const {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
+    }
+
+    bool DBM::satisfies(clock_constraint_t constraint) const {
+        return satisfies(constraint._i, constraint._j, constraint._bound);
     }
 
     relation_t DBM::relation(const DBM &dbm) const {
@@ -192,6 +196,10 @@ namespace pardibaal {
             }
         }
 
+    }
+
+    void DBM::restrict(clock_constraint_t constraint) {
+        restrict(constraint._i, constraint._j, constraint._bound);
     }
 
     void DBM::free(dim_t x) {

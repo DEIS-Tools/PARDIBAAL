@@ -25,6 +25,7 @@
 #include <vector>
 #include <ostream>
 
+#include "clock_constraint_t.h"
 #include "bound_t.h"
 #include "DBM.h"
 
@@ -117,6 +118,8 @@ namespace pardibaal {
          */
         [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
 
+        [[nodiscard]] bool satisfies(clock_constraint_t constraint) const;
+
         /**
          * Relation between this and a dbm.
          * The relation is an under-approximation.
@@ -206,6 +209,7 @@ namespace pardibaal {
         void future();
         void past();
         void restrict(dim_t x, dim_t y, bound_t g);
+        void restrict(clock_constraint_t constraint);
         void free(dim_t x);
         void assign(dim_t x, val_t m);
         void copy(dim_t x, dim_t y);

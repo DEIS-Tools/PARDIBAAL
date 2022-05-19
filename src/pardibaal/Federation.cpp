@@ -125,10 +125,14 @@ namespace pardibaal {
 
     bool Federation::satisfies(dim_t x, dim_t y, bound_t g) const {
         for (const auto& dbm : zones) {
-            if (dbm.is_satisfied(x, y, g))
+            if (dbm.satisfies(x, y, g))
                 return true;
         }
         return false;
+    }
+
+    bool Federation::satisfies(clock_constraint_t constraint) const {
+        satisfies(constraint._i, constraint._j, constraint._bound);
     }
 
     relation_t Federation::relation(const DBM &dbm) const {
@@ -226,6 +230,10 @@ namespace pardibaal {
     void Federation::restrict(dim_t x, dim_t y, bound_t g) {
         for (DBM& dbm : zones) dbm.restrict(x, y, g);
         make_consistent();
+    }
+
+    void Federation::restrict(clock_constraint_t constraint) {
+        restrict(constraint._i, constraint._j, constraint._bound);
     }
 
     void Federation::free(dim_t x) {
