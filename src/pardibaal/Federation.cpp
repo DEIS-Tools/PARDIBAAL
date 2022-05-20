@@ -23,6 +23,8 @@
 #include "Federation.h"
 #include "errors.h"
 
+#include <algorithm>
+
 namespace pardibaal {
 
     void Federation::make_consistent() {
