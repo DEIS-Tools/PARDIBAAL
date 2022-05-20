@@ -216,6 +216,9 @@ namespace pardibaal {
         void extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
         void extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
 
+        void intersection(const DBM& dbm);
+        void intersection(const Federation& fed);
+
         void remove_clock(dim_t c);
         void swap_clocks(dim_t a, dim_t b);
         void add_clock_at(dim_t c);

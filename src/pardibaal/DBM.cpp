@@ -69,7 +69,7 @@ namespace pardibaal {
         return false;
     }
 
-    bool DBM::is_satisfied(dim_t x, dim_t y, bound_t g) const {
+    bool DBM::satisfies(dim_t x, dim_t y, bound_t g) const {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
@@ -352,6 +352,19 @@ namespace pardibaal {
         }
 
         //TODO: Do something smart where we only close if something changes
+        this->close();
+    }
+
+    void DBM::intersection(const DBM &dbm) {
+#ifndef NEXCEPTIONS
+        if (dbm.dimension() != dimension())
+            throw(base_error("ERROR: Cannot take intersection of two dbms with different dimensions. ",
+                             "Got dimensions ", dbm.dimension(), " and ", dimension()));
+#endif
+        for (dim_t i = 0; i < dimension(); ++i)
+            for (dim_t j = 0; j < dimension(); ++j)
+                this->_bounds_table.set(i, j, bound_t::min(this->at(i, j), dbm.at(i, j)));
+
         this->close();
     }
 

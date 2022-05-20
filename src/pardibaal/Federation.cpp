@@ -125,7 +125,7 @@ namespace pardibaal {
 
     bool Federation::satisfies(dim_t x, dim_t y, bound_t g) const {
         for (const auto& dbm : zones) {
-            if (dbm.is_satisfied(x, y, g))
+            if (dbm.satisfies(x, y, g))
                 return true;
         }
         return false;
@@ -260,6 +260,28 @@ namespace pardibaal {
 
     void Federation::extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
         for (DBM& dbm : zones) dbm.extrapolate_lu_diagonal(lower, upper);
+    }
+
+    void Federation::intersection(const DBM& dbm) {
+        auto fed = Federation();
+        for (auto& z : zones) {
+            z.intersection(dbm);
+            fed.add(z);
+        }
+
+        *this = std::move(fed);
+    }
+
+    void Federation::intersection(const Federation &fed) {
+        auto union_fed = Federation();
+        auto tmp_fed = Federation();
+        for (const auto& z : fed) {
+            tmp_fed = *this;
+            tmp_fed.intersection(z);
+            union_fed.add(tmp_fed);
+        }
+
+        *this = std::move(union_fed);
     }
 
     void Federation::remove_clock(dim_t c) {
