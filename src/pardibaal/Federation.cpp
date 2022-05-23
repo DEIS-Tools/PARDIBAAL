@@ -23,6 +23,8 @@
 #include "Federation.h"
 #include "errors.h"
 
+#include <algorithm>
+
 namespace pardibaal {
 
     void Federation::make_consistent() {
@@ -39,8 +41,8 @@ namespace pardibaal {
 
     Federation Federation::unconstrained(dim_t dimension) {return Federation(DBM::unconstrained(dimension));}
 
-    auto Federation::begin() const {return zones.begin();}
-    auto Federation::end() const {return zones.end();}
+    Federation::zone_vector::const_iterator Federation::begin() const {return zones.begin();}
+    Federation::zone_vector::const_iterator Federation::end() const {return zones.end();}
 
     const DBM& Federation::at(dim_t index) const {
 #ifndef NEXCEPTIONS

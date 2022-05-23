@@ -31,7 +31,10 @@
 namespace pardibaal {
 
     class Federation {
-        std::vector<DBM> zones;
+
+        using zone_vector = std::vector<DBM>;
+
+        zone_vector zones;
 
         /**
          * Makes the federation consistent, by deleting all empty zones.
@@ -55,8 +58,8 @@ namespace pardibaal {
         // Returns a federation with a single unconstrained dbm
         static Federation unconstrained(dim_t dimension);
 
-        auto begin() const;
-        auto end() const;
+        zone_vector::const_iterator begin() const;
+        zone_vector::const_iterator end() const;
 
         [[nodiscard]] const DBM& at(dim_t index) const;
 
@@ -225,6 +228,14 @@ namespace pardibaal {
 
         std::vector<dim_t> resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits);
         void reorder(std::vector<dim_t> order, dim_t new_size);
+
+        const DBM& operator[](size_t i) const {
+#ifndef NDEBUG
+            return zones.at(i);
+#else
+            return zones[i];
+#endif
+        }
 
         friend std::ostream& operator<<(std::ostream& out, const Federation& fed);
     };

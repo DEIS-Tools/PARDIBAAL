@@ -20,13 +20,14 @@
  * along with PARDIBAAL.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <vector>
-#include <ostream>
-
 #include "bound_t.h"
 #include "DBM.h"
 #include "Federation.h"
 #include "errors.h"
+
+#include <vector>
+#include <ostream>
+#include <algorithm>
 
 namespace pardibaal {
 
