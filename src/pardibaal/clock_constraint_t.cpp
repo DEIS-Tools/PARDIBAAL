@@ -43,4 +43,14 @@ namespace pardibaal {
     clock_constraint_t clock_constraint_t::lower_non_strict(dim_t x, val_t n) {
         return clock_constraint_t(0, x, bound_t::non_strict(-n));
     }
+
+    std::ostream& operator<<(std::ostream& out, const clock_constraint_t& constraint) {
+        out << '[' << constraint._i << "] - [" << constraint._j << "] ";
+        if (constraint._bound.is_inf())
+            out << "INF";
+        else
+            out << (constraint._bound.is_strict() ? "< " : "<= ") << constraint._bound.get_bound();
+
+        return out;
+    }
 }

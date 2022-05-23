@@ -39,7 +39,11 @@ namespace pardibaal {
         static clock_constraint_t upper_non_strict(dim_t x, val_t n);
         static clock_constraint_t lower_strict(dim_t x, val_t n);
         static clock_constraint_t lower_non_strict(dim_t x, val_t n);
+
+        friend std::ostream& operator<<(std::ostream& out, const clock_constraint_t& constraint);
     };
+
+    std::ostream& operator<<(std::ostream& out, const clock_constraint_t& constraint);
 }
 
 
