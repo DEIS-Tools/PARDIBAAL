@@ -62,8 +62,10 @@ namespace pardibaal {
         [[nodiscard]] dim_t dimension() const;
 
         [[nodiscard]] bool is_empty() const;
+
         [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
         [[nodiscard]] bool satisfies(clock_constraint_t constraint) const;
+
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
         [[nodiscard]] relation_t relation(const Federation& fed) const;
 
@@ -130,6 +132,13 @@ namespace pardibaal {
         void extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
 
         void extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
+
+        /**
+         * Sets this to the intersection between this and dbm
+         * this = this intersect dbm
+         * @param dbm intersected with
+         */
+        void intersection(const DBM& dbm);
 
         /** Remove clock at index c
         *

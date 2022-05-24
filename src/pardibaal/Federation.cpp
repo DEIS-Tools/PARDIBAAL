@@ -23,6 +23,8 @@
 #include "Federation.h"
 #include "errors.h"
 
+#include <algorithm>
+
 namespace pardibaal {
 
     void Federation::make_consistent() {
@@ -39,8 +41,8 @@ namespace pardibaal {
 
     Federation Federation::unconstrained(dim_t dimension) {return Federation(DBM::unconstrained(dimension));}
 
-    auto Federation::begin() const {return zones.begin();}
-    auto Federation::end() const {return zones.end();}
+    Federation::zone_vector::const_iterator Federation::begin() const {return zones.begin();}
+    Federation::zone_vector::const_iterator Federation::end() const {return zones.end();}
 
     const DBM& Federation::at(dim_t index) const {
 #ifndef NEXCEPTIONS
@@ -268,6 +270,28 @@ namespace pardibaal {
 
     void Federation::extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
         for (DBM& dbm : zones) dbm.extrapolate_lu_diagonal(lower, upper);
+    }
+
+    void Federation::intersection(const DBM& dbm) {
+        auto fed = Federation();
+        for (auto& z : zones) {
+            z.intersection(dbm);
+            fed.add(z);
+        }
+
+        *this = std::move(fed);
+    }
+
+    void Federation::intersection(const Federation &fed) {
+        auto union_fed = Federation();
+        auto tmp_fed = Federation();
+        for (const auto& z : fed) {
+            tmp_fed = *this;
+            tmp_fed.intersection(z);
+            union_fed.add(tmp_fed);
+        }
+
+        *this = std::move(union_fed);
     }
 
     void Federation::remove_clock(dim_t c) {

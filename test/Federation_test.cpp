@@ -29,7 +29,7 @@
 using namespace pardibaal;
 
 
-BOOST_AUTO_TEST_CASE(at_test_1){
+BOOST_AUTO_TEST_CASE(at_test_1) {
     Federation fed(3);
 
     BOOST_CHECK_THROW(fed.at(1), base_error);
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(at_test_1){
     BOOST_CHECK(fed.at(0).equal(DBM(3)));
 }
 
-BOOST_AUTO_TEST_CASE(add_test_1){
+BOOST_AUTO_TEST_CASE(add_test_1) {
     Federation fed(3);
     DBM dbm(3);
 
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(add_test_1){
     BOOST_CHECK(fed.size() == 1);
 }
 
-BOOST_AUTO_TEST_CASE(add_test_2){
+BOOST_AUTO_TEST_CASE(add_test_2) {
     auto fed = Federation::unconstrained(3);
     auto fed2 = Federation::zero(3);
     auto fed3 = Federation::zero(3);
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(subtract_test_1) {
     BOOST_CHECK(not fed.satisfies(1, 0, bound_t::non_strict(5)));
 }
 
-BOOST_AUTO_TEST_CASE(remove_test_1){
+BOOST_AUTO_TEST_CASE(remove_test_1) {
     Federation fed(3);
 
     BOOST_CHECK(fed.size() == 1);
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(remove_test_1){
     BOOST_CHECK(fed.is_empty());
 }
 
-BOOST_AUTO_TEST_CASE(is_empty_test_1){
+BOOST_AUTO_TEST_CASE(is_empty_test_1) {
     auto empty_fed = Federation();
     Federation fed(10);
 
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(is_empty_test_1){
     BOOST_CHECK(not fed.is_empty());
 }
 
-BOOST_AUTO_TEST_CASE(satisfies_test_1){
+BOOST_AUTO_TEST_CASE(satisfies_test_1) {
     Federation fed(3);
     DBM dbm(3);
 
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(satisfies_test_1){
 
 }
 
-BOOST_AUTO_TEST_CASE(relation_test_1){
+BOOST_AUTO_TEST_CASE(relation_test_1) {
     Federation fed(3);
     DBM dbm(3);
 
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(relation_test_1){
     BOOST_CHECK(dbm.subset(fed));
 }
 
-BOOST_AUTO_TEST_CASE(relation_test_2){
+BOOST_AUTO_TEST_CASE(relation_test_2) {
     DBM dbm(3);
     auto fed = Federation();
 
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(relation_test_2){
     BOOST_CHECK(not dbm.subset(fed));
 }
 
-BOOST_AUTO_TEST_CASE(relation_test_3){
+BOOST_AUTO_TEST_CASE(relation_test_3) {
     Federation fed1(3);
     auto fed2 = Federation();
 
@@ -277,7 +277,7 @@ BOOST_AUTO_TEST_CASE(intersects_test_2) {
     BOOST_CHECK(not fed2.intersects(fed1));
 }
 
-BOOST_AUTO_TEST_CASE(is_unbounded_test_1){
+BOOST_AUTO_TEST_CASE(is_unbounded_test_1) {
     Federation fed(3);
     DBM dbm(3);
 
@@ -295,7 +295,7 @@ BOOST_AUTO_TEST_CASE(is_unbounded_test_1){
     BOOST_CHECK(fed.is_unbounded());
 }
 
-BOOST_AUTO_TEST_CASE(is_unbounded_test_2){
+BOOST_AUTO_TEST_CASE(is_unbounded_test_2) {
     Federation fed(3);
     DBM dbm(3);
 
@@ -308,7 +308,7 @@ BOOST_AUTO_TEST_CASE(is_unbounded_test_2){
     BOOST_CHECK(fed.is_unbounded());
 }
 
-BOOST_AUTO_TEST_CASE(restrict_test_1){
+BOOST_AUTO_TEST_CASE(restrict_test_1) {
     Federation fed(3);
     fed.future();
     fed.restrict(0, 1, bound_t::strict(-5));
@@ -322,7 +322,108 @@ BOOST_AUTO_TEST_CASE(restrict_test_1){
     BOOST_CHECK(fed.size() == 1);
 }
 
-BOOST_AUTO_TEST_CASE(remove_clock_test_1){
+BOOST_AUTO_TEST_CASE(intersection_test_1) {
+    auto fed = Federation::unconstrained(3);
+    auto dbm = DBM::zero(3);
+
+    fed.intersection(dbm);
+
+    BOOST_CHECK(fed.equal(dbm));
+}
+
+BOOST_AUTO_TEST_CASE(intersection_test_2) {
+    auto fed = Federation::unconstrained(3);
+    auto dbm = DBM::zero(3);
+
+    dbm.restrict(0, 1, bound_t::strict(-1));
+    fed.intersection(dbm);
+
+    BOOST_CHECK(fed.equal(dbm));
+    BOOST_CHECK(fed.is_empty());
+}
+
+BOOST_AUTO_TEST_CASE(intersection_test_3) {
+    auto fed = Federation::unconstrained(3);
+    auto dbm1 = DBM::unconstrained(3);
+    auto dbm2 = DBM::unconstrained(3);
+
+    dbm1.restrict(0, 1, bound_t::strict(-2));
+    fed.restrict(1, 0, bound_t::strict(1));
+    fed.add(dbm1);
+
+    dbm2.restrict(2, 0, bound_t::strict(1));
+
+    BOOST_CHECK(fed.satisfies(0, 2, bound_t::non_strict(-1)));
+
+    fed.intersection(dbm2);
+
+    BOOST_CHECK(not fed.equal(dbm2));
+    BOOST_CHECK(not fed.is_empty());
+    BOOST_CHECK(fed.size() == 2);
+    BOOST_CHECK(fed.satisfies(1, 0, bound_t::strict(2)));
+    BOOST_CHECK(fed.satisfies(0, 1, bound_t::strict(-2)));
+    BOOST_CHECK(not fed.satisfies(0, 2, bound_t::non_strict(-1)));
+    BOOST_CHECK(fed.satisfies(2, 0, bound_t::non_strict(1)));
+}
+
+BOOST_AUTO_TEST_CASE(intersection_test_4) {
+    auto fed = Federation::unconstrained(3);
+    auto dbm1 = DBM::unconstrained(3);
+    auto dbm2 = DBM::unconstrained(3);
+
+    dbm1.restrict(0, 1, bound_t::strict(-2));
+    fed.restrict(1, 0, bound_t::strict(1));
+    fed.add(dbm1);
+
+    dbm2.restrict(1, 0, bound_t::strict(2));
+    dbm2.restrict(0, 1, bound_t::strict(-1));
+
+    fed.intersection(dbm2);
+
+    BOOST_CHECK(fed.is_empty());
+    BOOST_CHECK(fed.size() <= 1);
+}
+
+BOOST_AUTO_TEST_CASE(intersection_test_5) {
+    auto fed1 = Federation::unconstrained(3);
+    auto fed2 = Federation::unconstrained(3);
+
+    fed1.restrict(1, 0, bound_t::strict(1));
+    fed2.restrict(0, 1, bound_t::strict(-1));
+
+    BOOST_CHECK(not fed1.intersects(fed2));
+    BOOST_CHECK(not fed1.is_empty());
+
+    fed1.intersection(fed2);
+
+    BOOST_CHECK(fed1.is_empty());
+}
+
+BOOST_AUTO_TEST_CASE(intersection_test_6) {
+    auto fed1 = Federation::unconstrained(3);
+    auto fed2 = Federation::unconstrained(3);
+    auto dbm = DBM::unconstrained(3);
+
+    dbm.restrict(0, 1, bound_t::strict(-2));
+    fed1.restrict(1, 0, bound_t::strict(1));
+    fed1.add(dbm);
+
+    fed2.restrict(0, 1, bound_t::strict(-1));
+
+    BOOST_CHECK(fed1.intersects(fed2));
+    BOOST_CHECK(not fed1.is_empty());
+    BOOST_CHECK(fed1.satisfies(1, 0, bound_t::non_strict(2)));
+    BOOST_CHECK(fed1.satisfies(1, 0, bound_t::strict(3)));
+
+    fed1.intersection(fed2);
+
+    BOOST_CHECK(not fed1.is_empty());
+    BOOST_CHECK(fed1.size() == 1);
+    BOOST_CHECK(not fed1.satisfies(1, 0, bound_t::non_strict(2)));
+    BOOST_CHECK(fed1.satisfies(1, 0, bound_t::strict(3)));
+}
+
+BOOST_AUTO_TEST_CASE(remove_clock_test_1) {
     Federation fed(3);
 
     BOOST_CHECK(fed.dimension() == 3);
@@ -332,7 +433,7 @@ BOOST_AUTO_TEST_CASE(remove_clock_test_1){
     BOOST_CHECK(fed.dimension() == 2);
 }
 
-BOOST_AUTO_TEST_CASE(add_clock_at_test_1){
+BOOST_AUTO_TEST_CASE(add_clock_at_test_1) {
     Federation fed(3);
 
     BOOST_CHECK(fed.dimension() == 3);

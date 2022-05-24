@@ -32,7 +32,10 @@
 namespace pardibaal {
 
     class Federation {
-        std::vector<DBM> zones;
+
+        using zone_vector = std::vector<DBM>;
+
+        zone_vector zones;
 
         /**
          * Makes the federation consistent, by deleting all empty zones.
@@ -56,8 +59,8 @@ namespace pardibaal {
         // Returns a federation with a single unconstrained dbm
         static Federation unconstrained(dim_t dimension);
 
-        auto begin() const;
-        auto end() const;
+        zone_vector::const_iterator begin() const;
+        zone_vector::const_iterator end() const;
 
         [[nodiscard]] const DBM& at(dim_t index) const;
 
@@ -220,12 +223,23 @@ namespace pardibaal {
         void extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
         void extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
 
+        void intersection(const DBM& dbm);
+        void intersection(const Federation& fed);
+
         void remove_clock(dim_t c);
         void swap_clocks(dim_t a, dim_t b);
         void add_clock_at(dim_t c);
 
         std::vector<dim_t> resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits);
         void reorder(std::vector<dim_t> order, dim_t new_size);
+
+        const DBM& operator[](size_t i) const {
+#ifndef NDEBUG
+            return zones.at(i);
+#else
+            return zones[i];
+#endif
+        }
 
         friend std::ostream& operator<<(std::ostream& out, const Federation& fed);
     };
