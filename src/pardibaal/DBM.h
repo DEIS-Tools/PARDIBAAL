@@ -59,12 +59,14 @@ namespace pardibaal {
 
         [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
         void set(dim_t i, dim_t j, bound_t bound);
+        void set(clock_constraint_t constraint);
         [[nodiscard]] dim_t dimension() const;
 
         [[nodiscard]] bool is_empty() const;
 
         [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
         [[nodiscard]] bool satisfies(clock_constraint_t constraint) const;
+        [[nodiscard]] bool satisfies(std::vector<clock_constraint_t> constraints) const;
 
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
         [[nodiscard]] relation_t relation(const Federation& fed) const;
@@ -100,6 +102,7 @@ namespace pardibaal {
         void past();
         void restrict(dim_t x, dim_t y, bound_t g);
         void restrict(clock_constraint_t constraint);
+        void restrict(std::vector<clock_constraint_t> constraints);
         void free(dim_t x);
         void assign(dim_t x, val_t m);
         void copy(dim_t x, dim_t y);

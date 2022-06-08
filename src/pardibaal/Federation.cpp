@@ -134,7 +134,15 @@ namespace pardibaal {
     }
 
     bool Federation::satisfies(clock_constraint_t constraint) const {
-        satisfies(constraint._i, constraint._j, constraint._bound);
+        return satisfies(constraint._i, constraint._j, constraint._bound);
+    }
+
+    bool Federation::satisfies(std::vector<clock_constraint_t> constraints) const {
+        for (const auto& c : constraints)
+            if (not satisfies(c._i, c._j, c._bound))
+                return false;
+
+        return true;
     }
 
     relation_t Federation::relation(const DBM &dbm) const {
@@ -236,6 +244,13 @@ namespace pardibaal {
 
     void Federation::restrict(clock_constraint_t constraint) {
         restrict(constraint._i, constraint._j, constraint._bound);
+    }
+
+    void Federation::restrict(std::vector<clock_constraint_t> constraints) {
+        for (const auto& c : constraints)
+            for (DBM& dbm : zones)
+                restrict(c._i, c._j, c._bound);
+        make_consistent();
     }
 
     void Federation::free(dim_t x) {
