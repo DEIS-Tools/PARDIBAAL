@@ -73,7 +73,7 @@ namespace pardibaal {
             this->add(dbm);
     }
 
-    void Federation::subtract(const DBM &dbm) {
+    void Federation::subtract(const DBM& dbm) {
 #ifndef NEXCEPTIONS
         if (!zones.empty()) {
             if (dimension() != dbm.dimension())
@@ -96,7 +96,7 @@ namespace pardibaal {
         *this = fed;
     }
 
-    void Federation::subtract(const Federation &fed) {
+    void Federation::subtract(const Federation& fed) {
         for (const auto& dbm : fed)
             this->subtract(dbm);
     }
@@ -133,11 +133,11 @@ namespace pardibaal {
         return false;
     }
 
-    bool Federation::satisfies(clock_constraint_t constraint) const {
+    bool Federation::satisfies(const clock_constraint_t& constraint) const {
         return satisfies(constraint._i, constraint._j, constraint._bound);
     }
 
-    bool Federation::satisfies(std::vector<clock_constraint_t> constraints) const {
+    bool Federation::satisfies(const std::vector<clock_constraint_t>& constraints) const {
         for (const auto& c : constraints)
             if (not satisfies(c._i, c._j, c._bound))
                 return false;
@@ -145,7 +145,7 @@ namespace pardibaal {
         return true;
     }
 
-    relation_t Federation::relation(const DBM &dbm) const {
+    relation_t Federation::relation(const DBM& dbm) const {
         if (this->is_empty())
             return dbm.is_empty() ? relation_t::equal() : relation_t::subset();
         if (dbm.is_empty())
@@ -167,7 +167,7 @@ namespace pardibaal {
         return relation_t::different();
     }
 
-    relation_t Federation::relation(const Federation &fed) const {
+    relation_t Federation::relation(const Federation& fed) const {
         if (this->is_empty())
             return fed.is_empty() ? relation_t::equal() : relation_t::subset();
         if (fed.is_empty())
@@ -189,31 +189,31 @@ namespace pardibaal {
         return relation_t::different();
     }
 
-    bool Federation::equal(const DBM &dbm) const {
+    bool Federation::equal(const DBM& dbm) const {
         return this->relation(dbm)._equal;
     }
 
-    bool Federation::equal(const Federation &fed) const {
+    bool Federation::equal(const Federation& fed) const {
         return this->relation(fed)._equal;
     }
 
-    bool Federation::subset(const DBM &dbm) const {
+    bool Federation::subset(const DBM& dbm) const {
         return this->relation(dbm)._subset;
     }
 
-    bool Federation::subset(const Federation &fed) const {
+    bool Federation::subset(const Federation& fed) const {
         return this->relation(fed)._subset;
     }
 
-    bool Federation::superset(const DBM &dbm) const {
+    bool Federation::superset(const DBM& dbm) const {
         return this->relation(dbm)._superset;
     }
 
-    bool Federation::superset(const Federation &fed) const {
+    bool Federation::superset(const Federation& fed) const {
         return this->relation(fed)._superset;
     }
 
-    bool Federation::intersects(const DBM &dbm) const {
+    bool Federation::intersects(const DBM& dbm) const {
         return std::any_of(this->begin(), this->end(), [&dbm](const DBM& z){return z.intersects(dbm);});
     }
 
@@ -242,11 +242,11 @@ namespace pardibaal {
         make_consistent();
     }
 
-    void Federation::restrict(clock_constraint_t constraint) {
+    void Federation::restrict(const clock_constraint_t& constraint) {
         restrict(constraint._i, constraint._j, constraint._bound);
     }
 
-    void Federation::restrict(std::vector<clock_constraint_t> constraints) {
+    void Federation::restrict(const std::vector<clock_constraint_t>& constraints) {
         for (const auto& c : constraints)
             for (DBM& dbm : zones)
                 restrict(c._i, c._j, c._bound);
@@ -271,19 +271,19 @@ namespace pardibaal {
         make_consistent();
     }
 
-    void Federation::extrapolate(const std::vector<val_t> &ceiling) {
+    void Federation::extrapolate(const std::vector<val_t>& ceiling) {
         for (DBM& dbm : zones) dbm.extrapolate(ceiling);
     }
 
-    void Federation::extrapolate_diagonal(const std::vector<val_t> &ceiling) {
+    void Federation::extrapolate_diagonal(const std::vector<val_t>& ceiling) {
         for (DBM& dbm : zones) dbm.extrapolate_diagonal(ceiling);
     }
 
-    void Federation::extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
+    void Federation::extrapolate_lu(const std::vector<val_t>& lower, const std::vector<val_t>& upper) {
         for (DBM& dbm : zones) dbm.extrapolate_lu(lower, upper);
     }
 
-    void Federation::extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
+    void Federation::extrapolate_lu_diagonal(const std::vector<val_t>& lower, const std::vector<val_t>& upper) {
         for (DBM& dbm : zones) dbm.extrapolate_lu_diagonal(lower, upper);
     }
 
@@ -297,7 +297,7 @@ namespace pardibaal {
         *this = std::move(fed);
     }
 
-    void Federation::intersection(const Federation &fed) {
+    void Federation::intersection(const Federation& fed) {
         auto union_fed = Federation();
         auto tmp_fed = Federation();
         for (const auto& z : fed) {
@@ -321,7 +321,7 @@ namespace pardibaal {
         for (DBM& dbm : zones) dbm.add_clock_at(c);
     }
 
-    std::vector<dim_t> Federation::resize(const std::vector<bool> &src_bits, const std::vector<bool> &dst_bits) {
+    std::vector<dim_t> Federation::resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits) {
         bool first = true;
         std::vector<dim_t> rtn;
 
@@ -336,7 +336,7 @@ namespace pardibaal {
         return rtn;
     }
 
-    void Federation::reorder(std::vector<dim_t> order, dim_t new_size) {
+    void Federation::reorder(const std::vector<dim_t>& order, dim_t new_size) {
         for (DBM& dbm : zones) dbm.reorder(order, new_size);
     }
 

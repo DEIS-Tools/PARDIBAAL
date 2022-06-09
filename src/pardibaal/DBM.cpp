@@ -49,7 +49,13 @@ namespace pardibaal {
     }
 
     bound_t DBM::at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
+
     void DBM::set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
+
+    void DBM::set(const clock_constraint_t& constraint) {
+        this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
+    }
+
     dim_t DBM::dimension() const {return this->_bounds_table.number_of_clocks();}
 
     bool DBM::is_empty() const {
@@ -74,8 +80,14 @@ namespace pardibaal {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
-    bool DBM::satisfies(clock_constraint_t constraint) const {
+    bool DBM::satisfies(const clock_constraint_t& constraint) const {
         return satisfies(constraint._i, constraint._j, constraint._bound);
+    }
+
+    bool DBM::satisfies(const std::vector<clock_constraint_t>& constraints) const {
+        return std::all_of(constraints.begin(), constraints.end(), [this](const clock_constraint_t& c) {
+            return this->satisfies(c);
+        });
     }
 
     relation_t DBM::relation(const DBM &dbm) const {
@@ -199,8 +211,13 @@ namespace pardibaal {
 
     }
 
-    void DBM::restrict(clock_constraint_t constraint) {
+    void DBM::restrict(const clock_constraint_t& constraint) {
         restrict(constraint._i, constraint._j, constraint._bound);
+    }
+
+    void DBM::restrict(const std::vector<clock_constraint_t> &constraints) {
+        for (const auto& c : constraints)
+            this->restrict(c);
     }
 
     void DBM::free(dim_t x) {
@@ -494,7 +511,7 @@ namespace pardibaal {
         return src_indir;
     }
 
-    void DBM::reorder(std::vector<dim_t> order, dim_t new_size) {
+    void DBM::reorder(const std::vector<dim_t>& order, dim_t new_size) {
 #ifndef NEXCEPTIONS
         if (order.size() != this->dimension())
             throw base_error("ERROR: Order vector has size: ", order.size(), " but the dimension of the DBM is: ",
