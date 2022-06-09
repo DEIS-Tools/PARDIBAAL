@@ -25,6 +25,7 @@
 #include <vector>
 #include <ostream>
 
+#include "clock_constraint_t.h"
 #include "bound_t.h"
 #include "DBM.h"
 
@@ -58,8 +59,8 @@ namespace pardibaal {
         // Returns a federation with a single unconstrained dbm
         static Federation unconstrained(dim_t dimension);
 
-        zone_vector::const_iterator begin() const;
-        zone_vector::const_iterator end() const;
+        [[nodiscard]] zone_vector::const_iterator begin() const;
+        [[nodiscard]] zone_vector::const_iterator end() const;
 
         [[nodiscard]] const DBM& at(dim_t index) const;
 
@@ -119,6 +120,9 @@ namespace pardibaal {
          * @return True if any of the zones satisfy the bound
          */
         [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
+
+        [[nodiscard]] bool satisfies(const clock_constraint_t& constraint) const;
+        [[nodiscard]] bool satisfies(const std::vector<clock_constraint_t>& constraints) const;
 
         /**
          * Relation between this and a dbm.
@@ -209,15 +213,17 @@ namespace pardibaal {
         void future();
         void past();
         void restrict(dim_t x, dim_t y, bound_t g);
+        void restrict(const clock_constraint_t& constraint);
+        void restrict(const std::vector<clock_constraint_t>& constraints);
         void free(dim_t x);
         void assign(dim_t x, val_t m);
         void copy(dim_t x, dim_t y);
         void shift(dim_t x, val_t n);
 
-        void extrapolate(const std::vector<val_t> &ceiling);
-        void extrapolate_diagonal(const std::vector<val_t> &ceiling);
-        void extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
-        void extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
+        void extrapolate(const std::vector<val_t>& ceiling);
+        void extrapolate_diagonal(const std::vector<val_t>& ceiling);
+        void extrapolate_lu(const std::vector<val_t>& lower, const std::vector<val_t>& upper);
+        void extrapolate_lu_diagonal(const std::vector<val_t>& lower, const std::vector<val_t>& upper);
 
         void intersection(const DBM& dbm);
         void intersection(const Federation& fed);
@@ -227,7 +233,7 @@ namespace pardibaal {
         void add_clock_at(dim_t c);
 
         std::vector<dim_t> resize(const std::vector<bool>& src_bits, const std::vector<bool>& dst_bits);
-        void reorder(std::vector<dim_t> order, dim_t new_size);
+        void reorder(const std::vector<dim_t>& order, dim_t new_size);
 
         const DBM& operator[](size_t i) const {
 #ifndef NDEBUG

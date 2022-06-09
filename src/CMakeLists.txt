@@ -2,14 +2,16 @@ set(HEADER_FILES
         pardibaal/Federation.h
         pardibaal/DBM.h
         pardibaal/bounds_table_t.h
-        pardibaal/bound_t.h)
+        pardibaal/bound_t.h
+        pardibaal/clock_constraint_t.h)
 
 add_library(pardibaal
         ${HEADER_FILES}
         pardibaal/Federation.cpp
         pardibaal/DBM.cpp
         pardibaal/bounds_table_t.cpp
-        pardibaal/bound_t.cpp)
+        pardibaal/bound_t.cpp
+        pardibaal/clock_constraint_t.cpp)
 
 target_include_directories (pardibaal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
