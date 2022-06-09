@@ -66,6 +66,8 @@ namespace pardibaal {
         [[nodiscard]] bound_t operator+(bound_t rhs) const;
         [[nodiscard]] bound_t operator+(val_t rhs) const;
 
+        [[nodiscard]] bound_t operator-(val_t rhs) const;
+
         [[nodiscard]] bound_t operator*(val_t rhs) const;
 
         [[nodiscard]] bool operator<(bound_t rhs) const;
@@ -85,6 +87,7 @@ namespace pardibaal {
     };
 
     [[nodiscard]] bound_t operator+(val_t val, bound_t bound);
+    [[nodiscard]] bound_t operator-(val_t val, bound_t bound);
     [[nodiscard]] bound_t operator*(val_t val, bound_t bound);
     std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 }
