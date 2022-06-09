@@ -60,6 +60,7 @@ namespace pardibaal {
         [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
         void set(dim_t i, dim_t j, bound_t bound);
         void set(const clock_constraint_t& constraint);
+
         [[nodiscard]] dim_t dimension() const;
 
         [[nodiscard]] bool is_empty() const;
@@ -99,7 +100,12 @@ namespace pardibaal {
         void close();
 
         void future();
+        void future(val_t d);
         void past();
+
+        void delay(val_t d);
+        void interval_delay(val_t lower, val_t upper);
+
         void restrict(dim_t x, dim_t y, bound_t g);
         void restrict(const clock_constraint_t& constraint);
         void restrict(const std::vector<clock_constraint_t>& constraints);

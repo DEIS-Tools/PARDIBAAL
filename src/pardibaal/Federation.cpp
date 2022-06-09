@@ -233,8 +233,20 @@ namespace pardibaal {
         for (DBM& dbm : zones) dbm.future();
     }
 
+    void Federation::future(val_t d) {
+        for (DBM& dbm : zones) dbm.future(d);
+    }
+
     void Federation::past() {
         for (DBM& dbm : zones) dbm.past();
+    }
+
+    void Federation::delay(val_t d) {
+        for (DBM& dbm : zones) dbm.delay(d);
+    }
+
+    void Federation::interval_delay(val_t lower, val_t upper) {
+        for (DBM& dbm : zones) dbm.interval_delay(lower, upper);
     }
 
     void Federation::restrict(dim_t x, dim_t y, bound_t g) {

@@ -182,6 +182,16 @@ namespace pardibaal {
             _bounds_table.set(i, 0, bound_t::inf());
     }
 
+    void DBM::future(val_t d) {
+#ifndef NEXCEPTIONS
+        if (d < 0)
+            throw(base_error("ERROR: Cannot do future operation on a negative amount"));
+#endif
+        for (dim_t i = 1; i < this->dimension(); ++i)
+            if (not this->at(i, 0).is_inf())
+                this->set(i, 0, this->at(i, 0) + d);
+    }
+
     void DBM::past() {
         for (dim_t i = 1; i < this->dimension(); ++i) {
             this->_bounds_table.set(0, i, bound_t::zero());
@@ -191,6 +201,28 @@ namespace pardibaal {
                 }
             }
         }
+    }
+
+    void DBM::delay(val_t d) {
+#ifndef NEXCEPTIONS
+        if (d < 0)
+            throw(base_error("ERROR: Cannot do a negative delay"));
+#endif
+        for (dim_t i = 1; i < this->dimension(); ++i)
+            this->set(0, i, this->at(0, i) - d);
+
+        this->future(d);
+    }
+
+    void DBM::interval_delay(val_t lower, val_t upper) {
+#ifndef NEXCEPTIONS
+        if (lower < 0 || upper < 0)
+            throw(base_error("ERROR: Cannot do a negative delay"));
+        if (lower > upper)
+            throw(base_error("ERROR: lower value of delay interval must be smaller than the upper valuer"));
+#endif
+        this->delay(lower);
+        this->future(upper - lower);
     }
 
     void DBM::restrict(dim_t x, dim_t y, bound_t g) {
