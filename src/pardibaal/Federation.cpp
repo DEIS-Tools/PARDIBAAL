@@ -247,9 +247,8 @@ namespace pardibaal {
     }
 
     void Federation::restrict(const std::vector<clock_constraint_t>& constraints) {
-        for (const auto& c : constraints)
-            for (DBM& dbm : zones)
-                restrict(c._i, c._j, c._bound);
+        for (DBM& dbm : zones)
+            restrict(constraints);
         make_consistent();
     }
 
