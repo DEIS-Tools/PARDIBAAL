@@ -353,7 +353,7 @@ namespace pardibaal {
 
     std::ostream& operator<<(std::ostream& out, const Federation& fed) {
         bool first = true;
-        out << "\n<<<<<<\n";
+        out << "\n<<<<<<";
         for (const DBM& dbm : fed) {
             if (first) {out << dbm; first = false;}
             else out << "&&" << dbm;
