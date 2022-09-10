@@ -28,7 +28,6 @@
 
 using namespace pardibaal;
 
-
 BOOST_AUTO_TEST_CASE(at_test_1) {
     Federation fed(3);
 
@@ -320,6 +319,17 @@ BOOST_AUTO_TEST_CASE(restrict_test_1) {
     fed.restrict(0, 1, bound_t::strict(-5));
 
     BOOST_CHECK(fed.size() == 1);
+}
+
+BOOST_AUTO_TEST_CASE(restrict_test_2) {
+    Federation fed1(3), fed2(3);
+    fed1.future(); fed2.future();
+    fed1.restrict(0, 1, bound_t::strict(-5));
+    fed2.restrict(0, 1, bound_t::strict(-5));
+
+    fed1.restrict({});
+
+    BOOST_CHECK(fed1.equal(fed2));
 }
 
 BOOST_AUTO_TEST_CASE(intersection_test_1) {
