@@ -161,8 +161,9 @@ namespace pardibaal {
             sub = sub && relation._subset;
         }
 
-        if (eq && sub) return relation_t::equal();
-        if (sub) return relation_t::subset();
+        if (eq && sub) return relation_t::equal();      // If one dbm is equal and all others are equal/subsets
+        if (eq && !sub) return relation_t::superset();  // If one dbm is equal, but not all the dbm are equal/subsets
+        if (sub) return relation_t::subset();           // If no dbm is equal but all of them are subsets
 
         return relation_t::different();
     }

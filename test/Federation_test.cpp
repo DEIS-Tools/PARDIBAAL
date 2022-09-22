@@ -69,6 +69,19 @@ BOOST_AUTO_TEST_CASE(add_test_2) {
     BOOST_CHECK(fed2.size() == 1);
 }
 
+BOOST_AUTO_TEST_CASE(add_test_3) {
+    auto fed = Federation::zero(3);
+    auto dbm = DBM::zero(3);
+    dbm.delay(2);
+
+    BOOST_CHECK(fed.size() == 1);
+    
+    fed.add(dbm);
+    BOOST_CHECK(fed.size() == 2);
+    fed.add(dbm);
+    BOOST_CHECK(fed.size() == 2);
+}
+
 BOOST_AUTO_TEST_CASE(subtract_test_1) {
     auto fed = Federation::unconstrained(3);
     auto dbm = DBM::unconstrained(3);
