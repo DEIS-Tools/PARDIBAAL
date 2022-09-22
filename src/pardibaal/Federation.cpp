@@ -184,7 +184,13 @@ namespace pardibaal {
             sup = sup && relation._superset;
         }
 
+        // If this is equal to one dbm in fed and supersets/equal to the rest
         if (eq && sup) return relation_t::equal();
+        
+        // If this is equal to one dbm in fed and not supersets to the rest (assumes no two dbms in fed are equal)
+        if (eq && !sup) return relation_t::subset();
+
+        // If this is a superset to all dbms in fed and not equal to any of them
         if (sup) return relation_t::superset();
 
         return relation_t::different();

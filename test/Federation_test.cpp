@@ -75,7 +75,6 @@ BOOST_AUTO_TEST_CASE(add_test_3) {
     dbm.delay(2);
 
     BOOST_CHECK(fed.size() == 1);
-    
     fed.add(dbm);
     BOOST_CHECK(fed.size() == 2);
     fed.add(dbm);
@@ -211,6 +210,29 @@ BOOST_AUTO_TEST_CASE(relation_test_3) {
 
     BOOST_CHECK(not fed2.superset(fed1));
     BOOST_CHECK(not fed2.equal(fed1));
+    BOOST_CHECK(fed2.subset(fed1));
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_4) {
+    auto fed = Federation::zero(3);
+    auto dbm = DBM::zero(3);
+    dbm.delay(2);
+
+    fed.add(dbm);
+
+    BOOST_CHECK(fed.superset(dbm));
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_5) {
+    auto fed1 = Federation::zero(3),
+         fed2 = Federation::zero(3);
+    auto dbm = DBM::zero(3);
+
+    dbm.delay(2);
+
+    fed1.add(dbm);
+
+    BOOST_CHECK(fed1.superset(fed2));
     BOOST_CHECK(fed2.subset(fed1));
 }
 
