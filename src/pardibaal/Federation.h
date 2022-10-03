@@ -211,7 +211,12 @@ namespace pardibaal {
         [[nodiscard]] bool is_unbounded() const;
 
         void future();
+        void future(val_t d);
         void past();
+
+        void delay(val_t d);
+        void interval_delay(val_t lower, val_t upper);
+
         void restrict(dim_t x, dim_t y, bound_t g);
         void restrict(const clock_constraint_t& constraint);
         void restrict(const std::vector<clock_constraint_t>& constraints);

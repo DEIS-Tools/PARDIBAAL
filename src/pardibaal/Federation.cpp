@@ -161,8 +161,9 @@ namespace pardibaal {
             sub = sub && relation._subset;
         }
 
-        if (eq && sub) return relation_t::equal();
-        if (sub) return relation_t::subset();
+        if (eq && sub) return relation_t::equal();      // If one dbm is equal and all others are equal/subsets
+        if (eq && !sub) return relation_t::superset();  // If one dbm is equal, but not all the dbm are equal/subsets
+        if (sub) return relation_t::subset();           // If no dbm is equal but all of them are subsets
 
         return relation_t::different();
     }
@@ -183,7 +184,13 @@ namespace pardibaal {
             sup = sup && relation._superset;
         }
 
+        // If this is equal to one dbm in fed and supersets/equal to the rest
         if (eq && sup) return relation_t::equal();
+        
+        // If this is equal to one dbm in fed and not supersets to the rest (assumes no two dbms in fed are equal)
+        if (eq && !sup) return relation_t::subset();
+
+        // If this is a superset to all dbms in fed and not equal to any of them
         if (sup) return relation_t::superset();
 
         return relation_t::different();
@@ -233,8 +240,20 @@ namespace pardibaal {
         for (DBM& dbm : zones) dbm.future();
     }
 
+    void Federation::future(val_t d) {
+        for (DBM& dbm : zones) dbm.future(d);
+    }
+
     void Federation::past() {
         for (DBM& dbm : zones) dbm.past();
+    }
+
+    void Federation::delay(val_t d) {
+        for (DBM& dbm : zones) dbm.delay(d);
+    }
+
+    void Federation::interval_delay(val_t lower, val_t upper) {
+        for (DBM& dbm : zones) dbm.interval_delay(lower, upper);
     }
 
     void Federation::restrict(dim_t x, dim_t y, bound_t g) {

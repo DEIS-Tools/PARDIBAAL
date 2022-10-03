@@ -60,6 +60,7 @@ namespace pardibaal {
         [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
         void set(dim_t i, dim_t j, bound_t bound);
         void set(const clock_constraint_t& constraint);
+
         [[nodiscard]] dim_t dimension() const;
 
         [[nodiscard]] bool is_empty() const;
@@ -98,8 +99,35 @@ namespace pardibaal {
 
         void close();
 
+        /**
+         * Also known as "up" raises all upper bounds to inf
+         */
         void future();
+        
+        /**
+         * Bounded future raises all upper bounds by d
+         * @param d Value added to all upper bounds 
+         */ 
+        void future(val_t d);
+
+        /**
+         * Also known as "down", lowers all lower bounds to zero
+         */
         void past();
+
+        /**
+         * A concrete delay. Effectively raises upper and lower bounds by d
+         * @param d value all bounds are raised by
+         */
+        void delay(val_t d);
+
+        /**
+         * Delays an interval ammount. Effectively raises lower bounds by lower and upper bounds by upper
+         * @param lower lower bound of interval
+         * @param upper upper bound of interval
+         */
+        void interval_delay(val_t lower, val_t upper);
+
         void restrict(dim_t x, dim_t y, bound_t g);
         void restrict(const clock_constraint_t& constraint);
         void restrict(const std::vector<clock_constraint_t>& constraints);
@@ -108,32 +136,31 @@ namespace pardibaal {
         void copy(dim_t x, dim_t y);
         void shift(dim_t x, val_t n);
 
+        /**
+         * sets all bounds above the ceiling to inf. 
+         * @param ceiling Vector of clock maximum (ceiling) values
+         */ 
         void extrapolate(const std::vector<val_t> &ceiling);
 
-        /** Diagonal extrapolation
-         *
-         * Update dbm[i,j] with
-         * - infinity if dbm[i,j] > max_xi
-         * - infinity if -dbm[0,i] > max_xi
-         * - infinity if -dbm[0,j] > max_xj, i != 0
-         * - <-max_xj if -dbm[i,j] > max_xj, i == 0
-         * - dbm[i,j] otherwise
-         * except for when i = j
-         * also make sure 0, j is not positive and i, 0 is not negative
-         *
-         * @param dbm: DBM.
-         * @param dim: dimension.
-         * @param max: table of maximal constants.
-         * @pre
-         * - DBM is closed and non empty
-         * - max is a int32_t[dim]
-         * - max[0] = 0 (reference clock)
-         * @post DBM is closed.
+        /**
+         * Read about this in 
+         *   Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
+         *   Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
          */
         void extrapolate_diagonal(const std::vector<val_t> &ceiling);
 
+        /**
+         * Read about this in 
+         *   Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
+         *   Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
+         */
         void extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
 
+        /**
+         * Read about this in 
+         *   Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
+         *   Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
+         */
         void extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
 
         /**

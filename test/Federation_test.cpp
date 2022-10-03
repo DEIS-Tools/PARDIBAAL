@@ -28,7 +28,6 @@
 
 using namespace pardibaal;
 
-
 BOOST_AUTO_TEST_CASE(at_test_1) {
     Federation fed(3);
 
@@ -68,6 +67,18 @@ BOOST_AUTO_TEST_CASE(add_test_2) {
 
     fed2.add(fed);
     BOOST_CHECK(fed2.size() == 1);
+}
+
+BOOST_AUTO_TEST_CASE(add_test_3) {
+    auto fed = Federation::zero(3);
+    auto dbm = DBM::zero(3);
+    dbm.delay(2);
+
+    BOOST_CHECK(fed.size() == 1);
+    fed.add(dbm);
+    BOOST_CHECK(fed.size() == 2);
+    fed.add(dbm);
+    BOOST_CHECK(fed.size() == 2);
 }
 
 BOOST_AUTO_TEST_CASE(subtract_test_1) {
@@ -202,6 +213,29 @@ BOOST_AUTO_TEST_CASE(relation_test_3) {
     BOOST_CHECK(fed2.subset(fed1));
 }
 
+BOOST_AUTO_TEST_CASE(relation_test_4) {
+    auto fed = Federation::zero(3);
+    auto dbm = DBM::zero(3);
+    dbm.delay(2);
+
+    fed.add(dbm);
+
+    BOOST_CHECK(fed.superset(dbm));
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_5) {
+    auto fed1 = Federation::zero(3),
+         fed2 = Federation::zero(3);
+    auto dbm = DBM::zero(3);
+
+    dbm.delay(2);
+
+    fed1.add(dbm);
+
+    BOOST_CHECK(fed1.superset(fed2));
+    BOOST_CHECK(fed2.subset(fed1));
+}
+
 BOOST_AUTO_TEST_CASE(intersects_test_1) {
     auto fed = Federation::zero(3);
     auto dbm = DBM::zero(3);
@@ -320,6 +354,17 @@ BOOST_AUTO_TEST_CASE(restrict_test_1) {
     fed.restrict(0, 1, bound_t::strict(-5));
 
     BOOST_CHECK(fed.size() == 1);
+}
+
+BOOST_AUTO_TEST_CASE(restrict_test_2) {
+    Federation fed1(3), fed2(3);
+    fed1.future(); fed2.future();
+    fed1.restrict(0, 1, bound_t::strict(-5));
+    fed2.restrict(0, 1, bound_t::strict(-5));
+
+    fed1.restrict({});
+
+    BOOST_CHECK(fed1.equal(fed2));
 }
 
 BOOST_AUTO_TEST_CASE(intersection_test_1) {

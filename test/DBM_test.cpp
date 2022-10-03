@@ -60,6 +60,75 @@ BOOST_AUTO_TEST_CASE(future_test_1) {
         }
 }
 
+BOOST_AUTO_TEST_CASE(bounded_future_test_1) {
+    DBM D(10);
+
+    D.future(5);
+
+    for (dim_t i = 0; i < 10; i++)
+        for (dim_t j = 0; j < 10; j++) {               
+            if (j == 0 && i != 0)
+                BOOST_CHECK(D.at(i, j) == bound_t::non_strict(5));
+            else
+                BOOST_CHECK(D.at(i, j) == bound_t::zero());
+        }
+}
+
+BOOST_AUTO_TEST_CASE(bounded_future_test_2) {
+    DBM D(10), Z(10);
+
+    D.future(0);
+
+    BOOST_CHECK(D.equal(Z));
+    BOOST_CHECK(Z.equal(D));
+}
+
+BOOST_AUTO_TEST_CASE(delay_test_1) {
+    DBM D(10);
+
+    D.delay(5);
+
+    for (dim_t i = 0; i < 10; i++)
+        for (dim_t j = 0; j < 10; j++) {               
+            if (j == 0 && i != 0)
+                BOOST_CHECK(D.at(i, j) == bound_t::non_strict(5));
+            else if (i == 0 && j != 0)
+                BOOST_CHECK(D.at(i, j) == bound_t::non_strict(-5));
+            else
+                BOOST_CHECK(D.at(i, j) == bound_t::zero());
+        }
+}
+
+BOOST_AUTO_TEST_CASE(delay_test_2) {
+    DBM D(10), Z(10);
+
+    D.delay(0);
+
+    BOOST_CHECK(D.equal(Z));
+    BOOST_CHECK(Z.equal(D));
+}
+
+BOOST_AUTO_TEST_CASE(interval_delay_test_1) {
+    DBM D(10), Z(10);
+
+    D.interval_delay(0, 5);
+    Z.future(5);
+
+    BOOST_CHECK(D.equal(Z));
+    BOOST_CHECK(Z.equal(D));
+}
+
+BOOST_AUTO_TEST_CASE(interval_delay_test_2) {
+    DBM D(10), Z(10);
+
+    D.interval_delay(2, 5);
+    Z.delay(2);
+    Z.future(3);
+
+    BOOST_CHECK(D.equal(Z));
+    BOOST_CHECK(Z.equal(D));
+}
+
 BOOST_AUTO_TEST_CASE(restrict_test_1) {
     DBM D(3);
     bound_t g(5, NON_STRICT);

@@ -70,6 +70,10 @@ namespace pardibaal {
         return bound_t(this->get_bound() + rhs, this->is_strict());
     }
 
+    bound_t bound_t::operator-(val_t rhs) const {
+        return bound_t(this->get_bound() - rhs, this->is_strict());
+    }
+
     bound_t bound_t::operator*(val_t rhs) const {
         return bound_t(this->get_bound() * rhs, this->is_strict());
     }
@@ -106,6 +110,7 @@ namespace pardibaal {
     bool ge(bound_t lhs, bound_t rhs) {return lhs >= rhs;}
 
     bound_t operator+(val_t val, bound_t bound) {return bound + val;}
+    bound_t operator-(val_t val, bound_t bound) {return bound - val;}
     bound_t operator*(val_t val, bound_t bound) {return bound * val;}
 
     std::ostream& operator<<(std::ostream& out, const bound_t& bound) {

@@ -140,3 +140,12 @@ BOOST_AUTO_TEST_CASE(add_test_4) {
 
     BOOST_CHECK(a + b == bound_t::zero());
 }
+
+BOOST_AUTO_TEST_CASE(subtract_test_1) {
+    bound_t a(5, STRICT);
+
+    BOOST_CHECK(a - 1 == bound_t::strict(4));
+    BOOST_CHECK(a - 10 == bound_t::strict(-5));
+    BOOST_CHECK(a - 5 == bound_t::strict(0));
+    BOOST_CHECK(a - 0 == bound_t::strict(5));
+}
