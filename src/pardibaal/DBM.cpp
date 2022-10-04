@@ -122,12 +122,25 @@ namespace pardibaal {
         return relation_t::different();
     }
 
-    bool DBM::equal(const DBM& dbm) const           {return this->relation(dbm)._equal;}
-    bool DBM::equal(const Federation &fed) const    {return this->relation(fed)._equal;}
-    bool DBM::subset(const DBM& dbm) const          {return this->relation(dbm)._subset;}
-    bool DBM::subset(const Federation &fed) const   {return this->relation(fed)._subset;}
-    bool DBM::superset(const DBM& dbm) const        {return this->relation(dbm)._superset;}
-    bool DBM::superset(const Federation &fed) const {return this->relation(fed)._superset;}
+    relation_t DBM::exact_relation(const Federation& fed) const {
+        auto r = fed.exact_relation(*this);
+
+        if (r._equal) return relation_t::equal();
+        if (r._superset) return relation_t::subset();
+        if (r._subset) return relation_t::superset();
+
+        return relation_t::different();
+    }
+
+    bool DBM::equal(const DBM& dbm) const                    {return this->relation(dbm)._equal;}
+    bool DBM::equal(const Federation &fed) const             {return this->relation(fed)._equal;}
+    bool DBM::exact_equal(const Federation& fed) const       {return this->exact_relation(fed)._equal;}
+    bool DBM::subset(const DBM& dbm) const                   {return this->relation(dbm)._subset;}
+    bool DBM::subset(const Federation &fed) const            {return this->relation(fed)._subset;}
+    bool DBM::exact_subset(const Federation &fed) const      {return this->exact_relation(fed)._subset;}
+    bool DBM::superset(const DBM& dbm) const                 {return this->relation(dbm)._superset;}
+    bool DBM::superset(const Federation &fed) const          {return this->relation(fed)._superset;}
+    bool DBM::exact_superset(const Federation &fed) const    {return this->exact_relation(fed)._superset;}
 
     bool DBM::intersects(const DBM &dbm) const {
 #ifndef NEXCEPTIONS

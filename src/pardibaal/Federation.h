@@ -89,6 +89,7 @@ namespace pardibaal {
          * @param fed The federation to be subtracted.
          */
         void subtract(const Federation& fed);
+
         void remove(dim_t index);
 
 
@@ -145,10 +146,26 @@ namespace pardibaal {
         [[nodiscard]] relation_t relation(const Federation& fed) const;
 
         /**
+         * Exact relation between this and a dbm.
+         * This relation is exact but also expensive.
+         * @param dbm the rhs of the relation expression.
+         * @return relation_t representing this in relation to the dbm
+         */
+        [[nodiscard]] relation_t exact_relation(const DBM& dbm) const;
+
+        /**
+         * Exact relation between this and another federation.
+         * This relation is exact but also expensive.
+         * @param fed the rhs of the relation expression.
+         * @return relation_t representing this in relation to fed
+         */
+        [[nodiscard]] relation_t exact_relation(const Federation& fed) const;
+
+        /**
          * Checks if this is equal to the dbm.
          * This is an under-approximation, see Federation::relation
          * @param dbm rhs of the equality.
-         * @return true if the dbm and federation includes the same space.
+         * @return true if the dbm and federation includes the exact same space.
          */
         [[nodiscard]] bool equal(const DBM& dbm) const;
 
@@ -156,9 +173,25 @@ namespace pardibaal {
          * Checks if the federations are equal.
          * This is an under-approximation, see Federation::relation
          * @param fed rhs of the equality.
-         * @return true if the federations includes the same space.
+         * @return true if the federations includes the exact same space.
          */
         [[nodiscard]] bool equal(const Federation& fed) const;
+
+        /**
+         * Checks if this is equal to the dbm.
+         * This is an exact relation see Federation::exact_relation
+         * @param dbm rhs of the equality.
+         * @return true if the dbm and federation includes the exact same space.
+         */
+        [[nodiscard]] bool exact_equal(const DBM& dbm) const;
+
+        /**
+         * Checks if the federations are equal.
+         * This is an exact relation see Federation::exact_relation
+         * @param fed rhs of the equality.
+         * @return true if the federations includes the exact same space.
+         */
+        [[nodiscard]] bool exact_equal(const Federation& fed) const;
 
         /**
          * Checks if this is a subset of or included in the dbm.
@@ -177,6 +210,22 @@ namespace pardibaal {
         [[nodiscard]] bool subset(const Federation& fed) const;
 
         /**
+         * Checks if this is a subset of the dbm.
+         * This is an exact relation see Federation::exact_relation
+         * @param dbm rhs of the comparison.
+         * @return true if this is included in the dbm.
+         */
+        [[nodiscard]] bool exact_subset(const DBM& dbm) const;
+        
+        /**
+         * Checks if this is a subset of the federation.
+         * This is an exact relation see Federation::exact_relation
+         * @param fed rhs of the comparison.
+         * @return true if this is included in the federation.
+         */
+        [[nodiscard]] bool exact_subset(const Federation& fed) const;
+
+        /**
          * Checks if this is a superset of or includes the dbm.
          * This is an under-approximation, see Federation::relation
          * @param dbm rhs of the relation.
@@ -192,6 +241,22 @@ namespace pardibaal {
          */
         [[nodiscard]] bool superset(const Federation& fed) const;
 
+        /**
+         * Checks if this is a superset of the dbm.
+         * This is an exact relation see Federation::exact_relation
+         * @param dbm rhs of the comparison.
+         * @return true if this includes the dbm.
+         */
+        [[nodiscard]] bool exact_superset(const DBM& dbm) const;
+        
+        /**
+         * Checks if this is a superset of the federation.
+         * This is an exact relation see Federation::exact_relation
+         * @param fed rhs of the comparison.
+         * @return true if this includes the federation.
+         */
+        [[nodiscard]] bool exact_superset(const Federation& fed) const;
+        
         /**
          * Checks if a federation intersect with a federation ie. if the intersection is non-empty
          * @return true if this intersects with dbm

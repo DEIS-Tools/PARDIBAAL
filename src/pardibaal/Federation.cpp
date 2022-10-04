@@ -196,12 +196,49 @@ namespace pardibaal {
         return relation_t::different();
     }
 
+    relation_t Federation::exact_relation(const DBM& dbm) const {
+        return this->exact_relation(Federation(dbm));
+    }
+
+    relation_t Federation::exact_relation(const Federation& fed) const {
+        if (this->is_empty())
+            return fed.is_empty() ? relation_t::equal() : relation_t::subset();
+        if (fed.is_empty())
+            return relation_t::superset();
+        if (this->dimension() != fed.dimension())
+            return relation_t::different();
+        
+        auto fed1 = *this;
+        auto fed2 = fed;
+
+        fed1.subtract(fed);
+        fed2.subtract(*this);
+        
+        if (fed1.is_empty()) {
+            if (fed2.is_empty())
+                return relation_t::equal();
+            return relation_t::subset();
+        } 
+        if (fed2.is_empty())
+            return relation_t::superset();
+
+        return relation_t::different();
+    }
+
     bool Federation::equal(const DBM& dbm) const {
         return this->relation(dbm)._equal;
     }
 
     bool Federation::equal(const Federation& fed) const {
         return this->relation(fed)._equal;
+    }
+
+    bool Federation::exact_equal(const DBM& dbm) const {
+        return this->exact_relation(dbm)._equal;
+    }
+
+    bool Federation::exact_equal(const Federation& fed) const {
+        return this->exact_relation(fed)._equal;
     }
 
     bool Federation::subset(const DBM& dbm) const {
@@ -212,6 +249,14 @@ namespace pardibaal {
         return this->relation(fed)._subset;
     }
 
+    bool Federation::exact_subset(const DBM& dbm) const {
+        return this->exact_relation(dbm)._subset;
+    }
+
+    bool Federation::exact_subset(const Federation& fed) const {
+        return this->exact_relation(fed)._subset;
+    }
+
     bool Federation::superset(const DBM& dbm) const {
         return this->relation(dbm)._superset;
     }
@@ -219,6 +264,15 @@ namespace pardibaal {
     bool Federation::superset(const Federation& fed) const {
         return this->relation(fed)._superset;
     }
+
+    bool Federation::exact_superset(const DBM& dbm) const {
+        return this->exact_relation(dbm)._superset;
+    }
+
+    bool Federation::exact_superset(const Federation& fed) const {
+        return this->exact_relation(fed)._superset;
+    }
+
 
     bool Federation::intersects(const DBM& dbm) const {
         return std::any_of(this->begin(), this->end(), [&dbm](const DBM& z){return z.intersects(dbm);});

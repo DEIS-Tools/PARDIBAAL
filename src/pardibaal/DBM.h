@@ -32,7 +32,8 @@
 
 namespace pardibaal {
     class Federation;
-    /** Relation struct
+    /** 
+     * Relation struct
      * represents the relation between two DBMs.
      * different means that they are neither equal or a sub/superset of each other, or the dimensions are different.
      */
@@ -69,15 +70,39 @@ namespace pardibaal {
         [[nodiscard]] bool satisfies(const clock_constraint_t& constraint) const;
         [[nodiscard]] bool satisfies(const std::vector<clock_constraint_t>& constraints) const;
 
+        /**
+         * Exact relation between this dbm and another dbm.
+         * This relation is exact.
+         * @param dbm the rhs of the relation expression.
+         * @return relation_t representing this in relation to dbm
+         */
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
+
+        /**
+         * Relation between this dbm and a federation
+         * This relation is approximate, see Federation::relation
+         * @param fed The rhs of the relation
+         * @return relation_t representing this in relation to fed
+         */
         [[nodiscard]] relation_t relation(const Federation& fed) const;
+
+        /**
+         * Exact relation between this dbm and federation.
+         * This relation is exact but also expensive.
+         * @param fed the rhs of the relation expression.
+         * @return relation_t representing this in relation to fed
+         */
+        [[nodsicard]] relation_t exact_relation(const Federation& fed) const;
 
         [[nodiscard]] bool equal(const DBM& dbm) const;
         [[nodiscard]] bool equal(const Federation& fed) const;
+        [[nodiscard]] bool exact_equal(const Federation& fed) const;
         [[nodiscard]] bool subset(const DBM& dbm) const;
         [[nodiscard]] bool subset(const Federation& fed) const;
+        [[nodiscard]] bool exact_subset(const Federation& fed) const;
         [[nodiscard]] bool superset(const DBM& dbm) const;
         [[nodiscard]] bool superset(const Federation& fed) const;
+        [[nodiscard]] bool exact_superset(const Federation& fed) const;
 
         /**
          * Checks if two DBMs intersect ie. if the intersection is non-empty
