@@ -150,6 +150,8 @@ namespace pardibaal {
             return dbm.is_empty() ? relation_t::equal() : relation_t::subset();
         if (dbm.is_empty())
             return relation_t::superset();
+        if (this->dimension() != dbm.dimension())
+            return relation_t::different();
 
         bool eq = false, sub = true;
 
@@ -173,6 +175,8 @@ namespace pardibaal {
             return fed.is_empty() ? relation_t::equal() : relation_t::subset();
         if (fed.is_empty())
             return relation_t::superset();
+        if (this->dimension() != fed.dimension())
+            return relation_t::different();
 
         bool eq = false, sup = true;
 
