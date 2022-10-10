@@ -127,136 +127,104 @@ namespace pardibaal {
 
         /**
          * Relation between this and a dbm.
-         * The relation is an under-approximation.
-         * Can possibly return different, even though it is equal/subset/superset.
-         * If it returns equal, subset, or superset it is always true.
-         * @param dbm the rhs of the relation expression.
-         * @return relation_t representing this in relation to dbm.
+         * The non-exact relation is an under-approximation.
+         * If it returns different, it might be equal subset, or superset.
+         * The exact relation is computationally expensive.
+         * @param fed the rhs (federation) of the relation expression.
+         * @return relation_t representing this in relation to fed.
          */
+        template<bool is_exact=true>
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
 
         /**
          * Relation between this and another federation.
-         * The relation is an under-approximation.
-         * If it returns different, it might actually be equal subset, or superset.
-         * If it returns equal, subset, or superset it is always true.
+         * The non-exact relation is an under-approximation.
+         * If it returns different, it might be equal subset, or superset.
+         * The exact relation is computationally expensive.
          * @param fed the rhs (federation) of the relation expression.
          * @return relation_t representing this in relation to fed.
          */
+        template<bool is_exact=true>
         [[nodiscard]] relation_t relation(const Federation& fed) const;
 
         /**
-         * Exact relation between this and a dbm.
-         * This relation is exact but also expensive.
-         * @param dbm the rhs of the relation expression.
-         * @return relation_t representing this in relation to the dbm
-         */
-        [[nodiscard]] relation_t exact_relation(const DBM& dbm) const;
-
-        /**
-         * Exact relation between this and another federation.
-         * This relation is exact but also expensive.
-         * @param fed the rhs of the relation expression.
-         * @return relation_t representing this in relation to fed
-         */
-        [[nodiscard]] relation_t exact_relation(const Federation& fed) const;
-
-        /**
          * Checks if this is equal to the dbm.
-         * This is an under-approximation, see Federation::relation
+         * The non-exact is an under-approximation, see Federation::relation<false>
          * @param dbm rhs of the equality.
          * @return true if the dbm and federation includes the exact same space.
          */
+        template<bool is_exact=true>
         [[nodiscard]] bool equal(const DBM& dbm) const;
 
         /**
          * Checks if the federations are equal.
-         * This is an under-approximation, see Federation::relation
+         * The non-exact is an under-approximation, see Federation::relation<false>
          * @param fed rhs of the equality.
          * @return true if the federations includes the exact same space.
          */
+        template<bool is_exact=true>
         [[nodiscard]] bool equal(const Federation& fed) const;
 
-        /**
-         * Checks if this is equal to the dbm.
-         * This is an exact relation see Federation::exact_relation
-         * @param dbm rhs of the equality.
-         * @return true if the dbm and federation includes the exact same space.
-         */
-        [[nodiscard]] bool exact_equal(const DBM& dbm) const;
-
-        /**
-         * Checks if the federations are equal.
-         * This is an exact relation see Federation::exact_relation
-         * @param fed rhs of the equality.
-         * @return true if the federations includes the exact same space.
-         */
-        [[nodiscard]] bool exact_equal(const Federation& fed) const;
 
         /**
          * Checks if this is a subset of or included in the dbm.
-         * This is an under-approximation, see Federation::relation
+         * The non-exact is an under-approximation, see Federation::relation<false>
          * @param dbm rhs of the relation.
          * @return true if this is included in the dbm
          */
+        template<bool is_exact=true>
         [[nodiscard]] bool subset(const DBM& dbm) const;
+
 
         /**
          * Checks if this is a subset of or included in the federation.
-         * This is an under-approximation, see Federation::relation
+         * The non-exact is an under-approximation, see Federation::relation<false>
          * @param fed rhs of the relation.
          * @return true if this is included in fed
          */
+        template<bool is_exact=true>
         [[nodiscard]] bool subset(const Federation& fed) const;
 
-        /**
-         * Checks if this is a subset of the dbm.
-         * This is an exact relation see Federation::exact_relation
-         * @param dbm rhs of the comparison.
-         * @return true if this is included in the dbm.
-         */
-        [[nodiscard]] bool exact_subset(const DBM& dbm) const;
-        
-        /**
-         * Checks if this is a subset of the federation.
-         * This is an exact relation see Federation::exact_relation
-         * @param fed rhs of the comparison.
-         * @return true if this is included in the federation.
-         */
-        [[nodiscard]] bool exact_subset(const Federation& fed) const;
 
         /**
          * Checks if this is a superset of or includes the dbm.
-         * This is an under-approximation, see Federation::relation
+         * The non-exact is an under-approximation, see Federation::relation<false>
          * @param dbm rhs of the relation.
          * @return true if this includes the dbm
          */
+        template<bool is_exact=true>
         [[nodiscard]] bool superset(const DBM& dbm) const;
 
+        
         /**
          * Checks if this is a superset of or includes the federation.
-         * This is an under-approximation, see Federation::relation
+         * The non-exact is an under-approximation, see Federation::relation<false>
          * @param fed rhs of the relation.
          * @return true if this includes fed
          */
+        template<bool is_exact=true>
         [[nodiscard]] bool superset(const Federation& fed) const;
 
-        /**
-         * Checks if this is a superset of the dbm.
-         * This is an exact relation see Federation::exact_relation
-         * @param dbm rhs of the comparison.
-         * @return true if this includes the dbm.
-         */
-        [[nodiscard]] bool exact_superset(const DBM& dbm) const;
-        
-        /**
-         * Checks if this is a superset of the federation.
-         * This is an exact relation see Federation::exact_relation
-         * @param fed rhs of the comparison.
-         * @return true if this includes the federation.
-         */
-        [[nodiscard]] bool exact_superset(const Federation& fed) const;
-        
+        [[nodiscard]] inline relation_t exact_relation(const DBM& dbm) const {return this->relation<true>(dbm);}
+        [[nodiscard]] inline relation_t approx_relation(const DBM& dbm) const {return this->relation<false>(dbm);}
+        [[nodiscard]] inline relation_t exact_relation(const Federation& fed) const {return this->relation<true>(fed);}
+        [[nodiscard]] inline relation_t approx_relation(const Federation& fed) const {return this->relation<false>(fed);}
+
+        [[nodiscard]] inline bool exact_equal(const DBM& dbm) const {return this->equal<true>(dbm);}
+        [[nodiscard]] inline bool approx_equal(const DBM& dbm) const {return this->equal<false>(dbm);}
+        [[nodiscard]] inline bool exact_equal(const Federation& fed) const {return this->equal<true>(fed);}
+        [[nodiscard]] inline bool approx_equal(const Federation& fed) const {return this->equal<false>(fed);}
+
+        [[nodiscard]] inline bool exact_subset(const DBM& dbm) const {return this->subset<true>(dbm);}
+        [[nodiscard]] inline bool approx_subset(const DBM& dbm) const {return this->subset<false>(dbm);}
+        [[nodiscard]] inline bool exact_subset(const Federation& fed) const {return this->subset<true>(fed);}
+        [[nodiscard]] inline bool approx_subset(const Federation& fed) const {return this->subset<false>(fed);}
+
+        [[nodiscard]] inline bool exact_superset(const DBM& dbm) const {return this->superset<true>(dbm);}
+        [[nodiscard]] inline bool approx_superset(const DBM& dbm) const {return this->superset<false>(dbm);}
+        [[nodiscard]] inline bool exact_superset(const Federation& fed) const {return this->superset<true>(fed);}
+        [[nodiscard]] inline bool approx_superset(const Federation& fed) const {return this->superset<false>(fed);}
+
         /**
          * Checks if a federation intersect with a federation ie. if the intersection is non-empty
          * @return true if this intersects with dbm
