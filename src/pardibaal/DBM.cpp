@@ -36,6 +36,11 @@ namespace pardibaal {
     relation_t relation_t::superset() {return relation_t(false, false, true, false);}
     relation_t relation_t::different() {return relation_t(false, false, false, true);}
 
+    bool relation_t::is_equal() const {return _is_equal;}
+    bool relation_t::is_subset() const {return _is_subset;}
+    bool relation_t::is_superset() const {return _is_superset;}
+    bool relation_t::is_different() const {return _is_different;}
+
     DBM::DBM(dim_t number_of_clocks) : _bounds_table(number_of_clocks) {}
 
     DBM DBM::zero(dim_t dimension) {return DBM(dimension);}
@@ -116,47 +121,47 @@ namespace pardibaal {
     relation_t DBM::relation(const Federation& fed) const {
         auto r = fed.relation<is_exact>(*this);
 
-        if (r._equal) return relation_t::equal();
-        if (r._superset) return relation_t::subset();
-        if (r._subset) return relation_t::superset();
+        if (r.is_equal()) return relation_t::equal();
+        if (r.is_superset()) return relation_t::subset();
+        if (r.is_subset()) return relation_t::superset();
 
         return relation_t::different();
     }
 
-    bool DBM::equal(const DBM& dbm)            const {return this->relation(dbm)._equal;}
+    bool DBM::is_equal(const DBM& dbm)            const {return this->relation(dbm).is_equal();}
     
     template<bool is_exact = true>
-    bool DBM::equal(const Federation &fed)     const {return this->relation<is_exact>(fed)._equal;}
+    bool DBM::is_equal(const Federation &fed)     const {return this->relation<is_exact>(fed).is_equal();}
     
-    bool DBM::subset(const DBM& dbm)           const {return this->relation(dbm)._subset;}
-    
-    template<bool is_exact = true>
-    bool DBM::subset(const Federation &fed)    const {return this->relation<is_exact>(fed)._subset;}
-    
-    bool DBM::superset(const DBM& dbm)         const {return this->relation(dbm)._superset;}
+    bool DBM::is_subset(const DBM& dbm)           const {return this->relation(dbm).is_subset();}
     
     template<bool is_exact = true>
-    bool DBM::superset(const Federation &fed)  const {return this->relation<is_exact>(fed)._superset;}
+    bool DBM::is_subset(const Federation &fed)    const {return this->relation<is_exact>(fed).is_subset();}
+    
+    bool DBM::is_superset(const DBM& dbm)         const {return this->relation(dbm).is_superset();}
+    
+    template<bool is_exact = true>
+    bool DBM::is_superset(const Federation &fed)  const {return this->relation<is_exact>(fed).is_superset();}
 
-    bool DBM::different(const DBM& dbm)        const {return this->relation(dbm)._different;}
+    bool DBM::is_different(const DBM& dbm)        const {return this->relation(dbm).is_different();}
     
     template<bool is_exact = true>
-    bool DBM::different(const Federation &fed) const {return this->relation<is_exact>(fed)._different;}
+    bool DBM::is_different(const Federation &fed) const {return this->relation<is_exact>(fed).is_different();}
 
     template relation_t DBM::relation<true>(const Federation& fed) const;
     template relation_t DBM::relation<false>(const Federation& fed) const;
 
-    template bool DBM::equal<true>(const Federation& fed) const;
-    template bool DBM::equal<false>(const Federation& fed) const;
+    template bool DBM::is_equal<true>(const Federation& fed) const;
+    template bool DBM::is_equal<false>(const Federation& fed) const;
     
-    template bool DBM::subset<true>(const Federation& fed) const;
-    template bool DBM::subset<false>(const Federation& fed) const;
+    template bool DBM::is_subset<true>(const Federation& fed) const;
+    template bool DBM::is_subset<false>(const Federation& fed) const;
     
-    template bool DBM::superset<true>(const Federation& fed) const;
-    template bool DBM::superset<false>(const Federation& fed) const;
+    template bool DBM::is_superset<true>(const Federation& fed) const;
+    template bool DBM::is_superset<false>(const Federation& fed) const;
 
-    template bool DBM::different<true>(const Federation& fed) const;
-    template bool DBM::different<false>(const Federation& fed) const;
+    template bool DBM::is_different<true>(const Federation& fed) const;
+    template bool DBM::is_different<false>(const Federation& fed) const;
 
     bool DBM::intersects(const DBM &dbm) const {
 #ifndef NEXCEPTIONS

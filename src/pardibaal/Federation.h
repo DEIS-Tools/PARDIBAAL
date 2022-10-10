@@ -154,7 +154,7 @@ namespace pardibaal {
          * @return true if the dbm and federation includes the exact same space.
          */
         template<bool is_exact=true>
-        [[nodiscard]] bool equal(const DBM& dbm) const;
+        [[nodiscard]] bool is_equal(const DBM& dbm) const;
 
         /**
          * Checks if the federations are equal.
@@ -163,7 +163,7 @@ namespace pardibaal {
          * @return true if the federations includes the exact same space.
          */
         template<bool is_exact=true>
-        [[nodiscard]] bool equal(const Federation& fed) const;
+        [[nodiscard]] bool is_equal(const Federation& fed) const;
 
 
         /**
@@ -173,7 +173,7 @@ namespace pardibaal {
          * @return true if this is included in the dbm
          */
         template<bool is_exact=true>
-        [[nodiscard]] bool subset(const DBM& dbm) const;
+        [[nodiscard]] bool is_subset(const DBM& dbm) const;
 
 
         /**
@@ -183,7 +183,7 @@ namespace pardibaal {
          * @return true if this is included in fed
          */
         template<bool is_exact=true>
-        [[nodiscard]] bool subset(const Federation& fed) const;
+        [[nodiscard]] bool is_subset(const Federation& fed) const;
 
 
         /**
@@ -193,7 +193,7 @@ namespace pardibaal {
          * @return true if this includes the dbm
          */
         template<bool is_exact=true>
-        [[nodiscard]] bool superset(const DBM& dbm) const;
+        [[nodiscard]] bool is_superset(const DBM& dbm) const;
 
         
         /**
@@ -203,27 +203,27 @@ namespace pardibaal {
          * @return true if this includes fed
          */
         template<bool is_exact=true>
-        [[nodiscard]] bool superset(const Federation& fed) const;
+        [[nodiscard]] bool is_superset(const Federation& fed) const;
 
         [[nodiscard]] inline relation_t exact_relation(const DBM& dbm) const {return this->relation<true>(dbm);}
         [[nodiscard]] inline relation_t approx_relation(const DBM& dbm) const {return this->relation<false>(dbm);}
         [[nodiscard]] inline relation_t exact_relation(const Federation& fed) const {return this->relation<true>(fed);}
         [[nodiscard]] inline relation_t approx_relation(const Federation& fed) const {return this->relation<false>(fed);}
 
-        [[nodiscard]] inline bool exact_equal(const DBM& dbm) const {return this->equal<true>(dbm);}
-        [[nodiscard]] inline bool approx_equal(const DBM& dbm) const {return this->equal<false>(dbm);}
-        [[nodiscard]] inline bool exact_equal(const Federation& fed) const {return this->equal<true>(fed);}
-        [[nodiscard]] inline bool approx_equal(const Federation& fed) const {return this->equal<false>(fed);}
+        [[nodiscard]] inline bool is_exact_equal(const DBM& dbm) const {return this->is_equal<true>(dbm);}
+        [[nodiscard]] inline bool is_approx_equal(const DBM& dbm) const {return this->is_equal<false>(dbm);}
+        [[nodiscard]] inline bool is_exact_equal(const Federation& fed) const {return this->is_equal<true>(fed);}
+        [[nodiscard]] inline bool is_approx_equal(const Federation& fed) const {return this->is_equal<false>(fed);}
 
-        [[nodiscard]] inline bool exact_subset(const DBM& dbm) const {return this->subset<true>(dbm);}
-        [[nodiscard]] inline bool approx_subset(const DBM& dbm) const {return this->subset<false>(dbm);}
-        [[nodiscard]] inline bool exact_subset(const Federation& fed) const {return this->subset<true>(fed);}
-        [[nodiscard]] inline bool approx_subset(const Federation& fed) const {return this->subset<false>(fed);}
+        [[nodiscard]] inline bool is_exact_subset(const DBM& dbm) const {return this->is_subset<true>(dbm);}
+        [[nodiscard]] inline bool is_approx_subset(const DBM& dbm) const {return this->is_subset<false>(dbm);}
+        [[nodiscard]] inline bool is_exact_subset(const Federation& fed) const {return this->is_subset<true>(fed);}
+        [[nodiscard]] inline bool is_approx_subset(const Federation& fed) const {return this->is_subset<false>(fed);}
 
-        [[nodiscard]] inline bool exact_superset(const DBM& dbm) const {return this->superset<true>(dbm);}
-        [[nodiscard]] inline bool approx_superset(const DBM& dbm) const {return this->superset<false>(dbm);}
-        [[nodiscard]] inline bool exact_superset(const Federation& fed) const {return this->superset<true>(fed);}
-        [[nodiscard]] inline bool approx_superset(const Federation& fed) const {return this->superset<false>(fed);}
+        [[nodiscard]] inline bool is_exact_superset(const DBM& dbm) const {return this->is_superset<true>(dbm);}
+        [[nodiscard]] inline bool is_approx_superset(const DBM& dbm) const {return this->is_superset<false>(dbm);}
+        [[nodiscard]] inline bool is_exact_superset(const Federation& fed) const {return this->is_superset<true>(fed);}
+        [[nodiscard]] inline bool is_approx_superset(const Federation& fed) const {return this->is_superset<false>(fed);}
 
         /**
          * Checks if a federation intersect with a federation ie. if the intersection is non-empty

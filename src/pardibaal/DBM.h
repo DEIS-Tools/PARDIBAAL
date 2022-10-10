@@ -38,14 +38,22 @@ namespace pardibaal {
      * different means that they are neither equal or a sub/superset of each other, or the dimensions are different.
      */
     struct relation_t {
-        bool _equal, _subset, _superset, _different;
+    private:
+        bool _is_equal, _is_subset, _is_superset, _is_different;
+    
+    public:
         relation_t(bool equal, bool subset, bool superset, bool different) :
-            _equal(equal), _subset(subset), _superset(superset), _different(different) {}
+            _is_equal(equal), _is_subset(subset), _is_superset(superset), _is_different(different) {}
 
         [[nodiscard]] static relation_t equal();
         [[nodiscard]] static relation_t subset();
         [[nodiscard]] static relation_t superset();
         [[nodiscard]] static relation_t different();
+
+        [[nodiscard]] bool is_equal() const;
+        [[nodiscard]] bool is_subset() const;
+        [[nodiscard]] bool is_superset() const;
+        [[nodiscard]] bool is_different() const;
     };
 
     class DBM {
@@ -87,40 +95,40 @@ namespace pardibaal {
         template<bool is_exact = true>
         [[nodiscard]] relation_t relation(const Federation& fed) const;
 
-        [[nodiscard]] bool equal(const DBM& dbm) const;
+        [[nodiscard]] bool is_equal(const DBM& dbm) const;
 
         template<bool is_exact = true>
-        [[nodiscard]] bool equal(const Federation& fed) const;
+        [[nodiscard]] bool is_equal(const Federation& fed) const;
 
-        [[nodiscard]] bool subset(const DBM& dbm) const;
+        [[nodiscard]] bool is_subset(const DBM& dbm) const;
 
         template<bool is_exact = true>
-        [[nodiscard]] bool subset(const Federation& fed) const;
+        [[nodiscard]] bool is_subset(const Federation& fed) const;
         
-        [[nodiscard]] bool superset(const DBM& dbm) const;
+        [[nodiscard]] bool is_superset(const DBM& dbm) const;
 
         template<bool is_exact = true>
-        [[nodiscard]] bool superset(const Federation& fed) const;
+        [[nodiscard]] bool is_superset(const Federation& fed) const;
 
-        [[nodiscard]] bool different(const DBM& dbm) const;
+        [[nodiscard]] bool is_different(const DBM& dbm) const;
 
         template<bool is_exact = true>
-        [[nodiscard]] bool different(const Federation& fed) const;
+        [[nodiscard]] bool is_different(const Federation& fed) const;
 
         [[nodiscard]] inline relation_t exact_relation(const Federation& fed) const {return this->relation<true>(fed);}
         [[nodiscard]] inline relation_t approx_relation(const Federation& fed) const {return this->relation<false>(fed);}
 
-        [[nodiscard]] inline bool exact_equal(const Federation& fed) const {return this->equal<true>(fed);}
-        [[nodiscard]] inline bool approx_equal(const Federation& fed) const {return this->equal<false>(fed);}
+        [[nodiscard]] inline bool is_exact_equal(const Federation& fed) const {return this->is_equal<true>(fed);}
+        [[nodiscard]] inline bool is_approx_equal(const Federation& fed) const {return this->is_equal<false>(fed);}
 
-        [[nodiscard]] inline bool exact_subset(const Federation& fed) const {return this->subset<true>(fed);}
-        [[nodiscard]] inline bool approx_subset(const Federation& fed) const {return this->subset<false>(fed);}
+        [[nodiscard]] inline bool is_exact_subset(const Federation& fed) const {return this->is_subset<true>(fed);}
+        [[nodiscard]] inline bool is_approx_subset(const Federation& fed) const {return this->is_subset<false>(fed);}
 
-        [[nodiscard]] inline bool exact_superset(const Federation& fed) const {return this->superset<true>(fed);}
-        [[nodiscard]] inline bool approx_superset(const Federation& fed) const {return this->superset<false>(fed);}
+        [[nodiscard]] inline bool is_exact_superset(const Federation& fed) const {return this->is_superset<true>(fed);}
+        [[nodiscard]] inline bool is_approx_superset(const Federation& fed) const {return this->is_superset<false>(fed);}
 
-        [[nodiscard]] inline bool exact_different(const Federation& fed) const {return this->different<true>(fed);}
-        [[nodiscard]] inline bool approx_different(const Federation& fed) const {return this->different<false>(fed);}
+        [[nodiscard]] inline bool is_exact_different(const Federation& fed) const {return this->is_different<true>(fed);}
+        [[nodiscard]] inline bool is_approx_different(const Federation& fed) const {return this->is_different<false>(fed);}
 
         /**
          * Checks if two DBMs intersect ie. if the intersection is non-empty

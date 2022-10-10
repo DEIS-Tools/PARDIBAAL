@@ -62,9 +62,9 @@ namespace pardibaal {
         }
 #endif
         auto r = this->relation(dbm);
-        if (r._subset)
+        if (r.is_subset())
             *this = Federation(dbm);
-        if (r._different)
+        if (r.is_different())
             zones.push_back(dbm);
     }
 
@@ -161,10 +161,10 @@ namespace pardibaal {
 
         for (const auto& e : zones) {
             auto relation = e.relation(dbm);
-            if (relation._superset && not relation._equal) return relation;
+            if (relation.is_superset() && not relation.is_equal()) return relation;
 
-            eq = eq || relation._equal;
-            sub = sub && relation._subset;
+            eq = eq || relation.is_equal();
+            sub = sub && relation.is_subset();
         }
 
         if (eq && sub) return relation_t::equal();      // If one dbm is equal and all others are equal/subsets
@@ -206,10 +206,10 @@ namespace pardibaal {
 
             for (const auto& dbm : fed) {
                 auto relation = this->relation(dbm);
-                if (relation._subset && not relation._equal) return relation_t::subset();
+                if (relation.is_subset() && not relation.is_equal()) return relation_t::subset();
 
-                eq = eq || relation._equal;
-                sup = sup && relation._superset;
+                eq = eq || relation.is_equal();
+                sup = sup && relation.is_superset();
             }
 
             // If this is equal to one dbm in fed and supersets/equal to the rest
@@ -225,33 +225,33 @@ namespace pardibaal {
     }
 
     template<bool is_exact=true>
-    bool Federation::equal(const DBM& dbm) const {
-        return this->relation<is_exact>(dbm)._equal;
+    bool Federation::is_equal(const DBM& dbm) const {
+        return this->relation<is_exact>(dbm).is_equal();
     }
 
     template<bool is_exact=true>
-    bool Federation::equal(const Federation& fed) const {
-        return this->relation<is_exact>(fed)._equal;
+    bool Federation::is_equal(const Federation& fed) const {
+        return this->relation<is_exact>(fed).is_equal();
     }
 
     template<bool is_exact=true>
-    bool Federation::subset(const DBM& dbm) const {
-        return this->relation<is_exact>(dbm)._subset;
+    bool Federation::is_subset(const DBM& dbm) const {
+        return this->relation<is_exact>(dbm).is_subset();
     }
 
     template<bool is_exact=true>
-    bool Federation::subset(const Federation& fed) const {
-        return this->relation<is_exact>(fed)._subset;
+    bool Federation::is_subset(const Federation& fed) const {
+        return this->relation<is_exact>(fed).is_subset();
     }
 
     template<bool is_exact=true>
-    bool Federation::superset(const DBM& dbm) const {
-        return this->relation<is_exact>(dbm)._superset;
+    bool Federation::is_superset(const DBM& dbm) const {
+        return this->relation<is_exact>(dbm).is_superset();
     }
 
     template<bool is_exact=true>
-    bool Federation::superset(const Federation& fed) const {
-        return this->relation<is_exact>(fed)._superset;
+    bool Federation::is_superset(const Federation& fed) const {
+        return this->relation<is_exact>(fed).is_superset();
     }
 
 
@@ -260,20 +260,20 @@ namespace pardibaal {
     template relation_t Federation::relation<true>(const Federation& fed) const;
     template relation_t Federation::relation<false>(const Federation& fed) const;
     
-    template bool Federation::equal<true>(const DBM& dbm) const;
-    template bool Federation::equal<false>(const DBM& dbm) const;
-    template bool Federation::equal<true>(const Federation& fed) const;
-    template bool Federation::equal<false>(const Federation& fed) const;
+    template bool Federation::is_equal<true>(const DBM& dbm) const;
+    template bool Federation::is_equal<false>(const DBM& dbm) const;
+    template bool Federation::is_equal<true>(const Federation& fed) const;
+    template bool Federation::is_equal<false>(const Federation& fed) const;
     
-    template bool Federation::subset<true>(const DBM& dbm) const;
-    template bool Federation::subset<false>(const DBM& dbm) const;
-    template bool Federation::subset<true>(const Federation& fed) const;
-    template bool Federation::subset<false>(const Federation& fed) const;
+    template bool Federation::is_subset<true>(const DBM& dbm) const;
+    template bool Federation::is_subset<false>(const DBM& dbm) const;
+    template bool Federation::is_subset<true>(const Federation& fed) const;
+    template bool Federation::is_subset<false>(const Federation& fed) const;
     
-    template bool Federation::superset<true>(const DBM& dbm) const;
-    template bool Federation::superset<false>(const DBM& dbm) const;
-    template bool Federation::superset<true>(const Federation& fed) const;
-    template bool Federation::superset<false>(const Federation& fed) const;
+    template bool Federation::is_superset<true>(const DBM& dbm) const;
+    template bool Federation::is_superset<false>(const DBM& dbm) const;
+    template bool Federation::is_superset<true>(const Federation& fed) const;
+    template bool Federation::is_superset<false>(const Federation& fed) const;
     
 
     bool Federation::intersects(const DBM& dbm) const {
