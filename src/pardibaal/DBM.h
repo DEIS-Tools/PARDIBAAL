@@ -35,7 +35,8 @@ namespace pardibaal {
     /** 
      * Relation struct
      * represents the relation between two DBMs.
-     * different means that they are neither equal or a sub/superset of each other, or the dimensions are different.
+     * different means that they are not equal or a sub/superset of each other, or the dimensions are different.
+     * Subset and superset is sharp (not equal)
      */
     struct relation_t {
     private:

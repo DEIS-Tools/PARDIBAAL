@@ -31,7 +31,7 @@
 
 namespace pardibaal {
 
-    relation_t relation_t::equal() {return relation_t(true, true, true, false);}
+    relation_t relation_t::equal() {return relation_t(true, false, false, false);}
     relation_t relation_t::subset() {return relation_t(false, true, false, false);}
     relation_t relation_t::superset() {return relation_t(false, false, true, false);}
     relation_t relation_t::different() {return relation_t(false, false, false, true);}
@@ -99,7 +99,7 @@ namespace pardibaal {
         if (this->dimension() != dbm.dimension())
             return relation_t::different();
 
-        bool eq, sub = true, super = true;
+        bool eq = true, sub = true, super = true;
 
         for (dim_t i = 0; i < dimension(); ++i)
             for (dim_t j = 0; j < dimension(); ++j) {

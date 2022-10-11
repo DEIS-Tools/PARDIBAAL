@@ -61,8 +61,8 @@ namespace pardibaal {
                                  " to a federation with dimension: ", dimension());
         }
 #endif
-        auto r = this->relation(dbm);
-        if (r.is_subset())
+        auto r = this->approx_relation(dbm);
+        if (r.is_subset() || r.is_equal())
             *this = Federation(dbm);
         if (r.is_different())
             zones.push_back(dbm);
@@ -157,21 +157,25 @@ namespace pardibaal {
         if (this->dimension() != dbm.dimension())
             return relation_t::different();
 
-        bool eq = false, sub = true;
+        bool diff = false, eq = false;
 
         for (const auto& e : zones) {
             auto relation = e.relation(dbm);
-            if (relation.is_superset() && not relation.is_equal()) return relation;
+            if (relation.is_superset()) return relation;
 
+            diff = diff || relation.is_different();
             eq = eq || relation.is_equal();
-            sub = sub && relation.is_subset();
         }
 
-        if (eq && sub) return relation_t::equal();      // If one dbm is equal and all others are equal/subsets
-        if (eq && !sub) return relation_t::superset();  // If one dbm is equal, but not all the dbm are equal/subsets
-        if (sub) return relation_t::subset();           // If no dbm is equal but all of them are subsets
+        // At this point: no dbms in this fed are supersets of dbm
 
-        return relation_t::different();
+        if (diff && eq) return relation_t::superset(); // If some dbms are equal and some are different
+
+        if (diff && not eq) return relation_t::different(); // If none are equal, but some are different.
+
+        if (eq) return relation_t::equal(); // If one dbm is equal and none are different/supersets
+        
+        return relation_t::subset(); // If no dbm is equal/different/supersets, then all must be subsets
     }
 
     template<bool is_exact>
@@ -200,27 +204,40 @@ namespace pardibaal {
                 return relation_t::superset();
 
             return relation_t::different();
+
         } else {
 
-            bool eq = false, sup = true;
+           bool g_subeq = true,
+                g_supereq = true;
+            
+            // If dbms (by index) in rhs are included in lhs
+            std::vector<bool> supereq(fed.size(), false);
 
-            for (const auto& dbm : fed) {
-                auto relation = this->relation(dbm);
-                if (relation.is_subset() && not relation.is_equal()) return relation_t::subset();
+            for (const auto& dbm1 : this->zones) {
+                bool subeq = false; // If this dbm is included in the rhs
+                
+                int i = 0;
+                for (const auto& dbm2 : fed) {
+                    auto rel = dbm1.relation(dbm2);
 
-                eq = eq || relation.is_equal();
-                sup = sup && relation.is_superset();
+                    subeq = subeq || rel.is_equal() || rel.is_subset();
+                    supereq[i] = supereq[i] || rel.is_superset() || rel.is_equal();
+                    ++i;
+                }
+
+                g_subeq = g_subeq && subeq;
             }
 
-            // If this is equal to one dbm in fed and supersets/equal to the rest
-            if (eq && sup) return relation_t::equal();
-            
-            // If this is equal to one dbm in fed and not supersets to the rest (assumes no two dbms in fed are equal)
-            if (eq && !sup) return relation_t::subset();
+            for (const auto& b : supereq)
+                g_supereq = g_supereq && b;
 
-            // If this is a superset to all dbms in fed and not equal to any of them
-            if (sup) return relation_t::superset();
+            /* If g_subeq is true, then all dbm in lhs are included in rhs 
+             If g_supereq is true, then all dbm in rhs are included in lhs */
+            if (g_subeq && g_supereq)     return relation_t::equal();
+            if (g_subeq && not g_supereq) return relation_t::subset();
+            if (not g_subeq && g_supereq) return relation_t::superset();
         }
+
         return relation_t::different();
     }
 
