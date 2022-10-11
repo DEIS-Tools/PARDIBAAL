@@ -34,7 +34,8 @@ BOOST_AUTO_TEST_CASE(at_test_1) {
     BOOST_CHECK_THROW(fed.at(1), base_error);
     BOOST_CHECK_THROW(fed.at(-1), base_error);
 
-    BOOST_CHECK(fed.at(0).is_equal<false>(DBM(3)));
+    BOOST_CHECK(fed.at(0).is_equal(DBM(3)));
+    BOOST_CHECK(fed.is_approx_equal(DBM(3)));
 }
 
 BOOST_AUTO_TEST_CASE(add_test_1) {
@@ -263,8 +264,8 @@ BOOST_AUTO_TEST_CASE(relation_test_6) {
     BOOST_CHECK(fed1.is_approx_superset(dbm2));
     BOOST_CHECK(fed2.is_approx_superset(dbm1));
     BOOST_CHECK(fed2.is_approx_superset(dbm2));
-    BOOST_CHECK(approx1.is_superset());
-    BOOST_CHECK(approx2.is_superset());
+    BOOST_CHECK(approx1.is_equal());
+    BOOST_CHECK(approx2.is_equal());
 }
 
 BOOST_AUTO_TEST_CASE(exact_relation_test_1) {
@@ -398,13 +399,14 @@ BOOST_AUTO_TEST_CASE(exact_relation_test_6) {
     fed2.add(dbm3);
     fed2.add(dbm4);
 
-    // auto approx1 = fed1.approx_relation(fed2);
-    // auto approx2 = fed2.approx_relation(fed1);
+    auto approx1 = fed1.approx_relation(fed2);
+    auto approx2 = fed2.approx_relation(fed1);
     auto exact1 = fed1.exact_relation(fed2);
     auto exact2 = fed2.exact_relation(fed1);
 
-    // BOOST_CHECK(approx1.is_different() && "If this fails, then perhaps the approximate relation is more precise");
-    // BOOST_CHECK(approx2.is_different() && "If this fails, then perhaps the approximate relation is more precise");
+    // approx is not as good as exact
+    BOOST_CHECK(not approx1.is_equal());
+    BOOST_CHECK(not approx2.is_equal());
 
     BOOST_CHECK(exact1.is_equal() && exact2.is_equal());
 }
@@ -429,12 +431,16 @@ BOOST_AUTO_TEST_CASE(exact_relation_test_7) {
     fed2.add(dbm1);
     fed2.add(dbm2);
 
-    // auto approx1 = fed1.relation<false>(fed2);
-    // auto approx2 = fed2.relation<false>(fed1);
+    auto approx1 = fed1.approx_relation(fed2);
+    auto approx2 = fed2.approx_relation(fed1);
     auto exact1 = fed1.exact_relation(fed2);
     auto exact2 = fed2.exact_relation(fed1);
 
-    BOOST_CHECK(exact1.is_equal() && exact2.is_equal());
+    BOOST_CHECK(approx1.is_equal());
+    BOOST_CHECK(approx2.is_equal());
+
+    BOOST_CHECK(exact1.is_equal());
+    BOOST_CHECK(exact2.is_equal());
 }
 
 BOOST_AUTO_TEST_CASE(intersects_test_1) {
