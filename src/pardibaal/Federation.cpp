@@ -145,7 +145,7 @@ namespace pardibaal {
         return true;
     }
 
-    template<bool is_exact>
+    template<bool is_exact = true>
     relation_t Federation::relation(const DBM& dbm) const {
         if (is_exact)
             return this->relation<true>(Federation(dbm));
@@ -178,7 +178,7 @@ namespace pardibaal {
         return relation_t::subset(); // If no dbm is equal/different/supersets, then all must be subsets
     }
 
-    template<bool is_exact>
+    template<bool is_exact = true>
     relation_t Federation::relation(const Federation& fed) const {
         if (this->is_empty())
             return fed.is_empty() ? relation_t::equal() : relation_t::subset();

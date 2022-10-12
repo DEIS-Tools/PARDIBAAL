@@ -117,7 +117,7 @@ namespace pardibaal {
         return relation_t::different();
     }
 
-    template<bool is_exact>
+    template<bool is_exact = true>
     relation_t DBM::relation(const Federation& fed) const {
         auto r = fed.relation<is_exact>(*this);
 
