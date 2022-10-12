@@ -268,6 +268,22 @@ BOOST_AUTO_TEST_CASE(relation_test_6) {
     BOOST_CHECK(approx2.is_equal());
 }
 
+BOOST_AUTO_TEST_CASE(relation_test_7) {
+    auto fed1 = Federation::unconstrained(3),
+         fed2 = Federation::zero(3);
+    auto dbm = DBM::unconstrained(3);
+
+    dbm.restrict(clock_constraint_t::upper_strict(1, 2));
+
+    fed2.add(dbm);
+
+    // should terminate faster
+    BOOST_CHECK(fed1.is_superset(fed2));
+
+    // Does not terminate faster
+    BOOST_CHECK(fed2.is_subset(fed1));
+}
+
 BOOST_AUTO_TEST_CASE(exact_relation_test_1) {
     Federation fed(3);
     DBM dbm(3);

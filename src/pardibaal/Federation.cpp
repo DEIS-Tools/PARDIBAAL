@@ -215,15 +215,20 @@ namespace pardibaal {
 
             for (const auto& dbm1 : this->zones) {
                 bool subeq = false; // If this dbm is included in the rhs
+                bool check_super = true; // Used for early termination when a single DBM includes all of fed
                 
                 int i = 0;
                 for (const auto& dbm2 : fed) {
                     auto rel = dbm1.relation(dbm2);
 
+                    check_super = check_super && rel.is_superset();
+
                     subeq = subeq || rel.is_equal() || rel.is_subset();
                     supereq[i] = supereq[i] || rel.is_superset() || rel.is_equal();
                     ++i;
                 }
+
+                if (check_super) return relation_t::superset();
 
                 g_subeq = g_subeq && subeq;
             }
