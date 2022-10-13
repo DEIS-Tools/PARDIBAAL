@@ -117,7 +117,7 @@ namespace pardibaal {
         return relation_t::different();
     }
 
-    template<bool is_exact = true>
+    template<bool is_exact>
     relation_t DBM::relation(const Federation& fed) const {
         auto r = fed.relation<is_exact>(*this);
 
@@ -130,22 +130,22 @@ namespace pardibaal {
 
     bool DBM::is_equal(const DBM& dbm)            const {return this->relation(dbm).is_equal();}
     
-    template<bool is_exact = true>
+    template<bool is_exact>
     bool DBM::is_equal(const Federation &fed)     const {return this->relation<is_exact>(fed).is_equal();}
     
     bool DBM::is_subset(const DBM& dbm)           const {return this->relation(dbm).is_subset();}
     
-    template<bool is_exact = true>
+    template<bool is_exact>
     bool DBM::is_subset(const Federation &fed)    const {return this->relation<is_exact>(fed).is_subset();}
     
     bool DBM::is_superset(const DBM& dbm)         const {return this->relation(dbm).is_superset();}
     
-    template<bool is_exact = true>
+    template<bool is_exact>
     bool DBM::is_superset(const Federation &fed)  const {return this->relation<is_exact>(fed).is_superset();}
 
     bool DBM::is_different(const DBM& dbm)        const {return this->relation(dbm).is_different();}
     
-    template<bool is_exact = true>
+    template<bool is_exact>
     bool DBM::is_different(const Federation &fed) const {return this->relation<is_exact>(fed).is_different();}
 
     template relation_t DBM::relation<true>(const Federation& fed) const;

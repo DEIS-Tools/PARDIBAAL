@@ -133,7 +133,7 @@ namespace pardibaal {
          * @param fed the rhs (federation) of the relation expression.
          * @return relation_t representing this in relation to fed.
          */
-        template<bool is_exact=true>
+        template<bool is_exact = true>
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
 
         /**
@@ -144,7 +144,7 @@ namespace pardibaal {
          * @param fed the rhs (federation) of the relation expression.
          * @return relation_t representing this in relation to fed.
          */
-        template<bool is_exact=true>
+        template<bool is_exact = true>
         [[nodiscard]] relation_t relation(const Federation& fed) const;
 
         /**
@@ -153,7 +153,7 @@ namespace pardibaal {
          * @param dbm rhs of the equality.
          * @return true if the dbm and federation includes the exact same space.
          */
-        template<bool is_exact=true>
+        template<bool is_exact = true>
         [[nodiscard]] bool is_equal(const DBM& dbm) const;
 
         /**
@@ -162,7 +162,7 @@ namespace pardibaal {
          * @param fed rhs of the equality.
          * @return true if the federations includes the exact same space.
          */
-        template<bool is_exact=true>
+        template<bool is_exact = true>
         [[nodiscard]] bool is_equal(const Federation& fed) const;
 
 
@@ -172,7 +172,7 @@ namespace pardibaal {
          * @param dbm rhs of the relation.
          * @return true if this is included in the dbm
          */
-        template<bool is_exact=true>
+        template<bool is_exact = true>
         [[nodiscard]] bool is_subset(const DBM& dbm) const;
 
 
@@ -182,7 +182,7 @@ namespace pardibaal {
          * @param fed rhs of the relation.
          * @return true if this is included in fed
          */
-        template<bool is_exact=true>
+        template<bool is_exact = true>
         [[nodiscard]] bool is_subset(const Federation& fed) const;
 
 
@@ -192,7 +192,7 @@ namespace pardibaal {
          * @param dbm rhs of the relation.
          * @return true if this includes the dbm
          */
-        template<bool is_exact=true>
+        template<bool is_exact = true>
         [[nodiscard]] bool is_superset(const DBM& dbm) const;
 
         
@@ -202,7 +202,7 @@ namespace pardibaal {
          * @param fed rhs of the relation.
          * @return true if this includes fed
          */
-        template<bool is_exact=true>
+        template<bool is_exact = true>
         [[nodiscard]] bool is_superset(const Federation& fed) const;
 
         [[nodiscard]] inline relation_t exact_relation(const DBM& dbm) const {return this->relation<true>(dbm);}
