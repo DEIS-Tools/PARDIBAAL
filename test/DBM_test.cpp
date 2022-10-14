@@ -83,6 +83,28 @@ BOOST_AUTO_TEST_CASE(bounded_future_test_2) {
     BOOST_CHECK(Z.is_equal(D));
 }
 
+BOOST_AUTO_TEST_CASE(bounded_future_test_3) {
+    DBM D(10);
+
+    D.free(2);
+    D.future(5);
+
+    for (dim_t i = 0; i < 10; i++)
+        for (dim_t j = 0; j < 10; j++) {               
+            if (j == 0 && i != 0) {
+                if (i == 2)
+                    BOOST_CHECK(D.at(i, j) == bound_t::inf() && D.at(i,j).get_bound() == 0);
+                else
+                    BOOST_CHECK(D.at(i, j) == bound_t::non_strict(5));
+            } else {
+                if (i == 2 && j != 2)
+                    BOOST_CHECK(D.at(i, j) == bound_t::inf() && D.at(i, j).get_bound() == 0);
+                else
+                    BOOST_CHECK(D.at(i, j) == bound_t::zero());
+            }
+        }
+}
+
 BOOST_AUTO_TEST_CASE(delay_test_1) {
     DBM D(10);
 

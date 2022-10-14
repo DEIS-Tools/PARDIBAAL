@@ -67,15 +67,21 @@ namespace pardibaal {
     }
 
     bound_t bound_t::operator+(val_t rhs) const {
-        return bound_t(this->get_bound() + rhs, this->is_strict());
+        if (not this->is_inf())
+            return bound_t(this->get_bound() + rhs, this->is_strict());
+        return *this;
     }
 
     bound_t bound_t::operator-(val_t rhs) const {
-        return bound_t(this->get_bound() - rhs, this->is_strict());
+        if (not this->is_inf())
+            return bound_t(this->get_bound() - rhs, this->is_strict());
+        return *this;
     }
 
     bound_t bound_t::operator*(val_t rhs) const {
-        return bound_t(this->get_bound() * rhs, this->is_strict());
+        if (not this->is_inf())
+            return bound_t(this->get_bound() * rhs, this->is_strict());
+        return *this;
     }
 
     bool bound_t::operator<(bound_t rhs) const {
