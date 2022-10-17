@@ -147,7 +147,7 @@ namespace pardibaal {
 
     template<bool is_exact>
     relation_t Federation::relation(const DBM& dbm) const {
-        if (is_exact)
+        if constexpr(is_exact)
             return this->relation<true>(Federation(dbm));
         
         if (this->is_empty())
@@ -187,7 +187,7 @@ namespace pardibaal {
         if (this->dimension() != fed.dimension())
             return relation_t::different();
 
-        if (is_exact) {
+        if constexpr(is_exact) {
             
             auto fed1 = *this;
             auto fed2 = fed;
@@ -233,7 +233,7 @@ namespace pardibaal {
                 g_subeq = g_subeq && subeq;
             }
 
-            for (const auto& b : supereq)
+            for (const auto b : supereq)
                 g_supereq = g_supereq && b;
 
             /* If g_subeq is true, then all dbm in lhs are included in rhs 
