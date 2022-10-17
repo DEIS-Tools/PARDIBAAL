@@ -147,7 +147,7 @@ namespace pardibaal {
 
     template<bool is_exact>
     relation_t Federation::relation(const DBM& dbm) const {
-        if (is_exact)
+        if constexpr(is_exact)
             return this->relation<true>(Federation(dbm));
         
         if (this->is_empty())
@@ -187,7 +187,7 @@ namespace pardibaal {
         if (this->dimension() != fed.dimension())
             return relation_t::different();
 
-        if (is_exact) {
+        if constexpr(is_exact) {
             
             auto fed1 = *this;
             auto fed2 = fed;
