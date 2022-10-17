@@ -32,19 +32,29 @@
 
 namespace pardibaal {
     class Federation;
-    /** Relation struct
+    /** 
+     * Relation struct
      * represents the relation between two DBMs.
-     * different means that they are neither equal or a sub/superset of each other, or the dimensions are different.
+     * different means that they are not equal or a sub/superset of each other, or the dimensions are different.
+     * Subset and superset is sharp (not equal)
      */
     struct relation_t {
-        bool _equal, _subset, _superset, _different;
+    private:
+        bool _is_equal, _is_subset, _is_superset, _is_different;
+    
+    public:
         relation_t(bool equal, bool subset, bool superset, bool different) :
-            _equal(equal), _subset(subset), _superset(superset), _different(different) {}
+            _is_equal(equal), _is_subset(subset), _is_superset(superset), _is_different(different) {}
 
         [[nodiscard]] static relation_t equal();
         [[nodiscard]] static relation_t subset();
         [[nodiscard]] static relation_t superset();
         [[nodiscard]] static relation_t different();
+
+        [[nodiscard]] bool is_equal() const;
+        [[nodiscard]] bool is_subset() const;
+        [[nodiscard]] bool is_superset() const;
+        [[nodiscard]] bool is_different() const;
     };
 
     class DBM {
@@ -69,15 +79,57 @@ namespace pardibaal {
         [[nodiscard]] bool satisfies(const clock_constraint_t& constraint) const;
         [[nodiscard]] bool satisfies(const std::vector<clock_constraint_t>& constraints) const;
 
+        /**
+         * Relation between this dbm and another dbm.
+         * This relation is always exact.
+         * @param dbm the rhs of the relation expression.
+         * @return relation_t representing this in relation to dbm
+         */
         [[nodiscard]] relation_t relation(const DBM& dbm) const;
+
+        /**
+         * Relation between this dbm and a federation
+         * Can be either exact (slow, default) or approximate (fast) see Federation::relation
+         * @param fed The rhs of the relation
+         * @return relation_t representing this in relation to fed
+         */
+        template<bool is_exact = true>
         [[nodiscard]] relation_t relation(const Federation& fed) const;
 
-        [[nodiscard]] bool equal(const DBM& dbm) const;
-        [[nodiscard]] bool equal(const Federation& fed) const;
-        [[nodiscard]] bool subset(const DBM& dbm) const;
-        [[nodiscard]] bool subset(const Federation& fed) const;
-        [[nodiscard]] bool superset(const DBM& dbm) const;
-        [[nodiscard]] bool superset(const Federation& fed) const;
+        [[nodiscard]] bool is_equal(const DBM& dbm) const;
+
+        template<bool is_exact = true>
+        [[nodiscard]] bool is_equal(const Federation& fed) const;
+
+        [[nodiscard]] bool is_subset(const DBM& dbm) const;
+
+        template<bool is_exact = true>
+        [[nodiscard]] bool is_subset(const Federation& fed) const;
+        
+        [[nodiscard]] bool is_superset(const DBM& dbm) const;
+
+        template<bool is_exact = true>
+        [[nodiscard]] bool is_superset(const Federation& fed) const;
+
+        [[nodiscard]] bool is_different(const DBM& dbm) const;
+
+        template<bool is_exact = true>
+        [[nodiscard]] bool is_different(const Federation& fed) const;
+
+        [[nodiscard]] inline relation_t exact_relation(const Federation& fed) const {return this->relation<true>(fed);}
+        [[nodiscard]] inline relation_t approx_relation(const Federation& fed) const {return this->relation<false>(fed);}
+
+        [[nodiscard]] inline bool is_exact_equal(const Federation& fed) const {return this->is_equal<true>(fed);}
+        [[nodiscard]] inline bool is_approx_equal(const Federation& fed) const {return this->is_equal<false>(fed);}
+
+        [[nodiscard]] inline bool is_exact_subset(const Federation& fed) const {return this->is_subset<true>(fed);}
+        [[nodiscard]] inline bool is_approx_subset(const Federation& fed) const {return this->is_subset<false>(fed);}
+
+        [[nodiscard]] inline bool is_exact_superset(const Federation& fed) const {return this->is_superset<true>(fed);}
+        [[nodiscard]] inline bool is_approx_superset(const Federation& fed) const {return this->is_superset<false>(fed);}
+
+        [[nodiscard]] inline bool is_exact_different(const Federation& fed) const {return this->is_different<true>(fed);}
+        [[nodiscard]] inline bool is_approx_different(const Federation& fed) const {return this->is_different<false>(fed);}
 
         /**
          * Checks if two DBMs intersect ie. if the intersection is non-empty

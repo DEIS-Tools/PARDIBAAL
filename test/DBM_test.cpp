@@ -79,8 +79,8 @@ BOOST_AUTO_TEST_CASE(bounded_future_test_2) {
 
     D.future(0);
 
-    BOOST_CHECK(D.equal(Z));
-    BOOST_CHECK(Z.equal(D));
+    BOOST_CHECK(D.is_equal(Z));
+    BOOST_CHECK(Z.is_equal(D));
 }
 
 BOOST_AUTO_TEST_CASE(delay_test_1) {
@@ -104,8 +104,8 @@ BOOST_AUTO_TEST_CASE(delay_test_2) {
 
     D.delay(0);
 
-    BOOST_CHECK(D.equal(Z));
-    BOOST_CHECK(Z.equal(D));
+    BOOST_CHECK(D.is_equal(Z));
+    BOOST_CHECK(Z.is_equal(D));
 }
 
 BOOST_AUTO_TEST_CASE(interval_delay_test_1) {
@@ -114,8 +114,8 @@ BOOST_AUTO_TEST_CASE(interval_delay_test_1) {
     D.interval_delay(0, 5);
     Z.future(5);
 
-    BOOST_CHECK(D.equal(Z));
-    BOOST_CHECK(Z.equal(D));
+    BOOST_CHECK(D.is_equal(Z));
+    BOOST_CHECK(Z.is_equal(D));
 }
 
 BOOST_AUTO_TEST_CASE(interval_delay_test_2) {
@@ -125,8 +125,8 @@ BOOST_AUTO_TEST_CASE(interval_delay_test_2) {
     Z.delay(2);
     Z.future(3);
 
-    BOOST_CHECK(D.equal(Z));
-    BOOST_CHECK(Z.equal(D));
+    BOOST_CHECK(D.is_equal(Z));
+    BOOST_CHECK(Z.is_equal(D));
 }
 
 BOOST_AUTO_TEST_CASE(restrict_test_1) {
@@ -779,7 +779,7 @@ BOOST_AUTO_TEST_CASE(intersection_test_1) {
 
     dbm1.intersection(dbm2);
 
-    BOOST_CHECK(dbm1.equal(dbm2));
+    BOOST_CHECK(dbm1.is_equal(dbm2));
 }
 
 BOOST_AUTO_TEST_CASE(intersection_test_2) {
@@ -842,14 +842,14 @@ BOOST_AUTO_TEST_CASE(relation_test_1) {
     DBM D1(2);
     DBM D2(3);
 
-    BOOST_CHECK(D1.relation(D2)._different);
-    BOOST_CHECK(not D1.equal(D2));
-    BOOST_CHECK(not D1.subset(D2));
-    BOOST_CHECK(not D1.superset(D2));
-    BOOST_CHECK(D2.relation(D1)._different);
-    BOOST_CHECK(not D2.equal(D1));
-    BOOST_CHECK(not D2.subset(D1));
-    BOOST_CHECK(not D2.superset(D1));
+    BOOST_CHECK(D1.relation(D2).is_different());
+    BOOST_CHECK(not D1.is_equal(D2));
+    BOOST_CHECK(not D1.is_subset(D2));
+    BOOST_CHECK(not D1.is_superset(D2));
+    BOOST_CHECK(D2.relation(D1).is_different());
+    BOOST_CHECK(not D2.is_equal(D1));
+    BOOST_CHECK(not D2.is_subset(D1));
+    BOOST_CHECK(not D2.is_superset(D1));
 }
 
 BOOST_AUTO_TEST_CASE(relation_test_2) {
@@ -858,17 +858,17 @@ BOOST_AUTO_TEST_CASE(relation_test_2) {
 
     D2.future();
 
-    BOOST_CHECK(D1.relation(D2)._subset);
-    BOOST_CHECK(D1.subset(D2));
-    BOOST_CHECK(D2.relation(D1)._superset);
-    BOOST_CHECK(D2.superset(D1));
+    BOOST_CHECK(D1.relation(D2).is_subset());
+    BOOST_CHECK(D1.is_subset(D2));
+    BOOST_CHECK(D2.relation(D1).is_superset());
+    BOOST_CHECK(D2.is_superset(D1));
 
     D1.free(1);
 
-    BOOST_CHECK(D1.relation(D2)._equal);
-    BOOST_CHECK(D1.equal(D2));
-    BOOST_CHECK(D2.relation(D1)._equal);
-    BOOST_CHECK(D2.equal(D1));
+    BOOST_CHECK(D1.relation(D2).is_equal());
+    BOOST_CHECK(D1.is_equal(D2));
+    BOOST_CHECK(D2.relation(D1).is_equal());
+    BOOST_CHECK(D2.is_equal(D1));
 }
 
 BOOST_AUTO_TEST_CASE(relation_test_3) {
@@ -878,34 +878,34 @@ BOOST_AUTO_TEST_CASE(relation_test_3) {
     D1.assign(1, 10);
     D2.assign(1, 5);
 
-    BOOST_CHECK(D1.relation(D2)._different);
-    BOOST_CHECK(not D1.equal(D2));
-    BOOST_CHECK(not D1.subset(D2));
-    BOOST_CHECK(not D1.superset(D2));
+    BOOST_CHECK(D1.relation(D2).is_different());
+    BOOST_CHECK(not D1.is_equal(D2));
+    BOOST_CHECK(not D1.is_subset(D2));
+    BOOST_CHECK(not D1.is_superset(D2));
 
     D1.future();
     D2.future();
 
-    BOOST_CHECK(D1.relation(D2)._subset);
-    BOOST_CHECK(D1.subset(D2));
-    BOOST_CHECK(D2.relation(D1)._superset);
-    BOOST_CHECK(D2.superset(D1));
-    BOOST_CHECK(not D2.relation(D1)._equal);
-    BOOST_CHECK(not D2.equal(D1));
+    BOOST_CHECK(D1.relation(D2).is_subset());
+    BOOST_CHECK(D1.is_subset(D2));
+    BOOST_CHECK(D2.relation(D1).is_superset());
+    BOOST_CHECK(D2.is_superset(D1));
+    BOOST_CHECK(not D2.relation(D1).is_equal());
+    BOOST_CHECK(not D2.is_equal(D1));
 
     D1.assign(1, 10);
 
-    BOOST_CHECK(D1.relation(D2)._subset);
-    BOOST_CHECK(D1.subset(D2));
-    BOOST_CHECK(not D1.superset(D2));
+    BOOST_CHECK(D1.relation(D2).is_subset());
+    BOOST_CHECK(D1.is_subset(D2));
+    BOOST_CHECK(not D1.is_superset(D2));
 
-    BOOST_CHECK(D2.relation(D1)._superset);
-    BOOST_CHECK(D2.superset(D1));
-    BOOST_CHECK(not D2.subset(D1));
+    BOOST_CHECK(D2.relation(D1).is_superset());
+    BOOST_CHECK(D2.is_superset(D1));
+    BOOST_CHECK(not D2.is_subset(D1));
 
-    BOOST_CHECK(!D2.relation(D1)._equal);
-    BOOST_CHECK(not D2.equal(D1));
-    BOOST_CHECK(not D1.equal(D2));
+    BOOST_CHECK(!D2.relation(D1).is_equal());
+    BOOST_CHECK(not D2.is_equal(D1));
+    BOOST_CHECK(not D1.is_equal(D2));
 }
 
 BOOST_AUTO_TEST_CASE(relation_test_4) {
@@ -913,7 +913,7 @@ BOOST_AUTO_TEST_CASE(relation_test_4) {
 
     a.future();
 
-    BOOST_CHECK(a.equal(b));
+    BOOST_CHECK(a.is_equal(b));
 }
 
 BOOST_AUTO_TEST_CASE(intersects_test_1) {
@@ -969,7 +969,7 @@ BOOST_AUTO_TEST_CASE(zero_test_1) {
         for (dim_t j = 0; j < dimension; ++j)
             dbm.set(i, j, bound_t::non_strict(0));
 
-    BOOST_CHECK(DBM::zero(dimension).equal(dbm));
+    BOOST_CHECK(DBM::zero(dimension).is_equal(dbm));
 }
 
 BOOST_AUTO_TEST_CASE(unconstrained_test_1) {
@@ -984,5 +984,5 @@ BOOST_AUTO_TEST_CASE(unconstrained_test_1) {
         }
     }
 
-    BOOST_CHECK(DBM::unconstrained(dimension).equal(dbm));
+    BOOST_CHECK(DBM::unconstrained(dimension).is_equal(dbm));
 }

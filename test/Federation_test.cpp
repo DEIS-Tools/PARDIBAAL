@@ -34,7 +34,8 @@ BOOST_AUTO_TEST_CASE(at_test_1) {
     BOOST_CHECK_THROW(fed.at(1), base_error);
     BOOST_CHECK_THROW(fed.at(-1), base_error);
 
-    BOOST_CHECK(fed.at(0).equal(DBM(3)));
+    BOOST_CHECK(fed.at(0).is_equal(DBM(3)));
+    BOOST_CHECK(fed.is_approx_equal(DBM(3)));
 }
 
 BOOST_AUTO_TEST_CASE(add_test_1) {
@@ -139,78 +140,78 @@ BOOST_AUTO_TEST_CASE(relation_test_1) {
 
     dbm.set(0, 0, bound_t::strict(-1));
 
-    auto relation1 = fed.relation(dbm);
-    auto relation2 = dbm.relation(fed);
+    auto relation1 = fed.approx_relation(dbm);
+    auto relation2 = dbm.approx_relation(fed);
 
-    BOOST_CHECK(relation1._superset);
-    BOOST_CHECK(not relation1._equal);
-    BOOST_CHECK(not relation1._subset);
-    BOOST_CHECK(not relation1._different);
+    BOOST_CHECK(relation1.is_superset());
+    BOOST_CHECK(not relation1.is_equal());
+    BOOST_CHECK(not relation1.is_subset());
+    BOOST_CHECK(not relation1.is_different());
 
-    BOOST_CHECK(not relation2._superset);
-    BOOST_CHECK(not relation2._equal);
-    BOOST_CHECK(relation2._subset);
-    BOOST_CHECK(not relation2._different);
+    BOOST_CHECK(not relation2.is_superset());
+    BOOST_CHECK(not relation2.is_equal());
+    BOOST_CHECK(relation2.is_subset());
+    BOOST_CHECK(not relation2.is_different());
 
-    BOOST_CHECK(fed.superset(dbm));
-    BOOST_CHECK(not fed.equal(dbm));
-    BOOST_CHECK(not fed.subset(dbm));
+    BOOST_CHECK(fed.is_approx_superset(dbm));
+    BOOST_CHECK(not fed.is_approx_equal(dbm));
+    BOOST_CHECK(not fed.is_approx_subset(dbm));
 
-    BOOST_CHECK(not dbm.superset(fed));
-    BOOST_CHECK(not dbm.equal(fed));
-    BOOST_CHECK(dbm.subset(fed));
+    BOOST_CHECK(not dbm.is_approx_superset(fed));
+    BOOST_CHECK(not dbm.is_approx_equal(fed));
+    BOOST_CHECK(dbm.is_approx_subset(fed));
 }
 
 BOOST_AUTO_TEST_CASE(relation_test_2) {
     DBM dbm(3);
     auto fed = Federation();
 
-    auto relation1 = fed.relation(dbm);
-    auto relation2 = dbm.relation(fed);
+    auto relation1 = fed.approx_relation(dbm);
+    auto relation2 = dbm.approx_relation(fed);
 
-    BOOST_CHECK(not relation1._superset);
-    BOOST_CHECK(not relation1._equal);
-    BOOST_CHECK(relation1._subset);
-    BOOST_CHECK(not relation1._different);
+    BOOST_CHECK(not relation1.is_superset());
+    BOOST_CHECK(not relation1.is_equal());
+    BOOST_CHECK(relation1.is_subset());
+    BOOST_CHECK(not relation1.is_different());
 
-    BOOST_CHECK( relation2._superset);
-    BOOST_CHECK(not relation2._equal);
-    BOOST_CHECK(not relation2._subset);
-    BOOST_CHECK(not relation2._different);
+    BOOST_CHECK( relation2.is_superset());
+    BOOST_CHECK(not relation2.is_equal());
+    BOOST_CHECK(not relation2.is_subset());
+    BOOST_CHECK(not relation2.is_different());
 
-    BOOST_CHECK(not fed.superset(dbm));
-    BOOST_CHECK(not fed.equal(dbm));
-    BOOST_CHECK(fed.subset(dbm));
+    BOOST_CHECK(not fed.is_approx_superset(dbm));
+    BOOST_CHECK(not fed.is_approx_equal(dbm));
+    BOOST_CHECK(fed.is_approx_subset(dbm));
 
-    BOOST_CHECK(dbm.superset(fed));
-    BOOST_CHECK(not dbm.equal(fed));
-    BOOST_CHECK(not dbm.subset(fed));
+    BOOST_CHECK(dbm.is_approx_superset(fed));
+    BOOST_CHECK(not dbm.is_approx_equal(fed));
+    BOOST_CHECK(not dbm.is_approx_subset(fed));
 }
 
 BOOST_AUTO_TEST_CASE(relation_test_3) {
     Federation fed1(3);
     auto fed2 = Federation();
 
-    auto relation1 = fed1.relation(fed2);
-    auto relation2 = fed2.relation(fed1);
+    auto relation1 = fed1.approx_relation(fed2);
+    auto relation2 = fed2.approx_relation(fed1);
 
-    BOOST_CHECK(relation1._superset);
-    BOOST_CHECK(not relation1._equal);
-    BOOST_CHECK(not relation1._subset);
-    BOOST_CHECK(not relation1._different);
+    BOOST_CHECK(relation1.is_superset());
+    BOOST_CHECK(not relation1.is_equal());
+    BOOST_CHECK(not relation1.is_subset());
+    BOOST_CHECK(not relation1.is_different());
 
-    BOOST_CHECK(not relation2._superset);
-    BOOST_CHECK(not relation2._equal);
-    BOOST_CHECK(relation2._subset);
-    BOOST_CHECK(not relation2._different);
+    BOOST_CHECK(not relation2.is_superset());
+    BOOST_CHECK(not relation2.is_equal());
+    BOOST_CHECK(relation2.is_subset());
+    BOOST_CHECK(not relation2.is_different());
 
-    BOOST_CHECK(fed1.superset(fed2));
-    BOOST_CHECK(not fed1.equal(fed2));
-    BOOST_CHECK(not fed1.subset(fed2));
+    BOOST_CHECK(fed1.is_approx_superset(fed2));
+    BOOST_CHECK(not fed1.is_approx_equal(fed2));
+    BOOST_CHECK(not fed1.is_approx_subset(fed2));
 
-    BOOST_CHECK(not fed2.superset(fed1));
-    BOOST_CHECK(not fed2.equal(fed1));
-    BOOST_CHECK(fed2.subset(fed1));
+    BOOST_CHECK(not fed2.is_approx_superset(fed1));
+    BOOST_CHECK(not fed2.is_approx_equal(fed1));
+    BOOST_CHECK(fed2.is_approx_subset(fed1));
 }
 
 BOOST_AUTO_TEST_CASE(relation_test_4) {
@@ -220,7 +221,7 @@ BOOST_AUTO_TEST_CASE(relation_test_4) {
 
     fed.add(dbm);
 
-    BOOST_CHECK(fed.superset(dbm));
+    BOOST_CHECK(fed.is_approx_superset(dbm));
 }
 
 BOOST_AUTO_TEST_CASE(relation_test_5) {
@@ -232,8 +233,230 @@ BOOST_AUTO_TEST_CASE(relation_test_5) {
 
     fed1.add(dbm);
 
-    BOOST_CHECK(fed1.superset(fed2));
-    BOOST_CHECK(fed2.subset(fed1));
+    BOOST_CHECK(fed1.is_approx_superset(fed2));
+    BOOST_CHECK(fed2.is_approx_subset(fed1));
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_6) {
+    auto fed1 = Federation::zero(3),
+         fed2 = Federation::zero(3);
+    auto dbm1 = DBM::unconstrained(3),
+         dbm2 = DBM::unconstrained(3);
+    
+    dbm1.restrict(clock_constraint_t::upper_non_strict(1, 10));
+    dbm2.restrict(clock_constraint_t::lower_strict(1, 10));
+
+    dbm1.restrict(clock_constraint_t::upper_non_strict(2, 5));
+    dbm2.restrict(clock_constraint_t::lower_strict(2, 5));
+
+    BOOST_CHECK(dbm1.relation(dbm2).is_different());
+    BOOST_CHECK(dbm2.relation(dbm1).is_different());
+
+    fed1.add(dbm1);
+    fed1.add(dbm2);
+    fed2.add(dbm1);
+    fed2.add(dbm2);
+
+    auto approx1 = fed1.approx_relation(fed2);
+    auto approx2 = fed2.approx_relation(fed1);
+
+    BOOST_CHECK(fed1.is_approx_superset(dbm1));
+    BOOST_CHECK(fed1.is_approx_superset(dbm2));
+    BOOST_CHECK(fed2.is_approx_superset(dbm1));
+    BOOST_CHECK(fed2.is_approx_superset(dbm2));
+    BOOST_CHECK(approx1.is_equal());
+    BOOST_CHECK(approx2.is_equal());
+}
+
+BOOST_AUTO_TEST_CASE(relation_test_7) {
+    auto fed1 = Federation::unconstrained(3),
+         fed2 = Federation::zero(3);
+    auto dbm = DBM::unconstrained(3);
+
+    dbm.restrict(clock_constraint_t::upper_strict(1, 2));
+
+    fed2.add(dbm);
+
+    // should terminate faster
+    BOOST_CHECK(fed1.is_superset(fed2));
+
+    // Does not terminate faster
+    BOOST_CHECK(fed2.is_subset(fed1));
+}
+
+BOOST_AUTO_TEST_CASE(exact_relation_test_1) {
+    Federation fed(3);
+    DBM dbm(3);
+
+    dbm.set(0, 0, bound_t::strict(-1));
+
+    auto relation1 = fed.exact_relation(dbm);
+    auto relation2 = dbm.exact_relation(fed);
+
+    BOOST_CHECK(relation1.is_superset());
+    BOOST_CHECK(not relation1.is_equal());
+    BOOST_CHECK(not relation1.is_subset());
+    BOOST_CHECK(not relation1.is_different());
+
+    BOOST_CHECK(not relation2.is_superset());
+    BOOST_CHECK(not relation2.is_equal());
+    BOOST_CHECK(relation2.is_subset());
+    BOOST_CHECK(not relation2.is_different());
+
+    BOOST_CHECK(fed.is_exact_superset(dbm));
+    BOOST_CHECK(not fed.is_exact_equal(dbm));
+    BOOST_CHECK(not fed.is_exact_subset(dbm));
+
+    BOOST_CHECK(not dbm.is_exact_superset(fed));
+    BOOST_CHECK(not dbm.is_exact_equal(fed));
+    BOOST_CHECK(dbm.is_exact_subset(fed));
+}
+
+BOOST_AUTO_TEST_CASE(exact_relation_test_2) {
+    DBM dbm(3);
+    auto fed = Federation();
+
+    auto relation1 = fed.exact_relation(dbm);
+    auto relation2 = dbm.exact_relation(fed);
+
+    BOOST_CHECK(not relation1.is_superset());
+    BOOST_CHECK(not relation1.is_equal());
+    BOOST_CHECK(relation1.is_subset());
+    BOOST_CHECK(not relation1.is_different());
+
+    BOOST_CHECK(relation2.is_superset());
+    BOOST_CHECK(not relation2.is_equal());
+    BOOST_CHECK(not relation2.is_subset());
+    BOOST_CHECK(not relation2.is_different());
+
+    BOOST_CHECK(not fed.is_exact_superset(dbm));
+    BOOST_CHECK(not fed.is_exact_equal(dbm));
+    BOOST_CHECK(fed.is_exact_subset(dbm));
+
+    BOOST_CHECK(dbm.is_exact_superset(fed));
+    BOOST_CHECK(not dbm.is_exact_equal(fed));
+    BOOST_CHECK(not dbm.is_exact_subset(fed));
+}
+
+BOOST_AUTO_TEST_CASE(exact_relation_test_3) {
+    Federation fed1(3);
+    auto fed2 = Federation();
+
+    auto relation1 = fed1.exact_relation(fed2);
+    auto relation2 = fed2.exact_relation(fed1);
+
+    BOOST_CHECK(relation1.is_superset());
+    BOOST_CHECK(not relation1.is_equal());
+    BOOST_CHECK(not relation1.is_subset());
+    BOOST_CHECK(not relation1.is_different());
+
+    BOOST_CHECK(not relation2.is_superset());
+    BOOST_CHECK(not relation2.is_equal());
+    BOOST_CHECK(relation2.is_subset());
+    BOOST_CHECK(not relation2.is_different());
+
+    BOOST_CHECK(fed1.is_exact_superset(fed2));
+    BOOST_CHECK(not fed1.is_exact_equal(fed2));
+    BOOST_CHECK(not fed1.is_exact_subset(fed2));
+
+    BOOST_CHECK(not fed2.is_exact_superset(fed1));
+    BOOST_CHECK(not fed2.is_exact_equal(fed1));
+    BOOST_CHECK(fed2.is_exact_subset(fed1));
+}
+
+BOOST_AUTO_TEST_CASE(exact_relation_test_4) {
+    auto fed = Federation::zero(3);
+    auto dbm = DBM::zero(3);
+    dbm.delay(2);
+
+    fed.add(dbm);
+
+    BOOST_CHECK(fed.is_exact_superset(dbm));
+}
+
+BOOST_AUTO_TEST_CASE(exact_relation_test_5) {
+    auto fed1 = Federation::zero(3),
+         fed2 = Federation::zero(3);
+    auto dbm = DBM::zero(3);
+
+    dbm.delay(2);
+
+    fed1.add(dbm);
+
+    BOOST_CHECK(fed1.is_exact_superset(fed2));
+    BOOST_CHECK(fed2.is_exact_subset(fed1));
+}
+
+BOOST_AUTO_TEST_CASE(exact_relation_test_6) {
+    auto fed1 = Federation::zero(3),
+         fed2 = Federation::zero(3);
+    auto dbm1 = DBM::unconstrained(3),
+         dbm2 = DBM::unconstrained(3),
+         dbm3 = DBM::unconstrained(3),
+         dbm4 = DBM::unconstrained(3);
+    
+    dbm1.restrict(clock_constraint_t::upper_non_strict(1, 10));
+    dbm2.restrict(clock_constraint_t::lower_strict(1, 10));
+
+    dbm3.restrict(clock_constraint_t::upper_non_strict(2, 10));
+    dbm4.restrict(clock_constraint_t::lower_strict(2, 10));
+    
+    // dbm1, dbm2, dbm3, dbm4 are disjunct but 1+2 and 3+4 they are equal to unconstrained
+
+    BOOST_CHECK(dbm1.relation(dbm2).different);
+    BOOST_CHECK(dbm1.relation(dbm3).different);
+    BOOST_CHECK(dbm1.relation(dbm4).different);
+    BOOST_CHECK(dbm2.relation(dbm3).different);
+    BOOST_CHECK(dbm2.relation(dbm4).different);
+    BOOST_CHECK(dbm3.relation(dbm4).different);
+
+    fed1.add(dbm1);
+    fed1.add(dbm2);
+    fed2.add(dbm3);
+    fed2.add(dbm4);
+
+    auto approx1 = fed1.approx_relation(fed2);
+    auto approx2 = fed2.approx_relation(fed1);
+    auto exact1 = fed1.exact_relation(fed2);
+    auto exact2 = fed2.exact_relation(fed1);
+
+    // approx is not as good as exact
+    BOOST_CHECK(not approx1.is_equal());
+    BOOST_CHECK(not approx2.is_equal());
+
+    BOOST_CHECK(exact1.is_equal() && exact2.is_equal());
+}
+
+BOOST_AUTO_TEST_CASE(exact_relation_test_7) {
+    auto fed1 = Federation::zero(3),
+         fed2 = Federation::zero(3);
+    auto dbm1 = DBM::unconstrained(3),
+         dbm2 = DBM::unconstrained(3);
+    
+    dbm1.restrict(clock_constraint_t::upper_non_strict(1, 10));
+    dbm2.restrict(clock_constraint_t::lower_strict(1, 10));
+
+    dbm1.restrict(clock_constraint_t::upper_non_strict(2, 5));
+    dbm2.restrict(clock_constraint_t::lower_strict(2, 5));
+
+    BOOST_CHECK(dbm1.relation(dbm2).different);
+    BOOST_CHECK(dbm2.relation(dbm1).different);
+
+    fed1.add(dbm1);
+    fed1.add(dbm2);
+    fed2.add(dbm1);
+    fed2.add(dbm2);
+
+    auto approx1 = fed1.approx_relation(fed2);
+    auto approx2 = fed2.approx_relation(fed1);
+    auto exact1 = fed1.exact_relation(fed2);
+    auto exact2 = fed2.exact_relation(fed1);
+
+    BOOST_CHECK(approx1.is_equal());
+    BOOST_CHECK(approx2.is_equal());
+
+    BOOST_CHECK(exact1.is_equal());
+    BOOST_CHECK(exact2.is_equal());
 }
 
 BOOST_AUTO_TEST_CASE(intersects_test_1) {
@@ -364,7 +587,7 @@ BOOST_AUTO_TEST_CASE(restrict_test_2) {
 
     fed1.restrict({});
 
-    BOOST_CHECK(fed1.equal(fed2));
+    BOOST_CHECK(fed1.is_equal(fed2));
 }
 
 BOOST_AUTO_TEST_CASE(intersection_test_1) {
@@ -373,7 +596,7 @@ BOOST_AUTO_TEST_CASE(intersection_test_1) {
 
     fed.intersection(dbm);
 
-    BOOST_CHECK(fed.equal(dbm));
+    BOOST_CHECK(fed.is_equal(dbm));
 }
 
 BOOST_AUTO_TEST_CASE(intersection_test_2) {
@@ -383,7 +606,7 @@ BOOST_AUTO_TEST_CASE(intersection_test_2) {
     dbm.restrict(0, 1, bound_t::strict(-1));
     fed.intersection(dbm);
 
-    BOOST_CHECK(fed.equal(dbm));
+    BOOST_CHECK(fed.is_equal(dbm));
     BOOST_CHECK(fed.is_empty());
 }
 
@@ -402,7 +625,7 @@ BOOST_AUTO_TEST_CASE(intersection_test_3) {
 
     fed.intersection(dbm2);
 
-    BOOST_CHECK(not fed.equal(dbm2));
+    BOOST_CHECK(not fed.is_equal(dbm2));
     BOOST_CHECK(not fed.is_empty());
     BOOST_CHECK(fed.size() == 2);
     BOOST_CHECK(fed.satisfies(1, 0, bound_t::strict(2)));
@@ -493,7 +716,7 @@ BOOST_AUTO_TEST_CASE(zero_test_1) {
     auto fed = Federation();
     fed.add(DBM::zero(dim));
 
-    BOOST_CHECK(fed.equal(Federation::zero(dim)));
+    BOOST_CHECK(fed.is_equal(Federation::zero(dim)));
 }
 
 BOOST_AUTO_TEST_CASE(unconstrained_test_1) {
@@ -501,5 +724,5 @@ BOOST_AUTO_TEST_CASE(unconstrained_test_1) {
     auto fed = Federation();
     fed.add(DBM::unconstrained(dim));
 
-    BOOST_CHECK(fed.equal(Federation::unconstrained(dim)));
+    BOOST_CHECK(fed.is_equal(Federation::unconstrained(dim)));
 }
