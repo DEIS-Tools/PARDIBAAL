@@ -233,7 +233,7 @@ namespace pardibaal {
                 g_subeq = g_subeq && subeq;
             }
 
-            for (const auto& b : supereq)
+            for (const auto b : supereq)
                 g_supereq = g_supereq && b;
 
             /* If g_subeq is true, then all dbm in lhs are included in rhs 
