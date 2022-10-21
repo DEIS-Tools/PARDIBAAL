@@ -75,9 +75,9 @@ namespace pardibaal {
 
         [[nodiscard]] bool is_empty() const;
 
-        [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
-        [[nodiscard]] bool satisfies(const clock_constraint_t& constraint) const;
-        [[nodiscard]] bool satisfies(const std::vector<clock_constraint_t>& constraints) const;
+        [[nodiscard]] bool is_satisfying(dim_t x, dim_t y, bound_t g) const;
+        [[nodiscard]] bool is_satisfying(const clock_constraint_t& constraint) const;
+        [[nodiscard]] bool is_satisfying(const std::vector<clock_constraint_t>& constraints) const;
 
         /**
          * Relation between this dbm and another dbm.
@@ -135,13 +135,13 @@ namespace pardibaal {
          * Checks if two DBMs intersect ie. if the intersection is non-empty
          * @return true if this intersects with dbm
          */
-        [[nodiscard]] bool intersects(const DBM& dbm) const;
+        [[nodiscard]] bool is_intersecting(const DBM& dbm) const;
 
         /**
          * Checks if a DBM intersect with a federation ie. if the intersection is non-empty
          * @return true if this intersects with fed
          */
-        [[nodiscard]] bool intersects(const Federation& fed) const;
+        [[nodiscard]] bool is_intersecting(const Federation& fed) const;
 
         /** Is bounded
          * Checks whether all upper bounds are infinite

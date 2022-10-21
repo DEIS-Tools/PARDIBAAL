@@ -120,10 +120,10 @@ namespace pardibaal {
          * @param g The bound (value and strictness) that is checked for
          * @return True if any of the zones satisfy the bound
          */
-        [[nodiscard]] bool satisfies(dim_t x, dim_t y, bound_t g) const;
+        [[nodiscard]] bool is_satisfying(dim_t x, dim_t y, bound_t g) const;
 
-        [[nodiscard]] bool satisfies(const clock_constraint_t& constraint) const;
-        [[nodiscard]] bool satisfies(const std::vector<clock_constraint_t>& constraints) const;
+        [[nodiscard]] bool is_satisfying(const clock_constraint_t& constraint) const;
+        [[nodiscard]] bool is_satisfying(const std::vector<clock_constraint_t>& constraints) const;
 
         /**
          * Relation between this and a dbm.

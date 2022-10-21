@@ -81,17 +81,17 @@ namespace pardibaal {
         return false;
     }
 
-    bool DBM::satisfies(dim_t x, dim_t y, bound_t g) const {
+    bool DBM::is_satisfying(dim_t x, dim_t y, bound_t g) const {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
-    bool DBM::satisfies(const clock_constraint_t& constraint) const {
-        return satisfies(constraint._i, constraint._j, constraint._bound);
+    bool DBM::is_satisfying(const clock_constraint_t& constraint) const {
+        return is_satisfying(constraint._i, constraint._j, constraint._bound);
     }
 
-    bool DBM::satisfies(const std::vector<clock_constraint_t>& constraints) const {
+    bool DBM::is_satisfying(const std::vector<clock_constraint_t>& constraints) const {
         return std::all_of(constraints.begin(), constraints.end(), [this](const clock_constraint_t& c) {
-            return this->satisfies(c);
+            return this->is_satisfying(c);
         });
     }
 
@@ -163,7 +163,7 @@ namespace pardibaal {
     template bool DBM::is_different<true>(const Federation& fed) const;
     template bool DBM::is_different<false>(const Federation& fed) const;
 
-    bool DBM::intersects(const DBM &dbm) const {
+    bool DBM::is_intersecting(const DBM &dbm) const {
 #ifndef NEXCEPTIONS
         if (dbm.dimension() != dimension())
             throw(base_error("ERROR: Cannot measure intersection of two dbms with different dimensions. ",
@@ -189,7 +189,7 @@ namespace pardibaal {
         return true;
     }
 
-    bool DBM::intersects(const Federation& fed) const {
+    bool DBM::is_intersecting(const Federation& fed) const {
         return fed.intersects(*this);
     }
 
