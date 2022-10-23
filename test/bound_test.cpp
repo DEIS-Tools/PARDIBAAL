@@ -141,6 +141,22 @@ BOOST_AUTO_TEST_CASE(add_test_4) {
     BOOST_CHECK(a + b == bound_t::zero());
 }
 
+BOOST_AUTO_TEST_CASE(add_test_5) {
+    auto a = bound_t::inf();
+    auto b = a + 5;
+
+    BOOST_CHECK(a + 5 == b);
+    BOOST_CHECK(b == bound_t::inf());
+    BOOST_CHECK(b.get_bound() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(add_test_6) {
+    auto a = bound_t::strict(5);
+    auto b = a + 5;
+
+    BOOST_CHECK(b == bound_t::strict(10));
+}
+
 BOOST_AUTO_TEST_CASE(subtract_test_1) {
     bound_t a(5, STRICT);
 
@@ -148,4 +164,34 @@ BOOST_AUTO_TEST_CASE(subtract_test_1) {
     BOOST_CHECK(a - 10 == bound_t::strict(-5));
     BOOST_CHECK(a - 5 == bound_t::strict(0));
     BOOST_CHECK(a - 0 == bound_t::strict(5));
+}
+
+BOOST_AUTO_TEST_CASE(subtract_test_2) {
+    auto a = bound_t::strict(5);
+    auto b = a - 5;
+
+    BOOST_CHECK(b == bound_t::strict(0));
+}
+
+BOOST_AUTO_TEST_CASE(subtract_test_3) {
+    auto a = bound_t::inf();
+    auto b = a - 5;
+
+    BOOST_CHECK(b == bound_t::inf());
+    BOOST_CHECK(b.get_bound() == 0);
+}
+
+BOOST_AUTO_TEST_CASE(multiply_test_1) {
+    auto a = bound_t::strict(5);
+    auto b = a * 5;
+
+    BOOST_CHECK(b == bound_t::strict(25));
+}
+
+BOOST_AUTO_TEST_CASE(multiply_test_2) {
+    auto a = bound_t::inf();
+    auto b = a * 5;
+
+    BOOST_CHECK(b == bound_t::inf());
+    BOOST_CHECK(b.get_bound() == 0);
 }

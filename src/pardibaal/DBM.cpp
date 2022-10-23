@@ -81,17 +81,17 @@ namespace pardibaal {
         return false;
     }
 
-    bool DBM::satisfies(dim_t x, dim_t y, bound_t g) const {
+    bool DBM::is_satisfying(dim_t x, dim_t y, bound_t g) const {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
-    bool DBM::satisfies(const clock_constraint_t& constraint) const {
-        return satisfies(constraint._i, constraint._j, constraint._bound);
+    bool DBM::is_satisfying(const clock_constraint_t& constraint) const {
+        return is_satisfying(constraint._i, constraint._j, constraint._bound);
     }
 
-    bool DBM::satisfies(const std::vector<clock_constraint_t>& constraints) const {
+    bool DBM::is_satisfying(const std::vector<clock_constraint_t>& constraints) const {
         return std::all_of(constraints.begin(), constraints.end(), [this](const clock_constraint_t& c) {
-            return this->satisfies(c);
+            return this->is_satisfying(c);
         });
     }
 
@@ -163,7 +163,7 @@ namespace pardibaal {
     template bool DBM::is_different<true>(const Federation& fed) const;
     template bool DBM::is_different<false>(const Federation& fed) const;
 
-    bool DBM::intersects(const DBM &dbm) const {
+    bool DBM::is_intersecting(const DBM &dbm) const {
 #ifndef NEXCEPTIONS
         if (dbm.dimension() != dimension())
             throw(base_error("ERROR: Cannot measure intersection of two dbms with different dimensions. ",
@@ -189,7 +189,7 @@ namespace pardibaal {
         return true;
     }
 
-    bool DBM::intersects(const Federation& fed) const {
+    bool DBM::is_intersecting(const Federation& fed) const {
         return fed.intersects(*this);
     }
 
@@ -217,14 +217,7 @@ namespace pardibaal {
     }
 
     void DBM::future(val_t d) {
-#ifndef NEXCEPTIONS
-        if (d < 0)
-            throw(base_error("ERROR: Cannot do future operation on a negative amount"));
-#endif
-        if (d > 0)
-            for (dim_t i = 1; i < this->dimension(); ++i)
-                if (not this->at(i, 0).is_inf())
-                    this->set(i, 0, this->at(i, 0) + d);
+        interval_delay(0, d);
     }
 
     void DBM::past() {
@@ -239,17 +232,7 @@ namespace pardibaal {
     }
 
     void DBM::delay(val_t d) {
-#ifndef NEXCEPTIONS
-        if (d < 0)
-            throw(base_error("ERROR: Cannot do a negative delay"));
-#endif
-        if (d > 0) {
-            // Raise lower bounds
-            for (dim_t i = 1; i < this->dimension(); ++i)
-                this->set(0, i, this->at(0, i) - d);
-            // Raise upper bounds
-            this->future(d);
-        }
+        interval_delay(d, d);
     }
 
     void DBM::interval_delay(val_t lower, val_t upper) {
@@ -259,8 +242,12 @@ namespace pardibaal {
         if (lower > upper)
             throw(base_error("ERROR: lower value of delay interval must be smaller than the upper valuer"));
 #endif
-        this->delay(lower);
-        this->future(upper - lower);
+        if (lower > 0 || upper > 0) {
+            for (dim_t i = 1; i < this->dimension(); ++i) {
+                this->set(0, i, this->at(0, i) - lower); // Raise lower bounds
+                this->set(i, 0, this->at(i, 0) + upper); // Raise upper bounds
+            }
+        }
     }
 
     void DBM::restrict(dim_t x, dim_t y, bound_t g) {

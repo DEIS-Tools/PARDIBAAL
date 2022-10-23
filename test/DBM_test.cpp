@@ -83,6 +83,28 @@ BOOST_AUTO_TEST_CASE(bounded_future_test_2) {
     BOOST_CHECK(Z.is_equal(D));
 }
 
+BOOST_AUTO_TEST_CASE(bounded_future_test_3) {
+    DBM D(10);
+
+    D.free(2);
+    D.future(5);
+
+    for (dim_t i = 0; i < 10; i++)
+        for (dim_t j = 0; j < 10; j++) {               
+            if (j == 0 && i != 0) {
+                if (i == 2)
+                    BOOST_CHECK(D.at(i, j) == bound_t::inf() && D.at(i,j).get_bound() == 0);
+                else
+                    BOOST_CHECK(D.at(i, j) == bound_t::non_strict(5));
+            } else {
+                if (i == 2 && j != 2)
+                    BOOST_CHECK(D.at(i, j) == bound_t::inf() && D.at(i, j).get_bound() == 0);
+                else
+                    BOOST_CHECK(D.at(i, j) == bound_t::zero());
+            }
+        }
+}
+
 BOOST_AUTO_TEST_CASE(delay_test_1) {
     DBM D(10);
 
@@ -245,12 +267,12 @@ BOOST_AUTO_TEST_CASE(trace_test_1) {
     BOOST_CHECK(D.at(0, z) == bound_t::zero());
 
     // To goal
-    BOOST_CHECK(D.satisfies(x, 0, bound_t::non_strict(2)));
-    BOOST_CHECK(D.satisfies(0, x, bound_t::non_strict(-2)));
-    BOOST_CHECK(D.satisfies(y, 0, bound_t::non_strict(4)));
-    BOOST_CHECK(D.satisfies(0, y, bound_t::non_strict(-4)));
-    BOOST_CHECK(D.satisfies(z, 0, bound_t::non_strict(3)));
-    BOOST_CHECK(D.satisfies(0, z, bound_t::non_strict(-3)));
+    BOOST_CHECK(D.is_satisfying(x, 0, bound_t::non_strict(2)));
+    BOOST_CHECK(D.is_satisfying(0, x, bound_t::non_strict(-2)));
+    BOOST_CHECK(D.is_satisfying(y, 0, bound_t::non_strict(4)));
+    BOOST_CHECK(D.is_satisfying(0, y, bound_t::non_strict(-4)));
+    BOOST_CHECK(D.is_satisfying(z, 0, bound_t::non_strict(3)));
+    BOOST_CHECK(D.is_satisfying(0, z, bound_t::non_strict(-3)));
 
     D.restrict(x, 0, bound_t::non_strict(2));
     D.restrict(0, x, bound_t::non_strict(-2));
@@ -410,17 +432,17 @@ BOOST_AUTO_TEST_CASE(resize_test_1) {
     std::vector<dim_t> indir = D.resize(src, dst);
 
 
-    BOOST_CHECK(D.satisfies(1, 0, bound_t::zero()));
-    BOOST_CHECK(D.satisfies(0, 1, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(1, 0, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(0, 1, bound_t::zero()));
 
-    BOOST_CHECK(D.satisfies(2, 0, bound_t::non_strict(1)));
-    BOOST_CHECK(D.satisfies(0, 2, bound_t::non_strict(1)));
+    BOOST_CHECK(D.is_satisfying(2, 0, bound_t::non_strict(1)));
+    BOOST_CHECK(D.is_satisfying(0, 2, bound_t::non_strict(1)));
 
-    BOOST_CHECK(D.satisfies(3, 0, bound_t::inf()));
-    BOOST_CHECK(D.satisfies(0, 3, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(3, 0, bound_t::inf()));
+    BOOST_CHECK(D.is_satisfying(0, 3, bound_t::zero()));
 
-    BOOST_CHECK(D.satisfies(4, 0, bound_t::non_strict(4)));
-    BOOST_CHECK(D.satisfies(0, 4, bound_t::non_strict(4)));
+    BOOST_CHECK(D.is_satisfying(4, 0, bound_t::non_strict(4)));
+    BOOST_CHECK(D.is_satisfying(0, 4, bound_t::non_strict(4)));
 }
 
 BOOST_AUTO_TEST_CASE(resize_test_2) {
@@ -448,14 +470,14 @@ BOOST_AUTO_TEST_CASE(reorder_test_1) {
 
     BOOST_CHECK(D.dimension() == 4);
 
-    BOOST_CHECK(D.satisfies(1, 0, bound_t::non_strict(3)));
-    BOOST_CHECK(D.satisfies(0, 1, bound_t::non_strict(3)));
+    BOOST_CHECK(D.is_satisfying(1, 0, bound_t::non_strict(3)));
+    BOOST_CHECK(D.is_satisfying(0, 1, bound_t::non_strict(3)));
 
-    BOOST_CHECK(D.satisfies(2, 0, bound_t::zero()));
-    BOOST_CHECK(D.satisfies(0, 2, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(2, 0, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(0, 2, bound_t::zero()));
 
-    BOOST_CHECK(D.satisfies(3, 0, bound_t::inf()));
-    BOOST_CHECK(D.satisfies(0, 3, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(3, 0, bound_t::inf()));
+    BOOST_CHECK(D.is_satisfying(0, 3, bound_t::zero()));
 }
 
 BOOST_AUTO_TEST_CASE(reorder_test_2) {
@@ -789,13 +811,13 @@ BOOST_AUTO_TEST_CASE(intersection_test_2) {
     dbm1.restrict(0, 1, bound_t::strict(-2));
     dbm2.future();
 
-    BOOST_CHECK(dbm1.intersects(dbm2));
+    BOOST_CHECK(dbm1.is_intersecting(dbm2));
 
     dbm1.intersection(dbm2);
 
-    BOOST_CHECK(dbm1.satisfies(0, 1, bound_t::strict(-2)));
-    BOOST_CHECK(not dbm1.satisfies(1, 0, bound_t::non_strict(-2)));
-    BOOST_CHECK(dbm1.satisfies(1, 0, bound_t::inf()));
+    BOOST_CHECK(dbm1.is_satisfying(0, 1, bound_t::strict(-2)));
+    BOOST_CHECK(not dbm1.is_satisfying(1, 0, bound_t::non_strict(-2)));
+    BOOST_CHECK(dbm1.is_satisfying(1, 0, bound_t::inf()));
 }
 
 BOOST_AUTO_TEST_CASE(intersection_test_3) {
@@ -805,19 +827,19 @@ BOOST_AUTO_TEST_CASE(intersection_test_3) {
     dbm1.restrict(1, 0, bound_t::non_strict(10));
     dbm2.restrict(0, 1, bound_t::strict(-10));
 
-    BOOST_CHECK(not dbm1.intersects(dbm2));
+    BOOST_CHECK(not dbm1.is_intersecting(dbm2));
 
     dbm1.intersection(dbm2);
 
     BOOST_CHECK(dbm1.is_empty());
-    BOOST_CHECK(not dbm1.intersects(dbm2));
-    BOOST_CHECK(not dbm2.intersects(dbm1));
+    BOOST_CHECK(not dbm1.is_intersecting(dbm2));
+    BOOST_CHECK(not dbm2.is_intersecting(dbm1));
 
     dbm2.intersection(dbm1);
 
     BOOST_CHECK(dbm2.is_empty());
-    BOOST_CHECK(not dbm1.intersects(dbm2));
-    BOOST_CHECK(not dbm2.intersects(dbm1));
+    BOOST_CHECK(not dbm1.is_intersecting(dbm2));
+    BOOST_CHECK(not dbm2.is_intersecting(dbm1));
 }
 
 BOOST_AUTO_TEST_CASE(is_unbounded_test_1) {
@@ -920,24 +942,24 @@ BOOST_AUTO_TEST_CASE(intersects_test_1) {
     DBM dbm1(3);
     DBM dbm2(3);
 
-    BOOST_CHECK(dbm1.intersects(dbm2));
-    BOOST_CHECK(dbm2.intersects(dbm1));
+    BOOST_CHECK(dbm1.is_intersecting(dbm2));
+    BOOST_CHECK(dbm2.is_intersecting(dbm1));
     dbm1.future();
 
-    BOOST_CHECK(dbm1.intersects(dbm2));
-    BOOST_CHECK(dbm2.intersects(dbm1));
+    BOOST_CHECK(dbm1.is_intersecting(dbm2));
+    BOOST_CHECK(dbm2.is_intersecting(dbm1));
 
     dbm1.free(1);
     dbm1.free(2);
 
-    BOOST_CHECK(dbm1.intersects(dbm2));
-    BOOST_CHECK(dbm2.intersects(dbm1));
+    BOOST_CHECK(dbm1.is_intersecting(dbm2));
+    BOOST_CHECK(dbm2.is_intersecting(dbm1));
 
     dbm1.restrict(0, 1, bound_t::strict(-2));
     dbm1.restrict(0, 2, bound_t::strict(-3));
 
-    BOOST_CHECK(not dbm1.intersects(dbm2));
-    BOOST_CHECK(not dbm2.intersects(dbm1));
+    BOOST_CHECK(not dbm1.is_intersecting(dbm2));
+    BOOST_CHECK(not dbm2.is_intersecting(dbm1));
 }
 
 BOOST_AUTO_TEST_CASE(intersects_test_2) {
@@ -947,8 +969,8 @@ BOOST_AUTO_TEST_CASE(intersects_test_2) {
     dbm1.future();
     dbm2.restrict(0, 1, bound_t::strict(-1));
 
-    BOOST_CHECK(not dbm1.intersects(dbm2));
-    BOOST_CHECK(not dbm2.intersects(dbm1));
+    BOOST_CHECK(not dbm1.is_intersecting(dbm2));
+    BOOST_CHECK(not dbm2.is_intersecting(dbm1));
 }
 
 BOOST_AUTO_TEST_CASE(intersects_test_3) {
@@ -958,8 +980,8 @@ BOOST_AUTO_TEST_CASE(intersects_test_3) {
     dbm1.restrict(1, 0, bound_t::strict(1));
     dbm2.restrict(0, 1, bound_t::strict(-1));
     
-    BOOST_CHECK(not dbm1.intersects(dbm2));
-    BOOST_CHECK(not dbm2.intersects(dbm1));
+    BOOST_CHECK(not dbm1.is_intersecting(dbm2));
+    BOOST_CHECK(not dbm2.is_intersecting(dbm1));
 }
 
 BOOST_AUTO_TEST_CASE(zero_test_1) {

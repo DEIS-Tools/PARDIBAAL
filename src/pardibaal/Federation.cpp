@@ -125,21 +125,21 @@ namespace pardibaal {
         return true;
     }
 
-    bool Federation::satisfies(dim_t x, dim_t y, bound_t g) const {
+    bool Federation::is_satisfying(dim_t x, dim_t y, bound_t g) const {
         for (const auto& dbm : zones) {
-            if (dbm.satisfies(x, y, g))
+            if (dbm.is_satisfying(x, y, g))
                 return true;
         }
         return false;
     }
 
-    bool Federation::satisfies(const clock_constraint_t& constraint) const {
-        return satisfies(constraint._i, constraint._j, constraint._bound);
+    bool Federation::is_satisfying(const clock_constraint_t& constraint) const {
+        return is_satisfying(constraint._i, constraint._j, constraint._bound);
     }
 
-    bool Federation::satisfies(const std::vector<clock_constraint_t>& constraints) const {
+    bool Federation::is_satisfying(const std::vector<clock_constraint_t>& constraints) const {
         for (const auto& c : constraints)
-            if (not satisfies(c._i, c._j, c._bound))
+            if (not is_satisfying(c._i, c._j, c._bound))
                 return false;
 
         return true;
@@ -299,7 +299,7 @@ namespace pardibaal {
     
 
     bool Federation::intersects(const DBM& dbm) const {
-        return std::any_of(this->begin(), this->end(), [&dbm](const DBM& z){return z.intersects(dbm);});
+        return std::any_of(this->begin(), this->end(), [&dbm](const DBM& z){return z.is_intersecting(dbm);});
     }
 
     bool Federation::intersects(const Federation& fed) const {

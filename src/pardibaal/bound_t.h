@@ -80,10 +80,10 @@ namespace pardibaal {
 
         friend std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 
-        [[nodiscard]] static bool lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
-        [[nodiscard]] static bool le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
-        [[nodiscard]] static bool gt(bound_t lhs, bound_t rhs) {return lhs > rhs;}
-        [[nodiscard]] static bool ge(bound_t lhs, bound_t rhs) {return lhs >= rhs;}
+        [[nodiscard]] static bool is_lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
+        [[nodiscard]] static bool is_le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
+        [[nodiscard]] static bool is_gt(bound_t lhs, bound_t rhs) {return lhs > rhs;}
+        [[nodiscard]] static bool is_ge(bound_t lhs, bound_t rhs) {return lhs >= rhs;}
     };
 
     [[nodiscard]] bound_t operator+(val_t val, bound_t bound);

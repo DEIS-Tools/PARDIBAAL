@@ -88,17 +88,17 @@ BOOST_AUTO_TEST_CASE(subtract_test_1) {
 
     dbm.restrict(1, 0, bound_t::strict(10));
 
-    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(11)));
-    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(10)));
-    BOOST_CHECK(fed.satisfies(1, 0, bound_t::strict(10)));
-    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(5)));
+    BOOST_CHECK(fed.is_satisfying(1, 0, bound_t::non_strict(11)));
+    BOOST_CHECK(fed.is_satisfying(1, 0, bound_t::non_strict(10)));
+    BOOST_CHECK(fed.is_satisfying(1, 0, bound_t::strict(10)));
+    BOOST_CHECK(fed.is_satisfying(1, 0, bound_t::non_strict(5)));
 
     fed.subtract(dbm);
 
-    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(11)));
-    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(10)));
-    BOOST_CHECK(not fed.satisfies(1, 0, bound_t::strict(10)));
-    BOOST_CHECK(not fed.satisfies(1, 0, bound_t::non_strict(5)));
+    BOOST_CHECK(fed.is_satisfying(1, 0, bound_t::non_strict(11)));
+    BOOST_CHECK(fed.is_satisfying(1, 0, bound_t::non_strict(10)));
+    BOOST_CHECK(not fed.is_satisfying(1, 0, bound_t::strict(10)));
+    BOOST_CHECK(not fed.is_satisfying(1, 0, bound_t::non_strict(5)));
 }
 
 BOOST_AUTO_TEST_CASE(remove_test_1) {
@@ -127,10 +127,10 @@ BOOST_AUTO_TEST_CASE(satisfies_test_1) {
     fed.future();
     fed.restrict(1, 0, bound_t::non_strict(5));
 
-    BOOST_CHECK(fed.satisfies(1, 0, bound_t::non_strict(5)));
-    BOOST_CHECK(fed.satisfies(1, 0, bound_t::strict(5)));
-    BOOST_CHECK(fed.satisfies(0, 1, bound_t::non_strict(-3)));
-    BOOST_CHECK(not fed.satisfies(0, 1, bound_t::non_strict(-6)));
+    BOOST_CHECK(fed.is_satisfying(1, 0, bound_t::non_strict(5)));
+    BOOST_CHECK(fed.is_satisfying(1, 0, bound_t::strict(5)));
+    BOOST_CHECK(fed.is_satisfying(0, 1, bound_t::non_strict(-3)));
+    BOOST_CHECK(not fed.is_satisfying(0, 1, bound_t::non_strict(-6)));
 
 }
 
@@ -464,12 +464,12 @@ BOOST_AUTO_TEST_CASE(intersects_test_1) {
     auto dbm = DBM::zero(3);
 
     BOOST_CHECK(fed.intersects(dbm));
-    BOOST_CHECK(dbm.intersects(fed));
+    BOOST_CHECK(dbm.is_intersecting(fed));
 
     fed.future();
 
     BOOST_CHECK(fed.intersects(dbm));
-    BOOST_CHECK(dbm.intersects(fed));
+    BOOST_CHECK(dbm.is_intersecting(fed));
 
     auto dbm2 = DBM::unconstrained(3);
     dbm2.restrict(0, 1, bound_t::strict(-2));
@@ -478,22 +478,22 @@ BOOST_AUTO_TEST_CASE(intersects_test_1) {
 
     BOOST_CHECK(fed.size() == 2);
     BOOST_CHECK(fed.intersects(dbm));
-    BOOST_CHECK(dbm.intersects(fed));
+    BOOST_CHECK(dbm.is_intersecting(fed));
 
     dbm.future();
 
     BOOST_CHECK(fed.intersects(dbm));
-    BOOST_CHECK(dbm.intersects(fed));
+    BOOST_CHECK(dbm.is_intersecting(fed));
 
     dbm.shift(1, 1);
 
     BOOST_CHECK(fed.intersects(dbm));
-    BOOST_CHECK(dbm.intersects(fed));
+    BOOST_CHECK(dbm.is_intersecting(fed));
 
     dbm.restrict(1, 0, bound_t::strict(2));
 
     BOOST_CHECK(not fed.intersects(dbm));
-    BOOST_CHECK(not dbm.intersects(fed));
+    BOOST_CHECK(not dbm.is_intersecting(fed));
 }
 
 BOOST_AUTO_TEST_CASE(intersects_test_2) {
@@ -621,17 +621,17 @@ BOOST_AUTO_TEST_CASE(intersection_test_3) {
 
     dbm2.restrict(2, 0, bound_t::strict(1));
 
-    BOOST_CHECK(fed.satisfies(0, 2, bound_t::non_strict(-1)));
+    BOOST_CHECK(fed.is_satisfying(0, 2, bound_t::non_strict(-1)));
 
     fed.intersection(dbm2);
 
     BOOST_CHECK(not fed.is_equal(dbm2));
     BOOST_CHECK(not fed.is_empty());
     BOOST_CHECK(fed.size() == 2);
-    BOOST_CHECK(fed.satisfies(1, 0, bound_t::strict(2)));
-    BOOST_CHECK(fed.satisfies(0, 1, bound_t::strict(-2)));
-    BOOST_CHECK(not fed.satisfies(0, 2, bound_t::non_strict(-1)));
-    BOOST_CHECK(fed.satisfies(2, 0, bound_t::non_strict(1)));
+    BOOST_CHECK(fed.is_satisfying(1, 0, bound_t::strict(2)));
+    BOOST_CHECK(fed.is_satisfying(0, 1, bound_t::strict(-2)));
+    BOOST_CHECK(not fed.is_satisfying(0, 2, bound_t::non_strict(-1)));
+    BOOST_CHECK(fed.is_satisfying(2, 0, bound_t::non_strict(1)));
 }
 
 BOOST_AUTO_TEST_CASE(intersection_test_4) {
@@ -680,15 +680,15 @@ BOOST_AUTO_TEST_CASE(intersection_test_6) {
 
     BOOST_CHECK(fed1.intersects(fed2));
     BOOST_CHECK(not fed1.is_empty());
-    BOOST_CHECK(fed1.satisfies(1, 0, bound_t::non_strict(2)));
-    BOOST_CHECK(fed1.satisfies(1, 0, bound_t::strict(3)));
+    BOOST_CHECK(fed1.is_satisfying(1, 0, bound_t::non_strict(2)));
+    BOOST_CHECK(fed1.is_satisfying(1, 0, bound_t::strict(3)));
 
     fed1.intersection(fed2);
 
     BOOST_CHECK(not fed1.is_empty());
     BOOST_CHECK(fed1.size() == 1);
-    BOOST_CHECK(not fed1.satisfies(1, 0, bound_t::non_strict(2)));
-    BOOST_CHECK(fed1.satisfies(1, 0, bound_t::strict(3)));
+    BOOST_CHECK(not fed1.is_satisfying(1, 0, bound_t::non_strict(2)));
+    BOOST_CHECK(fed1.is_satisfying(1, 0, bound_t::strict(3)));
 }
 
 BOOST_AUTO_TEST_CASE(remove_clock_test_1) {
