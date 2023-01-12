@@ -726,3 +726,51 @@ BOOST_AUTO_TEST_CASE(unconstrained_test_1) {
 
     BOOST_CHECK(fed.is_equal(Federation::unconstrained(dim)));
 }
+
+BOOST_AUTO_TEST_CASE(something) {
+    auto red1 = DBM::unconstrained(3);
+    auto blue1 = DBM::unconstrained(3);
+    auto red2 = DBM::unconstrained(3);
+    auto blue2 = DBM::unconstrained(3);
+    //x = 1, y = 2
+    red1.restrict({clock_constraint_t::upper_non_strict(2, 3), 
+                   clock_constraint_t::upper_non_strict(1, 2),
+                   clock_constraint_t::lower_non_strict(2, 1),
+                   clock_constraint_t::lower_non_strict(1, 1)});
+
+    red1.restrict(clock_constraint_t(2, 0, bound_t(3, false)));
+    red1.restrict(2, 0, bound_t::non_strict(3));
+
+    blue1.restrict({clock_constraint_t::upper_non_strict(2, 2),
+                    clock_constraint_t::upper_non_strict(1, 3),
+                    clock_constraint_t(2, 1, bound_t::zero()),
+                    clock_constraint_t(1, 2, bound_t::non_strict(2))});
+    
+    red2.restrict({clock_constraint_t::upper_non_strict(2, 3), 
+                   clock_constraint_t::upper_non_strict(1, 2),
+                   clock_constraint_t::lower_non_strict(1, 1),
+                   clock_constraint_t(2, 1, bound_t::non_strict(1))});
+
+    blue2.restrict({clock_constraint_t::upper_non_strict(2, 2),
+                    clock_constraint_t::upper_non_strict(1, 3),
+                    clock_constraint_t(2, 1, bound_t::non_strict(-1)),
+                    clock_constraint_t(1, 2, bound_t::non_strict(2))});
+
+    auto fed1 = Federation(red1);
+    fed1.add(blue1);
+
+    auto fed2 = Federation(red2);
+    fed2.add(blue2);
+
+    relation_t rel12 = fed1.exact_relation(fed2);
+    relation_t rel21 = fed2.exact_relation(fed1);
+
+    BOOST_CHECK(rel12.is_superset());
+    BOOST_CHECK(rel21.is_subset());
+
+    rel12 = fed1.approx_relation(fed2);
+    rel21 = fed2.approx_relation(fed1);
+
+    BOOST_CHECK(rel12.is_different());
+    BOOST_CHECK(rel21.is_different());
+}
