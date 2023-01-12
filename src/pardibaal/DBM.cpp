@@ -61,6 +61,17 @@ namespace pardibaal {
         this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
     }
 
+    void DBM::subtract(dim_t i, dim_t j, bound_t bound) {
+        if (this->at(i, j) > bound) // if i,j,bound is larger than current, then result is empty. Always false if bound is inf
+            this->restrict(j, i, bound_t(-bound.get_bound(), bound.is_non_strict()));
+        else
+            this->set(0, 0, bound_t::non_strict(-1));
+    }
+
+    void DBM::subtract(clock_constraint_t constraint) {
+        this->subtract(constraint._i, constraint._j, constraint._bound);
+    }
+
     dim_t DBM::dimension() const {return this->_bounds_table.number_of_clocks();}
 
     bool DBM::is_empty() const {
@@ -265,7 +276,6 @@ namespace pardibaal {
                 }
             }
         }
-
     }
 
     void DBM::restrict(const clock_constraint_t& constraint) {

@@ -71,6 +71,9 @@ namespace pardibaal {
         void set(dim_t i, dim_t j, bound_t bound);
         void set(const clock_constraint_t& constraint);
 
+        void subtract(dim_t i, dim_t j, bound_t bound);
+        void subtract(clock_constraint_t constraint);
+
         [[nodiscard]] dim_t dimension() const;
 
         [[nodiscard]] bool is_empty() const;

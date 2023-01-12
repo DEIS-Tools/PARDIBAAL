@@ -177,6 +177,27 @@ BOOST_AUTO_TEST_CASE(restrict_test_2) {
     BOOST_CHECK(D.is_empty());
 }
 
+BOOST_AUTO_TEST_CASE(subtract_test_1) {
+    DBM D(3);
+    bound_t g = bound_t::inf();
+
+    D.future();
+    D.subtract(1, 0, g);
+
+    BOOST_CHECK(D.is_empty());
+}
+
+BOOST_AUTO_TEST_CASE(subtract_test_2) {
+    DBM D = DBM::unconstrained(3);
+    bound_t g = bound_t::strict(1);
+
+    D.subtract(1, 2, g);
+
+    BOOST_CHECK(not D.is_satisfying(1, 2, g));
+    BOOST_CHECK(D.is_satisfying(1, 2, bound_t::non_strict(1)));
+    BOOST_CHECK(D.is_satisfying(2, 1, bound_t::inf()));
+}
+
 BOOST_AUTO_TEST_CASE(trace_test_1) {
     DBM D(4);
     dim_t x = 1, y = 2, z = 3;
