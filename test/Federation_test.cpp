@@ -243,11 +243,11 @@ BOOST_AUTO_TEST_CASE(relation_test_6) {
     auto dbm1 = DBM::unconstrained(3),
          dbm2 = DBM::unconstrained(3);
     
-    dbm1.restrict(clock_constraint_t::upper_non_strict(1, 10));
-    dbm2.restrict(clock_constraint_t::lower_strict(1, 10));
+    dbm1.restrict(difference_bound_t::upper_non_strict(1, 10));
+    dbm2.restrict(difference_bound_t::lower_strict(1, 10));
 
-    dbm1.restrict(clock_constraint_t::upper_non_strict(2, 5));
-    dbm2.restrict(clock_constraint_t::lower_strict(2, 5));
+    dbm1.restrict(difference_bound_t::upper_non_strict(2, 5));
+    dbm2.restrict(difference_bound_t::lower_strict(2, 5));
 
     BOOST_CHECK(dbm1.relation(dbm2).is_different());
     BOOST_CHECK(dbm2.relation(dbm1).is_different());
@@ -273,7 +273,7 @@ BOOST_AUTO_TEST_CASE(relation_test_7) {
          fed2 = Federation::zero(3);
     auto dbm = DBM::unconstrained(3);
 
-    dbm.restrict(clock_constraint_t::upper_strict(1, 2));
+    dbm.restrict(difference_bound_t::upper_strict(1, 2));
 
     fed2.add(dbm);
 
@@ -395,11 +395,11 @@ BOOST_AUTO_TEST_CASE(exact_relation_test_6) {
          dbm3 = DBM::unconstrained(3),
          dbm4 = DBM::unconstrained(3);
     
-    dbm1.restrict(clock_constraint_t::upper_non_strict(1, 10));
-    dbm2.restrict(clock_constraint_t::lower_strict(1, 10));
+    dbm1.restrict(difference_bound_t::upper_non_strict(1, 10));
+    dbm2.restrict(difference_bound_t::lower_strict(1, 10));
 
-    dbm3.restrict(clock_constraint_t::upper_non_strict(2, 10));
-    dbm4.restrict(clock_constraint_t::lower_strict(2, 10));
+    dbm3.restrict(difference_bound_t::upper_non_strict(2, 10));
+    dbm4.restrict(difference_bound_t::lower_strict(2, 10));
     
     // dbm1, dbm2, dbm3, dbm4 are disjunct but 1+2 and 3+4 they are equal to unconstrained
 
@@ -433,11 +433,11 @@ BOOST_AUTO_TEST_CASE(exact_relation_test_7) {
     auto dbm1 = DBM::unconstrained(3),
          dbm2 = DBM::unconstrained(3);
     
-    dbm1.restrict(clock_constraint_t::upper_non_strict(1, 10));
-    dbm2.restrict(clock_constraint_t::lower_strict(1, 10));
+    dbm1.restrict(difference_bound_t::upper_non_strict(1, 10));
+    dbm2.restrict(difference_bound_t::lower_strict(1, 10));
 
-    dbm1.restrict(clock_constraint_t::upper_non_strict(2, 5));
-    dbm2.restrict(clock_constraint_t::lower_strict(2, 5));
+    dbm1.restrict(difference_bound_t::upper_non_strict(2, 5));
+    dbm2.restrict(difference_bound_t::lower_strict(2, 5));
 
     BOOST_CHECK(dbm1.relation(dbm2).different);
     BOOST_CHECK(dbm2.relation(dbm1).different);
@@ -733,28 +733,28 @@ BOOST_AUTO_TEST_CASE(something) {
     auto red2 = DBM::unconstrained(3);
     auto blue2 = DBM::unconstrained(3);
     //x = 1, y = 2
-    red1.restrict({clock_constraint_t::upper_non_strict(2, 3), 
-                   clock_constraint_t::upper_non_strict(1, 2),
-                   clock_constraint_t::lower_non_strict(2, 1),
-                   clock_constraint_t::lower_non_strict(1, 1)});
+    red1.restrict({difference_bound_t::upper_non_strict(2, 3), 
+                   difference_bound_t::upper_non_strict(1, 2),
+                   difference_bound_t::lower_non_strict(2, 1),
+                   difference_bound_t::lower_non_strict(1, 1)});
 
-    red1.restrict(clock_constraint_t(2, 0, bound_t(3, false)));
+    red1.restrict(difference_bound_t(2, 0, bound_t(3, false)));
     red1.restrict(2, 0, bound_t::non_strict(3));
 
-    blue1.restrict({clock_constraint_t::upper_non_strict(2, 2),
-                    clock_constraint_t::upper_non_strict(1, 3),
-                    clock_constraint_t(2, 1, bound_t::zero()),
-                    clock_constraint_t(1, 2, bound_t::non_strict(2))});
+    blue1.restrict({difference_bound_t::upper_non_strict(2, 2),
+                    difference_bound_t::upper_non_strict(1, 3),
+                    difference_bound_t(2, 1, bound_t::zero()),
+                    difference_bound_t(1, 2, bound_t::non_strict(2))});
     
-    red2.restrict({clock_constraint_t::upper_non_strict(2, 3), 
-                   clock_constraint_t::upper_non_strict(1, 2),
-                   clock_constraint_t::lower_non_strict(1, 1),
-                   clock_constraint_t(2, 1, bound_t::non_strict(1))});
+    red2.restrict({difference_bound_t::upper_non_strict(2, 3), 
+                   difference_bound_t::upper_non_strict(1, 2),
+                   difference_bound_t::lower_non_strict(1, 1),
+                   difference_bound_t(2, 1, bound_t::non_strict(1))});
 
-    blue2.restrict({clock_constraint_t::upper_non_strict(2, 2),
-                    clock_constraint_t::upper_non_strict(1, 3),
-                    clock_constraint_t(2, 1, bound_t::non_strict(-1)),
-                    clock_constraint_t(1, 2, bound_t::non_strict(2))});
+    blue2.restrict({difference_bound_t::upper_non_strict(2, 2),
+                    difference_bound_t::upper_non_strict(1, 3),
+                    difference_bound_t(2, 1, bound_t::non_strict(-1)),
+                    difference_bound_t(1, 2, bound_t::non_strict(2))});
 
     auto fed1 = Federation(red1);
     fed1.add(blue1);

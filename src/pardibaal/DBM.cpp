@@ -57,7 +57,7 @@ namespace pardibaal {
 
     void DBM::set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
 
-    void DBM::set(const clock_constraint_t& constraint) {
+    void DBM::set(const difference_bound_t& constraint) {
         this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
     }
 
@@ -68,7 +68,7 @@ namespace pardibaal {
             this->set(0, 0, bound_t::non_strict(-1));
     }
 
-    void DBM::subtract(clock_constraint_t constraint) {
+    void DBM::subtract(difference_bound_t constraint) {
         this->subtract(constraint._i, constraint._j, constraint._bound);
     }
 
@@ -96,12 +96,12 @@ namespace pardibaal {
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
-    bool DBM::is_satisfying(const clock_constraint_t& constraint) const {
+    bool DBM::is_satisfying(const difference_bound_t& constraint) const {
         return is_satisfying(constraint._i, constraint._j, constraint._bound);
     }
 
-    bool DBM::is_satisfying(const std::vector<clock_constraint_t>& constraints) const {
-        return std::all_of(constraints.begin(), constraints.end(), [this](const clock_constraint_t& c) {
+    bool DBM::is_satisfying(const std::vector<difference_bound_t>& constraints) const {
+        return std::all_of(constraints.begin(), constraints.end(), [this](const difference_bound_t& c) {
             return this->is_satisfying(c);
         });
     }
@@ -278,11 +278,11 @@ namespace pardibaal {
         }
     }
 
-    void DBM::restrict(const clock_constraint_t& constraint) {
+    void DBM::restrict(const difference_bound_t& constraint) {
         restrict(constraint._i, constraint._j, constraint._bound);
     }
 
-    void DBM::restrict(const std::vector<clock_constraint_t> &constraints) {
+    void DBM::restrict(const std::vector<difference_bound_t> &constraints) {
         for (const auto& c : constraints)
             this->restrict(c);
     }

@@ -133,11 +133,11 @@ namespace pardibaal {
         return false;
     }
 
-    bool Federation::is_satisfying(const clock_constraint_t& constraint) const {
+    bool Federation::is_satisfying(const difference_bound_t& constraint) const {
         return is_satisfying(constraint._i, constraint._j, constraint._bound);
     }
 
-    bool Federation::is_satisfying(const std::vector<clock_constraint_t>& constraints) const {
+    bool Federation::is_satisfying(const std::vector<difference_bound_t>& constraints) const {
         for (const auto& c : constraints)
             if (not is_satisfying(c._i, c._j, c._bound))
                 return false;
@@ -339,11 +339,11 @@ namespace pardibaal {
         make_consistent();
     }
 
-    void Federation::restrict(const clock_constraint_t& constraint) {
+    void Federation::restrict(const difference_bound_t& constraint) {
         restrict(constraint._i, constraint._j, constraint._bound);
     }
 
-    void Federation::restrict(const std::vector<clock_constraint_t>& constraints) {
+    void Federation::restrict(const std::vector<difference_bound_t>& constraints) {
         for (DBM& dbm : zones)
             dbm.restrict(constraints);
         make_consistent();

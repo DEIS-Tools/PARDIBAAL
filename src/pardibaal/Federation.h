@@ -25,7 +25,7 @@
 #include <vector>
 #include <ostream>
 
-#include "clock_constraint_t.h"
+#include "difference_bound_t.h"
 #include "bound_t.h"
 #include "DBM.h"
 
@@ -122,8 +122,8 @@ namespace pardibaal {
          */
         [[nodiscard]] bool is_satisfying(dim_t x, dim_t y, bound_t g) const;
 
-        [[nodiscard]] bool is_satisfying(const clock_constraint_t& constraint) const;
-        [[nodiscard]] bool is_satisfying(const std::vector<clock_constraint_t>& constraints) const;
+        [[nodiscard]] bool is_satisfying(const difference_bound_t& constraint) const;
+        [[nodiscard]] bool is_satisfying(const std::vector<difference_bound_t>& constraints) const;
 
         /**
          * Relation between this and a dbm.
@@ -251,8 +251,8 @@ namespace pardibaal {
         void interval_delay(val_t lower, val_t upper);
 
         void restrict(dim_t x, dim_t y, bound_t g);
-        void restrict(const clock_constraint_t& constraint);
-        void restrict(const std::vector<clock_constraint_t>& constraints);
+        void restrict(const difference_bound_t& constraint);
+        void restrict(const std::vector<difference_bound_t>& constraints);
         void free(dim_t x);
         void assign(dim_t x, val_t m);
         void copy(dim_t x, dim_t y);
