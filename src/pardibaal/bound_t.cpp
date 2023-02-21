@@ -110,6 +110,13 @@ namespace pardibaal {
     bool bound_t::operator>=(bound_t rhs) const {return not (*this < rhs);}
     bool bound_t::operator<=(bound_t rhs) const {return not (rhs < *this);}
 
+    bool bound_t::operator==(val_t rhs) const {return *this == bound_t::non_strict(rhs);}
+    bool bound_t::operator!=(val_t rhs) const {return *this != bound_t::non_strict(rhs);}
+    bool bound_t::operator<(val_t rhs) const {return *this < bound_t::non_strict(rhs);}
+    bool bound_t::operator>(val_t rhs) const {return *this > bound_t::non_strict(rhs);}
+    bool bound_t::operator<=(val_t rhs) const {return *this <= bound_t::non_strict(rhs);}
+    bool bound_t::operator>=(val_t rhs) const {return *this >= bound_t::non_strict(rhs);}
+
     bool lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
     bool le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
     bool gt(bound_t lhs, bound_t rhs) {return lhs > rhs;}

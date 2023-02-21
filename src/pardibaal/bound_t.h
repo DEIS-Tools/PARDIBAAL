@@ -78,6 +78,13 @@ namespace pardibaal {
         [[nodiscard]] bool operator>=(bound_t rhs) const;
         [[nodiscard]] bool operator<=(bound_t rhs) const;
 
+        [[nodiscard]] bool operator==(val_t rhs) const;
+        [[nodiscard]] bool operator!=(val_t rhs) const;
+        [[nodiscard]] bool operator<(val_t rhs) const;
+        [[nodiscard]] bool operator>(val_t rhs) const;
+        [[nodiscard]] bool operator<=(val_t rhs) const;
+        [[nodiscard]] bool operator>=(val_t rhs) const;
+
         friend std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 
         [[nodiscard]] static bool is_lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
