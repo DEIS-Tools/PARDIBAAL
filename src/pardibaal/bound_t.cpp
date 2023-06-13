@@ -26,7 +26,7 @@
 
 namespace pardibaal {
 
-    bound_t::bound_t(val_t n, strict_t strictness) : _n(n) {_strict = strictness == STRICT ? true : false;}
+    bound_t::bound_t(val_t n, strict_e strictness) : _n(n) {_strict = strictness == STRICT ? true : false;}
 
     bound_t::bound_t(val_t n, bool strict) : _n(n), _strict(strict) {}
 
