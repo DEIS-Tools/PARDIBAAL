@@ -229,13 +229,13 @@ namespace pardibaal {
          * Checks if a federation intersect with a federation ie. if the intersection is non-empty
          * @return true if this intersects with dbm
          */
-        [[nodiscard]] bool intersects(const DBM& dbm) const;
+        [[nodiscard]] bool is_intersecting(const DBM& dbm) const;
 
         /**
          * Checks if a federation intersect with a DBM ie. if the intersection is non-empty
          * @return true if this intersects with fed
          */
-        [[nodiscard]] bool intersects(const Federation& fed) const;
+        [[nodiscard]] bool is_intersecting(const Federation& fed) const;
 
         /**
          * Checks if the any of the zones have upper bounds

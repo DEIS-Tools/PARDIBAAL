@@ -298,12 +298,12 @@ namespace pardibaal {
     template bool Federation::is_superset<false>(const Federation& fed) const;
     
 
-    bool Federation::intersects(const DBM& dbm) const {
+    bool Federation::is_intersecting(const DBM& dbm) const {
         return std::any_of(this->begin(), this->end(), [&dbm](const DBM& z){return z.is_intersecting(dbm);});
     }
 
-    bool Federation::intersects(const Federation& fed) const {
-        return std::any_of(fed.begin(), fed.end(), [this](const DBM& dbm){return this->intersects(dbm);});
+    bool Federation::is_intersecting(const Federation& fed) const {
+        return std::any_of(fed.begin(), fed.end(), [this](const DBM& dbm){return this->is_intersecting(dbm);});
     }
 
     bool Federation::is_unbounded() const {

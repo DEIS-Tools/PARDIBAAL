@@ -201,7 +201,7 @@ namespace pardibaal {
     }
 
     bool DBM::is_intersecting(const Federation& fed) const {
-        return fed.intersects(*this);
+        return fed.is_intersecting(*this);
     }
 
     bool DBM::is_unbounded() const {
