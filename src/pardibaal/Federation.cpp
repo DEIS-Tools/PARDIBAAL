@@ -73,6 +73,16 @@ namespace pardibaal {
             this->add(dbm);
     }
 
+    void Federation::subtract(dim_t i, dim_t j, bound_t bound) {
+        for (auto& z : zones) {
+            z.subtract(i, j, bound);
+        }
+    }
+
+    void Federation::subtract(difference_bound_t constraint) {
+        this->subtract(constraint._i, constraint._j, constraint._bound);
+    }
+
     void Federation::subtract(const DBM& dbm) {
 #ifndef NEXCEPTIONS
         if (!zones.empty()) {

@@ -101,6 +101,27 @@ BOOST_AUTO_TEST_CASE(subtract_test_1) {
     BOOST_CHECK(not fed.is_satisfying(1, 0, bound_t::non_strict(5)));
 }
 
+BOOST_AUTO_TEST_CASE(subtract_test_2) {
+    auto fed = Federation::unconstrained(10);
+    auto constraint1 = difference_bound_t(0, 5, bound_t::strict(-10));
+    auto constraint2 = difference_bound_t(5, 0, bound_t::non_strict(10));
+
+    BOOST_CHECK(fed.is_satisfying(constraint1));
+    BOOST_CHECK(fed.is_satisfying(constraint2));
+
+    fed.subtract(constraint1);
+
+    BOOST_CHECK(!fed.is_satisfying(constraint1));
+    BOOST_CHECK(fed.is_satisfying(constraint2));
+
+    fed.subtract(constraint2);
+
+    BOOST_CHECK(!fed.is_satisfying(constraint1));
+    BOOST_CHECK(!fed.is_satisfying(constraint2));
+    BOOST_CHECK(fed.is_empty());
+
+}
+
 BOOST_AUTO_TEST_CASE(remove_test_1) {
     Federation fed(3);
 

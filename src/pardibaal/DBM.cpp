@@ -93,6 +93,7 @@ namespace pardibaal {
     }
 
     bool DBM::is_satisfying(dim_t x, dim_t y, bound_t g) const {
+        if (this->is_empty()) return false;
         return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
     }
 

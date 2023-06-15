@@ -79,6 +79,16 @@ namespace pardibaal {
         void add(const Federation& fed);
 
         /**
+         * Subtract everything that satisfies the constraint i - j </<= bound constraint
+         */
+        void subtract(dim_t i, dim_t j, bound_t bound);
+        
+        /**
+         * Subtract everything that satisfies the difference constraint
+         */
+        void subtract(difference_bound_t constraint);
+
+        /**
          * Subtract a dbm from this federation.
          * @param dbm to be subtracted.
          */
