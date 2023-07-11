@@ -32,6 +32,8 @@
 
 namespace pardibaal {
     class Federation;
+    
+    enum relation_e {EQUAL, SUBSET, SUPERSET, DIFFERENT};
     /** 
      * Relation struct
      * represents the relation between two DBMs.
@@ -50,6 +52,8 @@ namespace pardibaal {
         [[nodiscard]] static relation_t subset();
         [[nodiscard]] static relation_t superset();
         [[nodiscard]] static relation_t different();
+
+        [[nodiscard]] relation_e type() const;
 
         [[nodiscard]] bool is_equal() const;
         [[nodiscard]] bool is_subset() const;
