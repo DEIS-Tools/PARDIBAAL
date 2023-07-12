@@ -363,13 +363,13 @@ namespace pardibaal {
         for (dim_t i = 0; i < D.dimension(); ++i) {
             for (dim_t j = 0; j < D.dimension(); ++j) {
                 if (i == j) continue;
-                if ((D.at(i, j) > bound_t::non_strict(ceiling[i])) ||
-                    (D.at(0, i) < bound_t::non_strict(-ceiling[i])) ||
-                    (D.at(0, j) < bound_t::non_strict(-ceiling[j]) && i != 0)){
+                if ((D.at(i, j).get_bound() > ceiling[i]) ||
+                    (-D.at(0, i).get_bound() > ceiling[i]) ||
+                    (-D.at(0, j).get_bound() > ceiling[j] && i != 0)){
 
                     this->set(i, j, bound_t::inf());
                 }
-                else if (D.at(i, j) < bound_t::non_strict(-ceiling[j]) && i == 0)
+                else if (-D.at(i, j).get_bound() > ceiling[j] && i == 0)
                     this->set(i, j, bound_t::strict(-ceiling[j]));
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
