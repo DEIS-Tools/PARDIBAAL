@@ -400,9 +400,9 @@ namespace pardibaal {
         for (dim_t i = 0; i < D.dimension(); ++i) {
             for (dim_t j = 0; j < D.dimension(); ++j) {
                 if (i == j) continue;
-                else if (D.at(i, j) > bound_t::non_strict(lower[i]))
+                else if (D.at(i, j).get_bound() > lower[i])
                     this->set(i, j, bound_t::inf());
-                else if (D.at(i, j) < bound_t::non_strict(-upper[j]))
+                else if (-D.at(i, j).get_bound() > upper[j])
                     this->set(i, j, bound_t::strict(-upper[j]));
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
@@ -430,11 +430,11 @@ namespace pardibaal {
         for (dim_t i = 0; i < D.dimension(); ++i) {
             for (dim_t j = 0; j < D.dimension(); ++j) {
                 if (i == j) continue;
-                else if (D.at(i, j) > bound_t::non_strict(lower[i]) ||
-                         D.at(0, i) < bound_t::non_strict(-lower[i]) ||
-                         (D.at(0, j) < bound_t::non_strict(-upper[j]) && i != 0))
+                else if ((D.at(i, j).get_bound() > lower[i]) ||
+                         (-D.at(0, i).get_bound() > -lower[i]) ||
+                         (-D.at(0, j).get_bound() > -upper[j] && i != 0))
                     this->set(i, j, bound_t::inf());
-                else if (D.at(0, j) < bound_t::non_strict(-upper[j]) && i == 0)
+                else if (-D.at(0, j).get_bound() > upper[j] && i == 0)
                     this->set(i, j, bound_t::strict(-upper[j]));
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
