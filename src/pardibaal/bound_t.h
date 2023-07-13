@@ -38,15 +38,18 @@ namespace pardibaal {
         val_t _n = 0;
         bool _strict = false,
              _inf = false;
-    public:
-        bound_t(){};
-        bound_t(val_t n, strict_e strictness);
-        bound_t(val_t n, bool strict);
 
-        [[nodiscard]] static bound_t strict(val_t n);
-        [[nodiscard]] static bound_t non_strict(val_t n);
-        [[nodiscard]] static bound_t inf();
-        [[nodiscard]] static bound_t zero();
+        constexpr bound_t(val_t n, bool strict, bool inf) : _n(n), _strict(strict), _inf(inf){};
+    public:
+        constexpr bound_t(){};
+        constexpr bound_t(val_t n, strict_e strictness) : _n(n) {_strict = strictness == STRICT ? true : false;}
+        constexpr bound_t(val_t n, bool strict) : _n(n), _strict(strict) {}
+
+        [[nodiscard]] static constexpr bound_t strict(val_t n)     {return bound_t(n, true,  false);}
+        [[nodiscard]] static constexpr bound_t non_strict(val_t n) {return bound_t(n, false, false);}
+        [[nodiscard]] static constexpr bound_t inf()               {return bound_t(0, true,  true);}
+        [[nodiscard]] static constexpr bound_t le_zero()           {return bound_t(0, false, false);}
+        [[nodiscard]] static constexpr bound_t lt_zero()           {return bound_t(0, true,  false);}
 
         [[nodiscard]] val_t get_bound() const;
         [[nodiscard]] bool is_strict() const;

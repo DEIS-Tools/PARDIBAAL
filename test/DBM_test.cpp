@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(future_test_1) {
     for (dim_t i = 0; i < 10; i++)
         for (dim_t j = 0; j < 10; j++) {
             if (i == 0 || j != 0)
-                BOOST_CHECK(D.at(i, j) == bound_t::zero());
+                BOOST_CHECK(D.at(i, j) == bound_t::le_zero());
             else
                 BOOST_CHECK(D.at(i, j) == bound_t::inf());
         }
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(bounded_future_test_1) {
             if (j == 0 && i != 0)
                 BOOST_CHECK(D.at(i, j) == bound_t::non_strict(5));
             else
-                BOOST_CHECK(D.at(i, j) == bound_t::zero());
+                BOOST_CHECK(D.at(i, j) == bound_t::le_zero());
         }
 }
 
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(bounded_future_test_3) {
                 if (i == 2 && j != 2)
                     BOOST_CHECK(D.at(i, j) == bound_t::inf() && D.at(i, j).get_bound() == 0);
                 else
-                    BOOST_CHECK(D.at(i, j) == bound_t::zero());
+                    BOOST_CHECK(D.at(i, j) == bound_t::le_zero());
             }
         }
 }
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(delay_test_1) {
             else if (i == 0 && j != 0)
                 BOOST_CHECK(D.at(i, j) == bound_t::non_strict(-5));
             else
-                BOOST_CHECK(D.at(i, j) == bound_t::zero());
+                BOOST_CHECK(D.at(i, j) == bound_t::le_zero());
         }
 }
 
@@ -207,20 +207,20 @@ BOOST_AUTO_TEST_CASE(trace_test_1) {
     D.restrict(y, 0, bound_t::non_strict(5));
 
     // x = y = z
-    BOOST_CHECK(D.at(x, y) == bound_t::zero());
-    BOOST_CHECK(D.at(y, x) == bound_t::zero());
-    BOOST_CHECK(D.at(x, z) == bound_t::zero());
-    BOOST_CHECK(D.at(z, x) == bound_t::zero());
-    BOOST_CHECK(D.at(y, z) == bound_t::zero());
-    BOOST_CHECK(D.at(z, y) == bound_t::zero());
+    BOOST_CHECK(D.at(x, y) == bound_t::le_zero());
+    BOOST_CHECK(D.at(y, x) == bound_t::le_zero());
+    BOOST_CHECK(D.at(x, z) == bound_t::le_zero());
+    BOOST_CHECK(D.at(z, x) == bound_t::le_zero());
+    BOOST_CHECK(D.at(y, z) == bound_t::le_zero());
+    BOOST_CHECK(D.at(z, y) == bound_t::le_zero());
 
     // x,y,z in [0, 5]
     BOOST_CHECK(D.at(x, 0) == bound_t::non_strict(5));
     BOOST_CHECK(D.at(y, 0) == bound_t::non_strict(5));
     BOOST_CHECK(D.at(z, 0) == bound_t::non_strict(5));
-    BOOST_CHECK(D.at(0, x) == bound_t::zero());
-    BOOST_CHECK(D.at(0, y) == bound_t::zero());
-    BOOST_CHECK(D.at(0, z) == bound_t::zero());
+    BOOST_CHECK(D.at(0, x) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, y) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, z) == bound_t::le_zero());
 
     // Reset x
     D.assign(x, 0);
@@ -228,20 +228,20 @@ BOOST_AUTO_TEST_CASE(trace_test_1) {
     D.restrict(y, 0, bound_t::non_strict(5));
 
     // y = z
-    BOOST_CHECK(D.at(y, z) == bound_t::zero());
-    BOOST_CHECK(D.at(z, y) == bound_t::zero());
+    BOOST_CHECK(D.at(y, z) == bound_t::le_zero());
+    BOOST_CHECK(D.at(z, y) == bound_t::le_zero());
 
     // x - y <= 0, y - x <= 5
-    BOOST_CHECK(D.at(x, y) == bound_t::zero());
+    BOOST_CHECK(D.at(x, y) == bound_t::le_zero());
     BOOST_CHECK(D.at(y, x) == bound_t::non_strict(5));
 
     // x,y,z in [0, 5]
     BOOST_CHECK(D.at(x, 0) == bound_t::non_strict(5));
     BOOST_CHECK(D.at(y, 0) == bound_t::non_strict(5));
     BOOST_CHECK(D.at(z, 0) == bound_t::non_strict(5));
-    BOOST_CHECK(D.at(0, x) == bound_t::zero());
-    BOOST_CHECK(D.at(0, y) == bound_t::zero());
-    BOOST_CHECK(D.at(0, z) == bound_t::zero());
+    BOOST_CHECK(D.at(0, x) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, y) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, z) == bound_t::le_zero());
 
     // Copy z to be the value of x
     D.copy(z, x);
@@ -249,22 +249,22 @@ BOOST_AUTO_TEST_CASE(trace_test_1) {
     D.restrict(y, 0, bound_t::non_strict(5));
 
     // x = z
-    BOOST_CHECK(D.at(x, z) == bound_t::zero());
-    BOOST_CHECK(D.at(z, x) == bound_t::zero());
+    BOOST_CHECK(D.at(x, z) == bound_t::le_zero());
+    BOOST_CHECK(D.at(z, x) == bound_t::le_zero());
 
     // x - y <= 0, y - x <= 5 also for z instead of x
-    BOOST_CHECK(D.at(x, y) == bound_t::zero());
+    BOOST_CHECK(D.at(x, y) == bound_t::le_zero());
     BOOST_CHECK(D.at(y, x) == bound_t::non_strict(5));
-    BOOST_CHECK(D.at(z, y) == bound_t::zero());
+    BOOST_CHECK(D.at(z, y) == bound_t::le_zero());
     BOOST_CHECK(D.at(y, z) == bound_t::non_strict(5));
 
     // x,y,z in [0, 5]
     BOOST_CHECK(D.at(x, 0) == bound_t::non_strict(5));
     BOOST_CHECK(D.at(y, 0) == bound_t::non_strict(5));
     BOOST_CHECK(D.at(z, 0) == bound_t::non_strict(5));
-    BOOST_CHECK(D.at(0, x) == bound_t::zero());
-    BOOST_CHECK(D.at(0, y) == bound_t::zero());
-    BOOST_CHECK(D.at(0, z) == bound_t::zero());
+    BOOST_CHECK(D.at(0, x) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, y) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, z) == bound_t::le_zero());
 
     // Reset x
     D.assign(x, 0);
@@ -272,20 +272,20 @@ BOOST_AUTO_TEST_CASE(trace_test_1) {
     D.restrict(y, 0, bound_t::non_strict(5));
 
     // x - z <= 0 and z - x <= 5
-    BOOST_CHECK(D.at(x, z) == bound_t::zero());
+    BOOST_CHECK(D.at(x, z) == bound_t::le_zero());
     BOOST_CHECK(D.at(z, x) == bound_t::non_strict(5));
 
     // z - y <= 0 and y - z <= 5
-    BOOST_CHECK(D.at(z, y) == bound_t::zero());
+    BOOST_CHECK(D.at(z, y) == bound_t::le_zero());
     BOOST_CHECK(D.at(y, z) == bound_t::non_strict(5));
 
     // x,y,z in [0, 5]
     BOOST_CHECK(D.at(x, 0) == bound_t::non_strict(5));
     BOOST_CHECK(D.at(y, 0) == bound_t::non_strict(5));
     BOOST_CHECK(D.at(z, 0) == bound_t::non_strict(5));
-    BOOST_CHECK(D.at(0, x) == bound_t::zero());
-    BOOST_CHECK(D.at(0, y) == bound_t::zero());
-    BOOST_CHECK(D.at(0, z) == bound_t::zero());
+    BOOST_CHECK(D.at(0, x) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, y) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, z) == bound_t::le_zero());
 
     // To goal
     BOOST_CHECK(D.is_satisfying(x, 0, bound_t::non_strict(2)));
@@ -338,13 +338,13 @@ BOOST_AUTO_TEST_CASE(remove_clock_test_1) {
     BOOST_CHECK(D.at(1, 0) == bound_t::inf());
     BOOST_CHECK(D.at(2, 0) == bound_t::inf());
 
-    BOOST_CHECK(D.at(0, 0) == bound_t::zero());
-    BOOST_CHECK(D.at(0, 1) == bound_t::zero());
-    BOOST_CHECK(D.at(0, 2) == bound_t::zero());
-    BOOST_CHECK(D.at(1, 1) == bound_t::zero());
-    BOOST_CHECK(D.at(1, 2) == bound_t::zero());
-    BOOST_CHECK(D.at(2, 1) == bound_t::zero());
-    BOOST_CHECK(D.at(2, 2) == bound_t::zero());
+    BOOST_CHECK(D.at(0, 0) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, 1) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, 2) == bound_t::le_zero());
+    BOOST_CHECK(D.at(1, 1) == bound_t::le_zero());
+    BOOST_CHECK(D.at(1, 2) == bound_t::le_zero());
+    BOOST_CHECK(D.at(2, 1) == bound_t::le_zero());
+    BOOST_CHECK(D.at(2, 2) == bound_t::le_zero());
 }
 
 BOOST_AUTO_TEST_CASE(remove_clock_test_2) {
@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE(swap_clocks_test_1) {
         for (dim_t j = 0; j < size; ++j) {
             bound_t bound;
             if (i == j)
-                bound = bound_t::zero();
+                bound = bound_t::le_zero();
             else if ((i == a && j == b) || (i == b && j == a))
                 bound = bound_t::non_strict(i + (j * size));
             else if (i == a)
@@ -410,28 +410,28 @@ BOOST_AUTO_TEST_CASE(add_clock_test_1) {
     BOOST_CHECK(D.dimension() == 5);
 
     BOOST_CHECK(D.at(1, 0) == bound_t::inf());
-    BOOST_CHECK(D.at(1, 1) == bound_t::zero());
+    BOOST_CHECK(D.at(1, 1) == bound_t::le_zero());
     BOOST_CHECK(D.at(1, 2) == bound_t::inf());
     BOOST_CHECK(D.at(1, 3) == D.at(1, 0));
-    BOOST_CHECK(D.at(1, 4) == bound_t::zero());
+    BOOST_CHECK(D.at(1, 4) == bound_t::le_zero());
 
-    BOOST_CHECK(D.at(2, 0) == bound_t::zero());
-    BOOST_CHECK(D.at(2, 1) == bound_t::zero());
-    BOOST_CHECK(D.at(2, 2) == bound_t::zero());
+    BOOST_CHECK(D.at(2, 0) == bound_t::le_zero());
+    BOOST_CHECK(D.at(2, 1) == bound_t::le_zero());
+    BOOST_CHECK(D.at(2, 2) == bound_t::le_zero());
     BOOST_CHECK(D.at(2, 3) == D.at(2, 0));
-    BOOST_CHECK(D.at(2, 4) == bound_t::zero());
+    BOOST_CHECK(D.at(2, 4) == bound_t::le_zero());
 
     BOOST_CHECK(D.at(3, 0) == bound_t::inf());
     BOOST_CHECK(D.at(3, 1) == bound_t::inf());
     BOOST_CHECK(D.at(3, 2) == bound_t::inf());
-    BOOST_CHECK(D.at(3, 3) == bound_t::zero());
+    BOOST_CHECK(D.at(3, 3) == bound_t::le_zero());
     BOOST_CHECK(D.at(3, 4) == bound_t::inf());
 
     BOOST_CHECK(D.at(4, 0) == bound_t::inf());
-    BOOST_CHECK(D.at(4, 1) == bound_t::zero());
+    BOOST_CHECK(D.at(4, 1) == bound_t::le_zero());
     BOOST_CHECK(D.at(4, 2) == bound_t::inf());
     BOOST_CHECK(D.at(4, 3) == D.at(4, 0));
-    BOOST_CHECK(D.at(4, 4) == bound_t::zero());
+    BOOST_CHECK(D.at(4, 4) == bound_t::le_zero());
 }
 
 BOOST_AUTO_TEST_CASE(add_clock_test_2) {
@@ -453,14 +453,14 @@ BOOST_AUTO_TEST_CASE(resize_test_1) {
     std::vector<dim_t> indir = D.resize(src, dst);
 
 
-    BOOST_CHECK(D.is_satisfying(1, 0, bound_t::zero()));
-    BOOST_CHECK(D.is_satisfying(0, 1, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(1, 0, bound_t::le_zero()));
+    BOOST_CHECK(D.is_satisfying(0, 1, bound_t::le_zero()));
 
     BOOST_CHECK(D.is_satisfying(2, 0, bound_t::non_strict(1)));
     BOOST_CHECK(D.is_satisfying(0, 2, bound_t::non_strict(1)));
 
     BOOST_CHECK(D.is_satisfying(3, 0, bound_t::inf()));
-    BOOST_CHECK(D.is_satisfying(0, 3, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(0, 3, bound_t::le_zero()));
 
     BOOST_CHECK(D.is_satisfying(4, 0, bound_t::non_strict(4)));
     BOOST_CHECK(D.is_satisfying(0, 4, bound_t::non_strict(4)));
@@ -494,11 +494,11 @@ BOOST_AUTO_TEST_CASE(reorder_test_1) {
     BOOST_CHECK(D.is_satisfying(1, 0, bound_t::non_strict(3)));
     BOOST_CHECK(D.is_satisfying(0, 1, bound_t::non_strict(3)));
 
-    BOOST_CHECK(D.is_satisfying(2, 0, bound_t::zero()));
-    BOOST_CHECK(D.is_satisfying(0, 2, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(2, 0, bound_t::le_zero()));
+    BOOST_CHECK(D.is_satisfying(0, 2, bound_t::le_zero()));
 
     BOOST_CHECK(D.is_satisfying(3, 0, bound_t::inf()));
-    BOOST_CHECK(D.is_satisfying(0, 3, bound_t::zero()));
+    BOOST_CHECK(D.is_satisfying(0, 3, bound_t::le_zero()));
 }
 
 BOOST_AUTO_TEST_CASE(reorder_test_2) {
@@ -548,7 +548,7 @@ BOOST_AUTO_TEST_CASE(extrapolate_test_2) {
     D.set(0, 1, bound_t::non_strict(-2));
     D.set(0, 2, bound_t::non_strict(-2));
     D.set(1, 0, bound_t::non_strict(5));
-    D.set(1, 2, bound_t::non_strict(0));
+    D.set(1, 2, bound_t::le_zero());
     D.set(2, 0, bound_t::non_strict(7));
     D.set(2, 1, bound_t::non_strict(2));
 
@@ -556,15 +556,15 @@ BOOST_AUTO_TEST_CASE(extrapolate_test_2) {
 
     D.extrapolate(max);
 
-    BOOST_CHECK(D.at(0, 0) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(0, 0) == bound_t::le_zero());
     BOOST_CHECK(D.at(0, 1) == bound_t::strict(-1));
     BOOST_CHECK(D.at(0, 2) == bound_t::non_strict(-2));
     BOOST_CHECK(D.at(1, 0) == bound_t::non_strict(7));
-    BOOST_CHECK(D.at(1, 1) == bound_t::non_strict(0));
-    BOOST_CHECK(D.at(1, 2) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(1, 1) == bound_t::le_zero());
+    BOOST_CHECK(D.at(1, 2) == bound_t::le_zero());
     BOOST_CHECK(D.at(2, 0) == bound_t::non_strict(7));
     BOOST_CHECK(D.at(2, 1) == bound_t::non_strict(2));
-    BOOST_CHECK(D.at(2, 2) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(2, 2) == bound_t::le_zero());
 }
 
 BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_1) {
@@ -588,7 +588,7 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_1) {
     D.set(0, 1, bound_t::non_strict(-2));
     D.set(0, 2, bound_t::non_strict(-2));
     D.set(1, 0, bound_t::non_strict(5));
-    D.set(1, 2, bound_t::non_strict(0));
+    D.set(1, 2, bound_t::le_zero());
     D.set(2, 0, bound_t::non_strict(7));
     D.set(2, 1, bound_t::non_strict(2));
 
@@ -596,15 +596,15 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_1) {
 
     D.extrapolate_diagonal(max);
 
-    BOOST_CHECK(D.at(0, 0) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(0, 0) == bound_t::le_zero());
     BOOST_CHECK(D.at(0, 1) == bound_t::strict(-1));
     BOOST_CHECK(D.at(0, 2) == bound_t::non_strict(-2));
     BOOST_CHECK(D.at(1, 0) == bound_t::inf());
-    BOOST_CHECK(D.at(1, 1) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(1, 1) == bound_t::le_zero());
     BOOST_CHECK(D.at(1, 2) == bound_t::inf());
     BOOST_CHECK(D.at(2, 0) == bound_t::non_strict(7));
     BOOST_CHECK(D.at(2, 1) == bound_t::strict(6));
-    BOOST_CHECK(D.at(2, 2) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(2, 2) == bound_t::le_zero());
 }
 
 BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_2) {
@@ -616,11 +616,11 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_2) {
     D.extrapolate_diagonal(ceiling);
 
     BOOST_CHECK(!D.is_empty());
-    BOOST_CHECK(D.at(0, 0) == bound_t::zero());
-    BOOST_CHECK(D.at(1, 1) == bound_t::zero());
-    BOOST_CHECK(D.at(2, 2) == bound_t::zero());
-    BOOST_CHECK(D.at(0, 1) == bound_t::zero());
-    BOOST_CHECK(D.at(0, 2) == bound_t::zero());
+    BOOST_CHECK(D.at(0, 0) == bound_t::le_zero());
+    BOOST_CHECK(D.at(1, 1) == bound_t::le_zero());
+    BOOST_CHECK(D.at(2, 2) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, 1) == bound_t::le_zero());
+    BOOST_CHECK(D.at(0, 2) == bound_t::le_zero());
 
     BOOST_CHECK(D.at(1, 0) == bound_t::inf());
     BOOST_CHECK(D.at(2, 0) == bound_t::inf());
@@ -693,35 +693,35 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_4) {
 //    INF     INF     INF     <=0     <=0
 //    INF     INF     INF     <=0     <=0
 
-    BOOST_CHECK(D.at(0, 0) == bound_t::zero());
+    BOOST_CHECK(D.at(0, 0) == bound_t::le_zero());
     BOOST_CHECK(D.at(1, 0) == bound_t::inf());
     BOOST_CHECK(D.at(2, 0) == bound_t::inf());
     BOOST_CHECK(D.at(3, 0) == bound_t::inf());
     BOOST_CHECK(D.at(4, 0) == bound_t::inf());
 
     BOOST_CHECK(D.at(0, 1) == bound_t::strict(-3));
-    BOOST_CHECK(D.at(1, 1) == bound_t::zero());
+    BOOST_CHECK(D.at(1, 1) == bound_t::le_zero());
     BOOST_CHECK(D.at(2, 1) == bound_t::inf());
     BOOST_CHECK(D.at(3, 1) == bound_t::inf());
     BOOST_CHECK(D.at(4, 1) == bound_t::inf());
 
-    BOOST_CHECK(D.at(0, 2) == bound_t::zero());
+    BOOST_CHECK(D.at(0, 2) == bound_t::le_zero());
     BOOST_CHECK(D.at(1, 2) == bound_t::inf());
-    BOOST_CHECK(D.at(2, 2) == bound_t::zero());
+    BOOST_CHECK(D.at(2, 2) == bound_t::le_zero());
     BOOST_CHECK(D.at(3, 2) == bound_t::inf());
     BOOST_CHECK(D.at(4, 2) == bound_t::inf());
 
-    BOOST_CHECK(D.at(0, 3) == bound_t::zero());
+    BOOST_CHECK(D.at(0, 3) == bound_t::le_zero());
     BOOST_CHECK(D.at(1, 3) == bound_t::inf());
     BOOST_CHECK(D.at(2, 3) == bound_t::inf());
-    BOOST_CHECK(D.at(3, 3) == bound_t::zero());
-    BOOST_CHECK(D.at(4, 3) == bound_t::zero());
+    BOOST_CHECK(D.at(3, 3) == bound_t::le_zero());
+    BOOST_CHECK(D.at(4, 3) == bound_t::le_zero());
 
-    BOOST_CHECK(D.at(0, 4) == bound_t::zero());
+    BOOST_CHECK(D.at(0, 4) == bound_t::le_zero());
     BOOST_CHECK(D.at(1, 4) == bound_t::inf());
     BOOST_CHECK(D.at(2, 4) == bound_t::inf());
-    BOOST_CHECK(D.at(3, 4) == bound_t::zero());
-    BOOST_CHECK(D.at(4, 4) == bound_t::zero());
+    BOOST_CHECK(D.at(3, 4) == bound_t::le_zero());
+    BOOST_CHECK(D.at(4, 4) == bound_t::le_zero());
 
 }
 
@@ -739,9 +739,9 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_6) {
     dbm.set(0, 1, {-2, STRICT});
     dbm.set(2, 1, {-2, STRICT});
     dbm.set(3, 2, {2, NON_STRICT});
-    dbm.set(0, 2, bound_t::zero());
-    dbm.set(0, 3, bound_t::zero());
-    dbm.set(2, 3, bound_t::zero());
+    dbm.set(0, 2, bound_t::le_zero());
+    dbm.set(0, 3, bound_t::le_zero());
+    dbm.set(2, 3, bound_t::le_zero());
     dbm.set(3, 1, {0, STRICT});
 
     BOOST_CHECK(!dbm.is_empty());
@@ -775,7 +775,7 @@ BOOST_AUTO_TEST_CASE(extrapolate_lu_test_1) {
     D.set(0, 1, bound_t::non_strict(-2));
     D.set(0, 2, bound_t::non_strict(-2));
     D.set(1, 0, bound_t::non_strict(5));
-    D.set(1, 2, bound_t::non_strict(0));
+    D.set(1, 2, bound_t::le_zero());
     D.set(2, 0, bound_t::non_strict(7));
     D.set(2, 1, bound_t::non_strict(2));
 
@@ -784,15 +784,15 @@ BOOST_AUTO_TEST_CASE(extrapolate_lu_test_1) {
 
     D.extrapolate_lu(lower, upper);
 
-    BOOST_CHECK(D.at(0, 0) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(0, 0) == bound_t::le_zero());
     BOOST_CHECK(D.at(0, 1) == bound_t::strict(-1));
     BOOST_CHECK(D.at(0, 2) == bound_t::non_strict(-2));
     BOOST_CHECK(D.at(1, 0) == bound_t::inf());
-    BOOST_CHECK(D.at(1, 1) == bound_t::non_strict(0));
-    BOOST_CHECK(D.at(1, 2) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(1, 1) == bound_t::le_zero());
+    BOOST_CHECK(D.at(1, 2) == bound_t::le_zero());
     BOOST_CHECK(D.at(2, 0) == bound_t::inf());
     BOOST_CHECK(D.at(2, 1) == bound_t::inf());
-    BOOST_CHECK(D.at(2, 2) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(2, 2) == bound_t::le_zero());
 }
 
 BOOST_AUTO_TEST_CASE(extrapolate_lu_diagonal_test_1) {
@@ -817,7 +817,7 @@ BOOST_AUTO_TEST_CASE(extrapolate_lu_diagonal_test_1) {
     D.set(0, 1, bound_t::non_strict(-2));
     D.set(0, 2, bound_t::non_strict(-2));
     D.set(1, 0, bound_t::non_strict(5));
-    D.set(1, 2, bound_t::non_strict(0));
+    D.set(1, 2, bound_t::le_zero());
     D.set(2, 0, bound_t::non_strict(7));
     D.set(2, 1, bound_t::non_strict(2));
 
@@ -826,15 +826,15 @@ BOOST_AUTO_TEST_CASE(extrapolate_lu_diagonal_test_1) {
 
     D.extrapolate_lu_diagonal(lower, upper);
 
-    BOOST_CHECK(D.at(0, 0) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(0, 0) == bound_t::le_zero());
     BOOST_CHECK(D.at(0, 1) == bound_t::strict(-1));
     BOOST_CHECK(D.at(0, 2) == bound_t::non_strict(-2));
     BOOST_CHECK(D.at(1, 0) == bound_t::inf());
-    BOOST_CHECK(D.at(1, 1) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(1, 1) == bound_t::le_zero());
     BOOST_CHECK(D.at(1, 2) == bound_t::inf());
     BOOST_CHECK(D.at(2, 0) == bound_t::inf());
     BOOST_CHECK(D.at(2, 1) == bound_t::inf());
-    BOOST_CHECK(D.at(2, 2) == bound_t::non_strict(0));
+    BOOST_CHECK(D.at(2, 2) == bound_t::le_zero());
 }
 
 BOOST_AUTO_TEST_CASE(intersection_test_1) {
@@ -1043,7 +1043,7 @@ BOOST_AUTO_TEST_CASE(zero_test_1) {
     DBM dbm(dimension);
     for (dim_t i = 0; i < dimension; ++i)
         for (dim_t j = 0; j < dimension; ++j)
-            dbm.set(i, j, bound_t::non_strict(0));
+            dbm.set(i, j, bound_t::le_zero());
 
     BOOST_CHECK(DBM::zero(dimension).is_equal(dbm));
 }
@@ -1054,7 +1054,7 @@ BOOST_AUTO_TEST_CASE(unconstrained_test_1) {
     for (dim_t i = 0; i < dimension; ++i) {
         for (dim_t j = 0; j < dimension; ++j) {
             if (j == i || i == 0)
-                dbm.set(i, j, bound_t::non_strict(0));
+                dbm.set(i, j, bound_t::le_zero());
             else
                 dbm.set(i, j, bound_t::inf());
         }

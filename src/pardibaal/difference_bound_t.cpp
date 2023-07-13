@@ -27,7 +27,7 @@ namespace pardibaal {
 
     difference_bound_t::difference_bound_t(dim_t i, dim_t j, const bound_t &bound) : _i(i), _j(j), _bound(bound) {}
 
-    difference_bound_t difference_bound_t::zero(dim_t i, dim_t j) {return difference_bound_t(i, j, bound_t::zero());}
+    difference_bound_t difference_bound_t::zero(dim_t i, dim_t j) {return difference_bound_t(i, j, bound_t::le_zero());}
 
     difference_bound_t difference_bound_t::inf(dim_t i, dim_t j) {return difference_bound_t(i, j, bound_t::inf());}
 

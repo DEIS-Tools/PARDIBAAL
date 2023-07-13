@@ -78,7 +78,7 @@ namespace pardibaal {
 
     bool DBM::is_empty() const {
         // Check if 0 - 0 is less than 0 (used for quicker identification of empty zone
-        if (_bounds_table.at(0, 0) < bound_t().zero())
+        if (_bounds_table.at(0, 0) < bound_t().le_zero())
             return true;
 
         // The DBM has to be closed for this to actually work
@@ -86,7 +86,7 @@ namespace pardibaal {
             for (dim_t j = 0; j < this->dimension(); ++j) {
                 bound_t i_to_j_to_i = this->_bounds_table.at(i, j) + this->_bounds_table.at(j, i);
 
-                if (i_to_j_to_i < bound_t::non_strict(0))
+                if (i_to_j_to_i < bound_t::le_zero())
                     return true;
             }
         }
@@ -96,7 +96,7 @@ namespace pardibaal {
 
     bool DBM::is_satisfying(dim_t x, dim_t y, bound_t g) const {
         if (this->is_empty()) return false;
-        return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
+        return bound_t::le_zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
     bool DBM::is_satisfying(const difference_bound_t& constraint) const {
@@ -191,8 +191,8 @@ namespace pardibaal {
 
                 // For opposite diagonal bounds: if they are both + or -, then they overlap
                 // Upper bounds can be inf; if upper bound is inf, then it overlaps with any opposite lower bound
-                if ((b1 > bound_t::zero() && b2 > bound_t::zero()) ||
-                    (b1 < bound_t::zero() && b2 < bound_t::zero()) ||
+                if ((b1 > bound_t::le_zero() && b2 > bound_t::le_zero()) ||
+                    (b1 < bound_t::le_zero() && b2 < bound_t::le_zero()) ||
                     (b1.is_inf() || b2.is_inf()))
                     continue;
                 else if (((b1.is_strict() || b2.is_strict()) && (not (b1 * -1 < b2))) || (not (b1 * -1 <= b2)))
@@ -236,7 +236,7 @@ namespace pardibaal {
 
     void DBM::past() {
         for (dim_t i = 1; i < this->dimension(); ++i) {
-            this->_bounds_table.set(0, i, bound_t::zero());
+            this->_bounds_table.set(0, i, bound_t::le_zero());
             for (dim_t j = 1; j < this->dimension(); ++j) {
                 if (this->_bounds_table.at(j, i) < this->_bounds_table.at(0, i)) {
                     this->_bounds_table.set(0, i, this->_bounds_table.at(j, i));
@@ -265,7 +265,7 @@ namespace pardibaal {
     }
 
     void DBM::restrict(dim_t x, dim_t y, bound_t g) {
-        if ((_bounds_table.at(y, x) + g) < bound_t::zero()) // In this case the zone is now empty
+        if ((_bounds_table.at(y, x) + g) < bound_t::le_zero()) // In this case the zone is now empty
             _bounds_table.set(0, 0, bound_t::non_strict(-1));
         else if (g < _bounds_table.at(x, y)) {
             _bounds_table.set(x, y, g);
@@ -315,8 +315,8 @@ namespace pardibaal {
                 _bounds_table.set(i, x, _bounds_table.at(i, y));
             }
         }
-        _bounds_table.set(x, y, bound_t::zero());
-        _bounds_table.set(y, x, bound_t::zero());
+        _bounds_table.set(x, y, bound_t::le_zero());
+        _bounds_table.set(y, x, bound_t::le_zero());
     }
 
     void DBM::shift(dim_t x, val_t n) {
@@ -326,8 +326,8 @@ namespace pardibaal {
                 this->_bounds_table.set(i, x, this->_bounds_table.at(i, x) + bound_t::non_strict(-n));
             }
         }
-        this->_bounds_table.set(x, 0, bound_t::max(this->_bounds_table.at(x, 0), bound_t::zero()));
-        this->_bounds_table.set(0, x, bound_t::min(this->_bounds_table.at(0, x), bound_t::zero()));
+        this->_bounds_table.set(x, 0, bound_t::max(this->_bounds_table.at(x, 0), bound_t::le_zero()));
+        this->_bounds_table.set(0, x, bound_t::min(this->_bounds_table.at(0, x), bound_t::le_zero()));
     }
 
     // Simple extrapolation from a ceiling for all clocks.
@@ -375,11 +375,11 @@ namespace pardibaal {
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
-                if (i == 0 && this->at(i, j) > bound_t::zero()) {
-                    this->set(i, j, bound_t::zero());
+                if (i == 0 && this->at(i, j) > bound_t::le_zero()) {
+                    this->set(i, j, bound_t::le_zero());
                 }
-                if (j == 0 && this->at(i, j) < bound_t::zero()) {
-                    this->set(i, j, bound_t::zero());
+                if (j == 0 && this->at(i, j) < bound_t::le_zero()) {
+                    this->set(i, j, bound_t::le_zero());
                 }
 
             }
@@ -408,10 +408,10 @@ namespace pardibaal {
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
-                if (i == 0 && this->at(i, j) > bound_t::zero())
-                    this->set(i, j, bound_t::zero());
-                if (j == 0 && this->at(i, j) < bound_t::zero())
-                    this->set(i, j, bound_t::zero());
+                if (i == 0 && this->at(i, j) > bound_t::le_zero())
+                    this->set(i, j, bound_t::le_zero());
+                if (j == 0 && this->at(i, j) < bound_t::le_zero())
+                    this->set(i, j, bound_t::le_zero());
             }
         }
 
@@ -440,10 +440,10 @@ namespace pardibaal {
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
-                if (i == 0 && this->at(i, j) > bound_t::zero())
-                    this->set(i, j, bound_t::zero());
-                if (j == 0 && this->at(i, j) < bound_t::zero())
-                    this->set(i, j, bound_t::zero());
+                if (i == 0 && this->at(i, j) > bound_t::le_zero())
+                    this->set(i, j, bound_t::le_zero());
+                if (j == 0 && this->at(i, j) < bound_t::le_zero())
+                    this->set(i, j, bound_t::le_zero());
             }
         }
 
