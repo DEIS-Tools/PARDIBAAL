@@ -31,11 +31,6 @@
 
 namespace pardibaal {
 
-    relation_t relation_t::equal() {return relation_t(true, false, false, false);}
-    relation_t relation_t::subset() {return relation_t(false, true, false, false);}
-    relation_t relation_t::superset() {return relation_t(false, false, true, false);}
-    relation_t relation_t::different() {return relation_t(false, false, false, true);}
-
     relation_e relation_t::type() const {return is_equal() ? EQUAL : is_subset() ? SUBSET : is_superset() ? SUPERSET : DIFFERENT;}
 
     bool relation_t::is_equal() const {return _is_equal;}

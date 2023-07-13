@@ -45,13 +45,13 @@ namespace pardibaal {
         bool _is_equal, _is_subset, _is_superset, _is_different;
     
     public:
-        relation_t(bool equal, bool subset, bool superset, bool different) :
+        constexpr relation_t(bool equal, bool subset, bool superset, bool different) :
             _is_equal(equal), _is_subset(subset), _is_superset(superset), _is_different(different) {}
 
-        [[nodiscard]] static relation_t equal();
-        [[nodiscard]] static relation_t subset();
-        [[nodiscard]] static relation_t superset();
-        [[nodiscard]] static relation_t different();
+        [[nodiscard]] static constexpr relation_t equal() {return relation_t(true, false, false, false);}
+        [[nodiscard]] static constexpr relation_t subset() {return relation_t(false, true, false, false);}
+        [[nodiscard]] static constexpr relation_t superset() {return relation_t(false, false, true, false);}
+        [[nodiscard]] static constexpr relation_t different() {return relation_t(false, false, false, true);}
 
         [[nodiscard]] relation_e type() const;
 
