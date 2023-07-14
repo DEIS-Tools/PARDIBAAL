@@ -51,10 +51,10 @@ namespace pardibaal {
         [[nodiscard]] static constexpr bound_t le_zero()           {return bound_t(0, false, false);}
         [[nodiscard]] static constexpr bound_t lt_zero()           {return bound_t(0, true,  false);}
 
-        [[nodiscard]] val_t get_bound() const;
-        [[nodiscard]] bool is_strict() const;
-        [[nodiscard]] bool is_non_strict() const;
-        [[nodiscard]] bool is_inf() const;
+        [[nodiscard]] inline val_t get_bound()    const {return this->_n;}
+        [[nodiscard]] inline bool is_strict()     const {return this->_strict;}
+        [[nodiscard]] inline bool is_non_strict() const {return not this->_strict;}
+        [[nodiscard]] inline bool is_inf()        const {return this->_inf;}
 
         [[nodiscard]] static const bound_t& max(const bound_t &a, const bound_t &b);
         [[nodiscard]] static bound_t max(bound_t &&a, bound_t &&b);

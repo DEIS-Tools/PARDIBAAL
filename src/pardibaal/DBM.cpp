@@ -50,13 +50,13 @@ namespace pardibaal {
         return dbm;
     }
 
-    bound_t DBM::at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
+    // bound_t DBM::at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
 
-    void DBM::set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
+    // void DBM::set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
 
-    void DBM::set(const difference_bound_t& constraint) {
-        this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
-    }
+    // void DBM::set(const difference_bound_t& constraint) {
+    //     this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
+    // }
 
     void DBM::subtract(dim_t i, dim_t j, bound_t bound) {
         if (this->at(i, j) > bound) // if i,j,bound is larger than current, then result is empty. Always false if bound is inf

@@ -71,9 +71,11 @@ namespace pardibaal {
 
         static DBM unconstrained(dim_t dimension);
 
-        [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
-        void set(dim_t i, dim_t j, bound_t bound);
-        void set(const difference_bound_t& constraint);
+        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
+        inline void set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
+        inline void set(const difference_bound_t& constraint) {
+            this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
+        }
 
         void subtract(dim_t i, dim_t j, bound_t bound);
         void subtract(difference_bound_t constraint);

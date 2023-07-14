@@ -35,24 +35,24 @@ namespace pardibaal {
 
     dim_t bounds_table_t::number_of_clocks() const {return this->_number_of_clocks;}
 
-    bound_t bounds_table_t::at(dim_t i, dim_t j) const {
-#ifndef NEXCEPTIONS
-        if (i >= _number_of_clocks || j >= _number_of_clocks)
-            throw base_error("ERROR: Out of bounds access on coordinate: ", i, ", ", j, " with dimensions: ",
-                             _number_of_clocks);
-#endif
+//     bound_t bounds_table_t::at(dim_t i, dim_t j) const {
+// #ifndef NEXCEPTIONS
+//         if (i >= _number_of_clocks || j >= _number_of_clocks)
+//             throw base_error("ERROR: Out of bounds access on coordinate: ", i, ", ", j, " with dimensions: ",
+//                              _number_of_clocks);
+// #endif
 
-        return _bounds[i * _number_of_clocks + j];
-    }
+//         return _bounds[i * _number_of_clocks + j];
+//     }
 
-    void bounds_table_t::set(dim_t i, dim_t j, bound_t bound) {
-#ifndef NEXCEPTIONS
-        if (i >= _number_of_clocks || j >= _number_of_clocks)
-            throw base_error("ERROR: Out of bounds access on coordinate: ", i, ", ", j, " with dimensions: ",
-                             _number_of_clocks);
-#endif
-        this->_bounds[i * _number_of_clocks + j] = bound;
-    }
+//     void bounds_table_t::set(dim_t i, dim_t j, bound_t bound) {
+// #ifndef NEXCEPTIONS
+//         if (i >= _number_of_clocks || j >= _number_of_clocks)
+//             throw base_error("ERROR: Out of bounds access on coordinate: ", i, ", ", j, " with dimensions: ",
+//                              _number_of_clocks);
+// #endif
+//         this->_bounds[i * _number_of_clocks + j] = bound;
+//     }
 
     std::ostream& operator<<(std::ostream& out, const bounds_table_t& table) {
         out << '\n';
