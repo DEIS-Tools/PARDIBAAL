@@ -26,10 +26,10 @@
 
 namespace pardibaal {
 
-    val_t bound_t::get_bound()    const {return this->_n;}
-    bool bound_t::is_strict()     const {return this->_strict;}
-    bool bound_t::is_non_strict() const {return not this->_strict;}
-    bool bound_t::is_inf()        const {return this->_inf;}
+    // val_t bound_t::get_bound()    const {return this->_n;}
+    // bool bound_t::is_strict()     const {return this->_strict;}
+    // bool bound_t::is_non_strict() const {return not this->_strict;}
+    // bool bound_t::is_inf()        const {return this->_inf;}
 
     const bound_t &bound_t::max(const bound_t &a, const bound_t &b) {return a < b ? b : a;}
     bound_t bound_t::max(bound_t &&a, bound_t &&b) {return max(a, b);}
