@@ -70,12 +70,8 @@ namespace pardibaal {
         if (this->is_inf()) return false;
         if (rhs.is_inf()) return true;
 
-        if (this->get_bound() == rhs.get_bound()) {
-            if (rhs.is_strict())
-                return false;
-
-            return this->is_strict();
-        }
+        if (this->get_bound() == rhs.get_bound())
+            return !rhs.is_strict() && this->is_strict();
 
         return this->get_bound() < rhs.get_bound();
     }
