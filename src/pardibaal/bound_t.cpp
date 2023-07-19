@@ -26,7 +26,7 @@
 
 namespace pardibaal {
 
-    bound_t::bound_t(val_t n, strict_t strictness) : _n(n) {_strict = strictness == STRICT ? true : false;}
+    bound_t::bound_t(val_t n, strict_e strictness) : _n(n) {_strict = strictness == STRICT ? true : false;}
 
     bound_t::bound_t(val_t n, bool strict) : _n(n), _strict(strict) {}
 
@@ -109,6 +109,13 @@ namespace pardibaal {
     bool bound_t::operator>(bound_t rhs)  const {return rhs < *this;}
     bool bound_t::operator>=(bound_t rhs) const {return not (*this < rhs);}
     bool bound_t::operator<=(bound_t rhs) const {return not (rhs < *this);}
+
+    bool bound_t::operator==(val_t rhs) const {return *this == bound_t::non_strict(rhs);}
+    bool bound_t::operator!=(val_t rhs) const {return *this != bound_t::non_strict(rhs);}
+    bool bound_t::operator<(val_t rhs) const {return *this < bound_t::non_strict(rhs);}
+    bool bound_t::operator>(val_t rhs) const {return *this > bound_t::non_strict(rhs);}
+    bool bound_t::operator<=(val_t rhs) const {return *this <= bound_t::non_strict(rhs);}
+    bool bound_t::operator>=(val_t rhs) const {return *this >= bound_t::non_strict(rhs);}
 
     bool lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
     bool le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}

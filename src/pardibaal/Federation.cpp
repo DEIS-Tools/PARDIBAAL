@@ -73,6 +73,16 @@ namespace pardibaal {
             this->add(dbm);
     }
 
+    void Federation::subtract(dim_t i, dim_t j, bound_t bound) {
+        for (auto& z : zones) {
+            z.subtract(i, j, bound);
+        }
+    }
+
+    void Federation::subtract(difference_bound_t constraint) {
+        this->subtract(constraint._i, constraint._j, constraint._bound);
+    }
+
     void Federation::subtract(const DBM& dbm) {
 #ifndef NEXCEPTIONS
         if (!zones.empty()) {
@@ -133,11 +143,11 @@ namespace pardibaal {
         return false;
     }
 
-    bool Federation::is_satisfying(const clock_constraint_t& constraint) const {
+    bool Federation::is_satisfying(const difference_bound_t& constraint) const {
         return is_satisfying(constraint._i, constraint._j, constraint._bound);
     }
 
-    bool Federation::is_satisfying(const std::vector<clock_constraint_t>& constraints) const {
+    bool Federation::is_satisfying(const std::vector<difference_bound_t>& constraints) const {
         for (const auto& c : constraints)
             if (not is_satisfying(c._i, c._j, c._bound))
                 return false;
@@ -298,12 +308,12 @@ namespace pardibaal {
     template bool Federation::is_superset<false>(const Federation& fed) const;
     
 
-    bool Federation::intersects(const DBM& dbm) const {
+    bool Federation::is_intersecting(const DBM& dbm) const {
         return std::any_of(this->begin(), this->end(), [&dbm](const DBM& z){return z.is_intersecting(dbm);});
     }
 
-    bool Federation::intersects(const Federation& fed) const {
-        return std::any_of(fed.begin(), fed.end(), [this](const DBM& dbm){return this->intersects(dbm);});
+    bool Federation::is_intersecting(const Federation& fed) const {
+        return std::any_of(fed.begin(), fed.end(), [this](const DBM& dbm){return this->is_intersecting(dbm);});
     }
 
     bool Federation::is_unbounded() const {
@@ -339,11 +349,11 @@ namespace pardibaal {
         make_consistent();
     }
 
-    void Federation::restrict(const clock_constraint_t& constraint) {
+    void Federation::restrict(const difference_bound_t& constraint) {
         restrict(constraint._i, constraint._j, constraint._bound);
     }
 
-    void Federation::restrict(const std::vector<clock_constraint_t>& constraints) {
+    void Federation::restrict(const std::vector<difference_bound_t>& constraints) {
         for (DBM& dbm : zones)
             dbm.restrict(constraints);
         make_consistent();

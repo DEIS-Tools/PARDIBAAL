@@ -9,7 +9,7 @@ if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif (NOT CMAKE_BUILD_TYPE)
 
-option(PARDIBAAL_BuildTests "Build the unit tests when BUILD_TESTING is enabled." ON)
+option(PARDIBAAL_BuildTests "Build the unit tests." OFF)
 option(PARDIBAAL_GetDependencies "Fetch external dependencies from web." ON)
 
 if (PARDIBAAL_BuildTests)
@@ -51,7 +51,7 @@ if (PARDIBAAL_GetDependencies)
         set(BOOST_CONFIG_JAM "using gcc : : ${CMAKE_CXX_COMPILER}")
     endif ()
 
-    if(BUILD_TESTING AND PARDIBAAL_BuildTests)
+    if(PARDIBAAL_BuildTests)
         ExternalProject_Add(
             boost-ext
             URL https://boostorg.jfrog.io/artifactory/main/release/1.78.0/source/boost_1_78_0.zip
@@ -73,7 +73,7 @@ if(NOT CMAKE_BUILD_TYPE MATCHES Prebuild)
     include_directories(include)
     add_subdirectory(src)
 endif()
-if(BUILD_TESTING AND PARDIBAAL_BuildTests)
+if(PARDIBAAL_BuildTests)
     if (CMAKE_BUILD_TYPE MATCHES Prebuild)
         # dummy for pre-build
         add_custom_target( prebuild )

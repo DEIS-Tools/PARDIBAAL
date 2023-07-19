@@ -195,3 +195,111 @@ BOOST_AUTO_TEST_CASE(multiply_test_2) {
     BOOST_CHECK(b == bound_t::inf());
     BOOST_CHECK(b.get_bound() == 0);
 }
+
+BOOST_AUTO_TEST_CASE(comp_test_6) {
+    auto a = bound_t::inf();
+    auto b = 600;
+
+    BOOST_CHECK(!(a == b));
+    BOOST_CHECK(a != b);
+    BOOST_CHECK(!(a < b));
+    BOOST_CHECK(a > b);
+    BOOST_CHECK(!(a <= b));
+    BOOST_CHECK(a >= b);
+}
+
+BOOST_AUTO_TEST_CASE(comp_test_7) {
+    auto a = bound_t::non_strict(350);
+    auto b = 350;
+
+    BOOST_CHECK(a == b);
+    BOOST_CHECK(!(a != b));
+    BOOST_CHECK(!(a < b));
+    BOOST_CHECK(!(a > b));
+    BOOST_CHECK(a <= b);
+    BOOST_CHECK(a >= b);
+}
+
+BOOST_AUTO_TEST_CASE(comp_test_8) {
+    auto a = bound_t::strict(350);
+    auto b = 350;
+
+    BOOST_CHECK(!(a == b));
+    BOOST_CHECK(a != b);
+    BOOST_CHECK(a < b);
+    BOOST_CHECK(!(a > b));
+    BOOST_CHECK(a <= b);
+    BOOST_CHECK(!(a >= b));
+}
+
+BOOST_AUTO_TEST_CASE(comp_test_9) {
+    auto a = bound_t::strict(350);
+    auto b = 351;
+
+    BOOST_CHECK(!(a == b));
+    BOOST_CHECK(a != b);
+    BOOST_CHECK(a < b);
+    BOOST_CHECK(!(a > b));
+    BOOST_CHECK(a <= b);
+    BOOST_CHECK(!(a >= b));
+}
+
+BOOST_AUTO_TEST_CASE(comp_test_10) {
+    auto a = bound_t::strict(350);
+    auto b = 349;
+
+    BOOST_CHECK(!(a == b));
+    BOOST_CHECK(a != b);
+    BOOST_CHECK(!(a < b));
+    BOOST_CHECK(a > b);
+    BOOST_CHECK(!(a <= b));
+    BOOST_CHECK(a >= b);
+}
+
+BOOST_AUTO_TEST_CASE(comp_test_11) {
+    auto a = bound_t::strict(-350);
+    auto b = 349;
+
+    BOOST_CHECK(!(a == b));
+    BOOST_CHECK(a != b);
+    BOOST_CHECK(a < b);
+    BOOST_CHECK(!(a > b));
+    BOOST_CHECK(a <= b);
+    BOOST_CHECK(!(a >= b));
+}
+
+BOOST_AUTO_TEST_CASE(comp_test_12) {
+    auto a = bound_t::strict(-350);
+    auto b = -350;
+
+    BOOST_CHECK(!(a == b));
+    BOOST_CHECK(a != b);
+    BOOST_CHECK(a < b);
+    BOOST_CHECK(!(a > b));
+    BOOST_CHECK(a <= b);
+    BOOST_CHECK(!(a >= b));
+}
+
+BOOST_AUTO_TEST_CASE(comp_test_13) {
+    auto a = bound_t::non_strict(-350);
+    auto b = -350;
+
+    BOOST_CHECK(a == b);
+    BOOST_CHECK(!(a != b));
+    BOOST_CHECK(!(a < b));
+    BOOST_CHECK(!(a > b));
+    BOOST_CHECK(a <= b);
+    BOOST_CHECK(a >= b);
+}
+
+BOOST_AUTO_TEST_CASE(comp_test_14) {
+    auto a = bound_t::non_strict(350);
+    auto b = -350;
+
+    BOOST_CHECK(!(a == b));
+    BOOST_CHECK(a != b);
+    BOOST_CHECK(!(a < b));
+    BOOST_CHECK(a > b);
+    BOOST_CHECK(!(a <= b));
+    BOOST_CHECK(a >= b);
+}

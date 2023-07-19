@@ -935,6 +935,7 @@ BOOST_AUTO_TEST_CASE(relation_test_3) {
     BOOST_CHECK(D2.is_superset(D1));
     BOOST_CHECK(not D2.relation(D1).is_equal());
     BOOST_CHECK(not D2.is_equal(D1));
+    BOOST_CHECK(not D1.is_equal(D2));
 
     D1.assign(1, 10);
 
@@ -955,8 +956,19 @@ BOOST_AUTO_TEST_CASE(relation_test_4) {
     DBM a(1), b(1);
 
     a.future();
-
     BOOST_CHECK(a.is_equal(b));
+}
+
+BOOST_AUTO_TEST_CASE(relation_t_test_1) {
+    DBM a(10), b(10);
+
+    a.future();
+
+    BOOST_CHECK(a.relation(b).type() == SUPERSET);
+    
+    b.future();
+
+    BOOST_CHECK(a.relation(b).type() == EQUAL);
 }
 
 BOOST_AUTO_TEST_CASE(intersects_test_1) {

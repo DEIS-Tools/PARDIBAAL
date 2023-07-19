@@ -23,13 +23,13 @@
 #define BOOST_TEST_MODULE PARDIBAAL
 
 #include <boost/test/unit_test.hpp>
-#include "pardibaal/clock_constraint_t.h"
+#include "pardibaal/difference_bound_t.h"
 #include "errors.h"
 
 using namespace pardibaal;
 
 BOOST_AUTO_TEST_CASE(zero_test_1) {
-    auto c = clock_constraint_t::zero(1, 0);
+    auto c = difference_bound_t::zero(1, 0);
 
     BOOST_CHECK(c._i == 1);
     BOOST_CHECK(c._j == 0);
@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(zero_test_1) {
 }
 
 BOOST_AUTO_TEST_CASE(inf_test_1) {
-    auto c = clock_constraint_t::inf(10, 3);
+    auto c = difference_bound_t::inf(10, 3);
 
     BOOST_CHECK(c._i == 10);
     BOOST_CHECK(c._j == 3);
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(inf_test_1) {
 }
 
 BOOST_AUTO_TEST_CASE(upper_strict_test_1) {
-    auto c = clock_constraint_t::upper_strict(10, 0);
+    auto c = difference_bound_t::upper_strict(10, 0);
 
     BOOST_CHECK(c._i == 10);
     BOOST_CHECK(c._j == 0);
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(upper_strict_test_1) {
 }
 
 BOOST_AUTO_TEST_CASE(upper_non_strict_test_1) {
-    auto c = clock_constraint_t::upper_non_strict(10, 3);
+    auto c = difference_bound_t::upper_non_strict(10, 3);
 
     BOOST_CHECK(c._i == 10);
     BOOST_CHECK(c._j == 0);
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(upper_non_strict_test_1) {
 }
 
 BOOST_AUTO_TEST_CASE(lower_strict_test_1) {
-    auto c = clock_constraint_t::lower_strict(10, 3);
+    auto c = difference_bound_t::lower_strict(10, 3);
 
     BOOST_CHECK(c._i == 0);
     BOOST_CHECK(c._j == 10);
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(lower_strict_test_1) {
 }
 
 BOOST_AUTO_TEST_CASE(lower_non_strict_test_1) {
-    auto c = clock_constraint_t::lower_non_strict(10, 0);
+    auto c = difference_bound_t::lower_non_strict(10, 0);
 
     BOOST_CHECK(c._i == 0);
     BOOST_CHECK(c._j == 10);
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(lower_non_strict_test_1) {
 }
 
 BOOST_AUTO_TEST_CASE(lower_non_strict_test_2) {
-    BOOST_CHECK_THROW(clock_constraint_t::lower_non_strict(10, -1), base_error);
+    BOOST_CHECK_THROW(difference_bound_t::lower_non_strict(10, -1), base_error);
 }
 
 

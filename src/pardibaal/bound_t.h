@@ -31,7 +31,7 @@ namespace pardibaal {
     using dim_t = uint32_t;
     using val_t = int32_t;
 
-    enum strict_t {STRICT, NON_STRICT};
+    enum strict_e {STRICT, NON_STRICT};
 
     struct bound_t {
     private:
@@ -40,7 +40,7 @@ namespace pardibaal {
              _inf = false;
     public:
         bound_t(){};
-        bound_t(val_t n, strict_t strictness);
+        bound_t(val_t n, strict_e strictness);
         bound_t(val_t n, bool strict);
 
         [[nodiscard]] static bound_t strict(val_t n);
@@ -77,6 +77,13 @@ namespace pardibaal {
         [[nodiscard]] bool operator>(bound_t rhs) const;
         [[nodiscard]] bool operator>=(bound_t rhs) const;
         [[nodiscard]] bool operator<=(bound_t rhs) const;
+
+        [[nodiscard]] bool operator==(val_t rhs) const;
+        [[nodiscard]] bool operator!=(val_t rhs) const;
+        [[nodiscard]] bool operator<(val_t rhs) const;
+        [[nodiscard]] bool operator>(val_t rhs) const;
+        [[nodiscard]] bool operator<=(val_t rhs) const;
+        [[nodiscard]] bool operator>=(val_t rhs) const;
 
         friend std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 

@@ -25,7 +25,7 @@
 #include <vector>
 #include <ostream>
 
-#include "clock_constraint_t.h"
+#include "difference_bound_t.h"
 #include "bound_t.h"
 #include "DBM.h"
 
@@ -79,6 +79,16 @@ namespace pardibaal {
         void add(const Federation& fed);
 
         /**
+         * Subtract everything that satisfies the constraint i - j </<= bound constraint
+         */
+        void subtract(dim_t i, dim_t j, bound_t bound);
+        
+        /**
+         * Subtract everything that satisfies the difference constraint
+         */
+        void subtract(difference_bound_t constraint);
+
+        /**
          * Subtract a dbm from this federation.
          * @param dbm to be subtracted.
          */
@@ -122,8 +132,8 @@ namespace pardibaal {
          */
         [[nodiscard]] bool is_satisfying(dim_t x, dim_t y, bound_t g) const;
 
-        [[nodiscard]] bool is_satisfying(const clock_constraint_t& constraint) const;
-        [[nodiscard]] bool is_satisfying(const std::vector<clock_constraint_t>& constraints) const;
+        [[nodiscard]] bool is_satisfying(const difference_bound_t& constraint) const;
+        [[nodiscard]] bool is_satisfying(const std::vector<difference_bound_t>& constraints) const;
 
         /**
          * Relation between this and a dbm.
@@ -229,13 +239,13 @@ namespace pardibaal {
          * Checks if a federation intersect with a federation ie. if the intersection is non-empty
          * @return true if this intersects with dbm
          */
-        [[nodiscard]] bool intersects(const DBM& dbm) const;
+        [[nodiscard]] bool is_intersecting(const DBM& dbm) const;
 
         /**
          * Checks if a federation intersect with a DBM ie. if the intersection is non-empty
          * @return true if this intersects with fed
          */
-        [[nodiscard]] bool intersects(const Federation& fed) const;
+        [[nodiscard]] bool is_intersecting(const Federation& fed) const;
 
         /**
          * Checks if the any of the zones have upper bounds
@@ -251,8 +261,8 @@ namespace pardibaal {
         void interval_delay(val_t lower, val_t upper);
 
         void restrict(dim_t x, dim_t y, bound_t g);
-        void restrict(const clock_constraint_t& constraint);
-        void restrict(const std::vector<clock_constraint_t>& constraints);
+        void restrict(const difference_bound_t& constraint);
+        void restrict(const std::vector<difference_bound_t>& constraints);
         void free(dim_t x);
         void assign(dim_t x, val_t m);
         void copy(dim_t x, dim_t y);

@@ -19,32 +19,32 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with pardibaal. If not, see <https://www.gnu.org/licenses/>.
  */
-#ifndef PARDIBAAL_CLOCK_CONSTRAINT_T_H
-#define PARDIBAAL_CLOCK_CONSTRAINT_T_H
+#ifndef PARDIBAAL_DIFFERENCE_BOUND_T_H
+#define PARDIBAAL_DIFFERENCE_BOUND_T_H
 
 #include "bound_t.h"
 
 namespace pardibaal {
 
-    struct clock_constraint_t {
+    struct difference_bound_t {
         dim_t _i, _j;
         bound_t _bound;
 
-        clock_constraint_t(dim_t i, dim_t j, const bound_t &bound);
+        difference_bound_t(dim_t i, dim_t j, const bound_t &bound);
 
-        static clock_constraint_t zero(dim_t i, dim_t j);
-        static clock_constraint_t inf(dim_t i, dim_t j);
+        static difference_bound_t zero(dim_t i, dim_t j);
+        static difference_bound_t inf(dim_t i, dim_t j);
 
-        static clock_constraint_t upper_strict(dim_t x, val_t n);
-        static clock_constraint_t upper_non_strict(dim_t x, val_t n);
-        static clock_constraint_t lower_strict(dim_t x, val_t n);
-        static clock_constraint_t lower_non_strict(dim_t x, val_t n);
+        static difference_bound_t upper_strict(dim_t x, val_t n);
+        static difference_bound_t upper_non_strict(dim_t x, val_t n);
+        static difference_bound_t lower_strict(dim_t x, val_t n);
+        static difference_bound_t lower_non_strict(dim_t x, val_t n);
 
-        friend std::ostream& operator<<(std::ostream& out, const clock_constraint_t& constraint);
+        friend std::ostream& operator<<(std::ostream& out, const difference_bound_t& constraint);
     };
 
-    std::ostream& operator<<(std::ostream& out, const clock_constraint_t& constraint);
+    std::ostream& operator<<(std::ostream& out, const difference_bound_t& constraint);
 }
 
 
-#endif //PARDIBAAL_CLOCK_CONSTRAINT_T_H
+#endif //PARDIBAAL_DIFFERENCE_BOUND_T_H
