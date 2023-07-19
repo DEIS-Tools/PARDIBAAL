@@ -627,6 +627,7 @@ BOOST_AUTO_TEST_CASE(intersection_test_2) {
     dbm.restrict(0, 1, bound_t::strict(-1));
     fed.intersection(dbm);
 
+    BOOST_CHECK(dbm.is_empty());
     BOOST_CHECK(fed.is_equal(dbm));
     BOOST_CHECK(fed.is_empty());
 }

@@ -62,7 +62,11 @@ namespace pardibaal {
     };
 
     class DBM {
+        enum empty_status_e {EMPTY, NON_EMPTY, UNKNOWN};
+
         bounds_table_t _bounds_table;
+        mutable empty_status_e _empty_status = NON_EMPTY;
+        mutable bool _is_closed = true;
 
     public:
         DBM(dim_t number_of_clocks);
@@ -72,9 +76,15 @@ namespace pardibaal {
         static DBM unconstrained(dim_t dimension);
 
         [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
-        inline void set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
+
+        inline void set(dim_t i, dim_t j, bound_t bound) {
+            this->_bounds_table.set(i, j, bound);
+            _is_closed = false;
+            _empty_status = UNKNOWN;
+        }
+
         inline void set(const difference_bound_t& constraint) {
-            this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
+            this->set(constraint._i, constraint._j, constraint._bound);
         }
 
         void subtract(dim_t i, dim_t j, bound_t bound);
