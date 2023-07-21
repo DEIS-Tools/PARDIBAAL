@@ -108,7 +108,9 @@ namespace pardibaal {
     }
 
     relation_t DBM::relation(const DBM &dbm) const {
-        if (this->dimension() != dbm.dimension())
+        const auto dim = this->dimension();
+
+        if (dim != dbm.dimension())
             return relation_t::different();
         else if (this->is_empty())
             return dbm.is_empty() ? relation_t::equal() : relation_t::subset();
@@ -117,8 +119,8 @@ namespace pardibaal {
 
         bool eq = true, sub = true, super = true;
 
-        for (dim_t i = 0; i < dimension(); ++i)
-            for (dim_t j = 0; j < dimension(); ++j) {
+        for (dim_t i = 0; i < dim; ++i)
+            for (dim_t j = 0; j < dim; ++j) {
                 sub = sub && this->at(i, j) <= dbm.at(i, j);
                 super = super && this->at(i, j) >= dbm.at(i, j);
                 if (!sub && !super) return relation_t::different();
@@ -180,14 +182,15 @@ namespace pardibaal {
     template bool DBM::is_different<false>(const Federation& fed) const;
 
     bool DBM::is_intersecting(const DBM &dbm) const {
+        const auto dim = this->dimension();
 #ifndef NEXCEPTIONS
-        if (dbm.dimension() != dimension())
+        if (dbm.dimension() != this->dimension())
             throw(base_error("ERROR: Cannot measure intersection of two dbms with different dimensions. ",
-                             "Got dimensions ", dbm.dimension(), " and ", dimension()));
+                             "Got dimensions ", dbm.dimension(), " and ", dim));
 #endif
         if (this->is_empty() || dbm.is_empty()) return false;
-        for (dim_t i = 0; i < dimension(); ++i) {
-            for (dim_t j = 0; j < dimension(); ++j) {
+        for (dim_t i = 0; i < dim; ++i) {
+            for (dim_t j = 0; j < dim; ++j) {
                 bound_t b1 = this->at(i, j);
                 bound_t b2 = dbm.at(j, i);
 
@@ -212,7 +215,8 @@ namespace pardibaal {
     bool DBM::is_unbounded() const {
         if (is_empty()) return false;
 
-        for (dim_t i = 1; i < dimension(); ++i)
+        const auto dim = this->dimension();
+        for (dim_t i = 1; i < dim; ++i)
             if (not this->at(i, 0).is_inf())
                 return false;
 
@@ -222,11 +226,11 @@ namespace pardibaal {
     void DBM::close() {
         if (_is_closed) return;
 
-        const dim_t size = this->dimension();
+        const dim_t dim = this->dimension();
 
-        for(dim_t k = 0; k < size; ++k)
-            for(dim_t i = 0; i < size; ++i)
-                for(dim_t j = 0; j < size; ++j)
+        for(dim_t k = 0; k < dim; ++k)
+            for(dim_t i = 0; i < dim; ++i)
+                for(dim_t j = 0; j < dim; ++j)
                     _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j),
                                                          _bounds_table.at(i, k) + _bounds_table.at(k, j)));
 
@@ -234,15 +238,17 @@ namespace pardibaal {
     }
 
     void DBM::close_single_bound(dim_t i, dim_t j) {
-        const dim_t size = this->dimension();
+        const dim_t dim = this->dimension();
 
-        for(dim_t k = 0; k < size; ++k)
+        for(dim_t k = 0; k < dim; ++k)
             _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j), 
                               _bounds_table.at(i, k) + _bounds_table.at(k, j)));
     }
 
     void DBM::future() {
-        for (dim_t i = 1; i < this->dimension(); ++i)
+        const dim_t dim = this->dimension();
+
+        for (dim_t i = 1; i < dim; ++i)
             _bounds_table.set(i, 0, bound_t::inf());
     }
 
@@ -251,9 +257,10 @@ namespace pardibaal {
     }
 
     void DBM::past() {
-        for (dim_t i = 1; i < this->dimension(); ++i) {
+        const auto dim = this->dimension();
+        for (dim_t i = 1; i < dim; ++i) {
             this->_bounds_table.set(0, i, bound_t::le_zero());
-            for (dim_t j = 1; j < this->dimension(); ++j) {
+            for (dim_t j = 1; j < dim; ++j) {
                 if (this->_bounds_table.at(j, i) < this->_bounds_table.at(0, i)) {
                     this->_bounds_table.set(0, i, this->_bounds_table.at(j, i));
                 }
@@ -272,8 +279,10 @@ namespace pardibaal {
         if (lower > upper)
             throw(base_error("ERROR: lower value of delay interval must be smaller than the upper valuer"));
 #endif
+        const auto dim = this->dimension();
+
         if (lower > 0 || upper > 0) {
-            for (dim_t i = 1; i < this->dimension(); ++i) {
+            for (dim_t i = 1; i < dim; ++i) {
                 this->set(0, i, this->at(0, i) - lower); // Raise lower bounds
                 this->set(i, 0, this->at(i, 0) + upper); // Raise upper bounds
             }
@@ -285,8 +294,10 @@ namespace pardibaal {
             _empty_status = EMPTY;
         else if (g < _bounds_table.at(x, y)) {
             _bounds_table.set(x, y, g);
-            for (dim_t i = 0; i < this->dimension(); ++i) {
-                for (dim_t j = 0; j < this->dimension(); ++j) {
+
+            const auto dim = this->dimension();
+            for (dim_t i = 0; i < dim; ++i) {
+                for (dim_t j = 0; j < dim; ++j) {
                     if (_bounds_table.at(i, x) + _bounds_table.at(x, j) < _bounds_table.at(i, j))
                         _bounds_table.set(i, j, _bounds_table.at(i, x) + _bounds_table.at(x, j));
 
@@ -307,7 +318,9 @@ namespace pardibaal {
     }
 
     void DBM::free(dim_t x) {
-        for (dim_t i = 0; i < dimension(); ++i) {
+       const auto dim = this->dimension();
+
+        for (dim_t i = 0; i < dim; ++i) {
             if (i != x) {
                 _bounds_table.set(x, i, bound_t::inf());
                 _bounds_table.set(i, x, _bounds_table.at(i, 0));
@@ -317,7 +330,9 @@ namespace pardibaal {
 
     // x := m
     void DBM::assign(dim_t x, val_t m) {
-        for (dim_t i = 0; i < this->dimension(); ++i) {
+        const auto dim = this->dimension();
+
+        for (dim_t i = 0; i < dim; ++i) {
             _bounds_table.set(x, i, bound_t::non_strict(m) + _bounds_table.at(0, i));
             _bounds_table.set(i, x, bound_t::non_strict(-m) + _bounds_table.at(i, 0));
         }
@@ -325,7 +340,9 @@ namespace pardibaal {
 
     // x := y
     void DBM::copy(dim_t x, dim_t y) {
-        for (dim_t i = 0; i < this->dimension(); ++i) {
+        const auto dim = this->dimension();
+
+        for (dim_t i = 0; i < dim; ++i) {
             if (i != x) {
                 _bounds_table.set(x, i, _bounds_table.at(y, i));
                 _bounds_table.set(i, x, _bounds_table.at(i, y));
@@ -336,7 +353,9 @@ namespace pardibaal {
     }
 
     void DBM::shift(dim_t x, val_t n) {
-        for (dim_t i = 0; i < this->dimension(); ++i) {
+        const auto dim = this->dimension();
+
+        for (dim_t i = 0; i < dim; ++i) {
             if (i != x) {
                 this->_bounds_table.set(x, i, this->_bounds_table.at(x, i) + bound_t::non_strict(n));
                 this->_bounds_table.set(i, x, this->_bounds_table.at(i, x) + bound_t::non_strict(-n));
@@ -348,14 +367,16 @@ namespace pardibaal {
 
     // Simple extrapolation from a ceiling for all clocks.
     void DBM::extrapolate(const std::vector<val_t> &ceiling) {
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
-        if (this->dimension() != ceiling.size())
+        if (dim != ceiling.size())
             throw base_error("ERROR: Got max constants vector of size ", ceiling.size(), " but the DBM has ",
-                             this->dimension(), " clocks");
+                             dim, " clocks");
 #endif
 
-        for (dim_t i = 0; i < this->dimension(); ++i) {
-            for (dim_t j = 0; j < this->dimension(); ++j) {
+        for (dim_t i = 0; i < dim; ++i) {
+            for (dim_t j = 0; j < dim; ++j) {
                 if (!this->_bounds_table.at(i, j).is_inf() && this->_bounds_table.at(i, j) > bound_t::non_strict(ceiling[i])){
                     this->_bounds_table.set(i, j, bound_t::inf());
                 }
@@ -370,17 +391,19 @@ namespace pardibaal {
     }
 
     void DBM::extrapolate_diagonal(const std::vector<val_t> &ceiling) {
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
-        if (this->dimension() != ceiling.size())
+        if (dim != ceiling.size())
             throw base_error("ERROR: Got max constants vector of size ", ceiling.size(), " but the DBM has ",
-                             this->dimension(), " clocks");
+                             dim, " clocks");
 #endif
         DBM D(*this);
 
         std::vector<std::pair<dim_t, dim_t>> modified_bounds;
 
-        for (dim_t i = 0; i < D.dimension(); ++i) {
-            for (dim_t j = 0; j < D.dimension(); ++j) {
+        for (dim_t i = 0; i < dim; ++i) {
+            for (dim_t j = 0; j < dim; ++j) {
                 if (i == j) continue;
                 if ((D.at(i, j).get_bound() > ceiling[i]) ||
                         (-D.at(0, i).get_bound() > ceiling[i]) ||
@@ -415,15 +438,17 @@ namespace pardibaal {
     }
 
     void DBM::extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
-        if (this->dimension() != lower.size() || this->dimension() != upper.size())
+        if (dim != lower.size() || dim != upper.size())
             throw base_error("ERROR: Got LU constants vector of size ", lower.size(), " and ", upper.size(),
-                             " but the DBM has ", this->dimension(), " clocks");
+                             " but the DBM has ", dim, " clocks");
 #endif
         DBM D(*this);
 
-        for (dim_t i = 0; i < D.dimension(); ++i) {
-            for (dim_t j = 0; j < D.dimension(); ++j) {
+        for (dim_t i = 0; i < dim; ++i) {
+            for (dim_t j = 0; j < dim; ++j) {
                 if (i == j) continue;
                 else if (D.at(i, j).get_bound() > lower[i])
                     this->set(i, j, bound_t::inf());
@@ -446,15 +471,17 @@ namespace pardibaal {
     }
 
     void DBM::extrapolate_lu_diagonal(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
-        if (this->dimension() != lower.size() || this->dimension() != upper.size())
+        if (dim != lower.size() || dim != upper.size())
             throw base_error("ERROR: Got LU constants vector of size ", lower.size(), " and ", upper.size(),
-                             " but the DBM has ", this->dimension(), " clocks");
+                             " but the DBM has ", dim, " clocks");
 #endif
         DBM D(*this);
 
-        for (dim_t i = 0; i < D.dimension(); ++i) {
-            for (dim_t j = 0; j < D.dimension(); ++j) {
+        for (dim_t i = 0; i < dim; ++i) {
+            for (dim_t j = 0; j < dim; ++j) {
                 if (i == j) continue;
                 else if ((D.at(i, j).get_bound() > lower[i]) ||
                          (-D.at(0, i).get_bound() > -lower[i]) ||
@@ -479,18 +506,20 @@ namespace pardibaal {
     }
 
     void DBM::intersection(const DBM &dbm) {
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
-        if (dbm.dimension() != dimension())
+        if (dbm.dimension() != dim)
             throw(base_error("ERROR: Cannot take intersection of two dbms with different dimensions. ",
-                             "Got dimensions ", dbm.dimension(), " and ", dimension()));
+                             "Got dimensions ", dbm.dimension(), " and ", dim));
 #endif
         if (dbm.is_empty() || this->is_empty()) {
             this->_empty_status = EMPTY;
             return;
         }
 
-        for (dim_t i = 0; i < dimension(); ++i)
-            for (dim_t j = 0; j < dimension(); ++j)
+        for (dim_t i = 0; i < dim; ++i)
+            for (dim_t j = 0; j < dim; ++j)
                 this->_bounds_table.set(i, j, bound_t::min(this->at(i, j), dbm.at(i, j)));
 
         _empty_status = UNKNOWN;
@@ -499,17 +528,19 @@ namespace pardibaal {
     }
 
     void DBM::remove_clock(dim_t c) {
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
         if (c == 0)
             throw base_error("ERROR: Cannot remove the zero clock");
-        if (c >= this->dimension())
-            throw base_error("ERROR: Removing clock ", c, " but the DBM only has clocks from 0 to ", dimension() - 1);
+        if (c >= dim)
+            throw base_error("ERROR: Removing clock ", c, " but the DBM only has clocks from 0 to ", dim - 1);
 #endif
-        DBM D(dimension() - 1);
+        DBM D(dim - 1);
 
-        for (dim_t i = 0, i2 = 0; i < dimension(); ++i, ++i2) {
-            for (dim_t j = 0, j2 = 0; j < dimension(); ++j) {
-                if (i == c && i < dimension() -1) {++i;}
+        for (dim_t i = 0, i2 = 0; i < dim; ++i, ++i2) {
+            for (dim_t j = 0, j2 = 0; j < dim; ++j) {
+                if (i == c && i < dim -1) {++i;}
                 if (j == c || i == c) continue;
 
                 D._bounds_table.set(i2, j2++, this->at(i, j));
@@ -520,16 +551,18 @@ namespace pardibaal {
     }
 
     void DBM::swap_clocks(dim_t a, dim_t b) {
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
         if (a == 0 || b == 0)
             throw base_error("ERROR: Cannot swap the zero clock");
-        if (a >= this->dimension() || b >= this->dimension())
-            throw base_error("ERROR: Swapping clock ", a, " and ", b, " but the DBM only has clocks from 0 to ", dimension() - 1);
+        if (a >= dim || b >= dim)
+            throw base_error("ERROR: Swapping clock ", a, " and ", b, " but the DBM only has clocks from 0 to ", dim - 1);
 #endif
         if (a == b) return;
 
         bound_t tmp;
-        for (dim_t i = 0; i < dimension(); ++i) {
+        for (dim_t i = 0; i < dim; ++i) {
             if (!(i == a || i == b)) {
                 tmp = at(i, a);
                 _bounds_table.set(i, a, at(i, b));
@@ -547,18 +580,20 @@ namespace pardibaal {
     }
 
     void DBM::add_clock_at(dim_t c) {
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
         if (c == 0)
             throw base_error("ERROR: Cannot add a new clock at index zero");
-        if (c > this->dimension())
-            throw base_error("ERROR: Adding clock at index", c, " but the DBM only has clocks from 0 to ", dimension() - 1);
+        if (c > dim)
+            throw base_error("ERROR: Adding clock at index", c, " but the DBM only has clocks from 0 to ", dim - 1);
 #endif
 
-        DBM D(dimension() + 1);
+        DBM D(dim + 1);
 
-        for (dim_t i = 0, i2 = 0; i < D.dimension(); ++i, ++i2) {
-            for (dim_t j = 0, j2 = 0; j < D.dimension(); ++j) {
-                if (i == c && i < D.dimension() - 1) {++i;}
+        for (dim_t i = 0, i2 = 0; i < dim + 1; ++i, ++i2) {
+            for (dim_t j = 0, j2 = 0; j < dim + 1; ++j) {
+                if (i == c && i < dim) {++i;}
                 if (j == c || i == c) continue;
                 D._bounds_table.set(i, j, this->at(i2, j2++));
             }
@@ -572,10 +607,12 @@ namespace pardibaal {
         /* assume number of '1' bits in src_bits and dst_bits match, and
          * that the length of src_bits is the same as _number_of_clocks
          */
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
-        if (src_bits.size() != this->dimension())
+        if (src_bits.size() != dim)
             throw base_error("ERROR: src_bits has size: ", src_bits.size(), " but the dimension of the DBM is: ",
-                             this->dimension(), " but they must be equal");
+                             dim, " but they must be equal");
 
         int src = std::count_if(dst_bits.begin(), dst_bits.end(), [](bool b){return b;});
         int dst = std::count_if(src_bits.begin(), src_bits.end(), [](bool b){return b;});
@@ -588,7 +625,7 @@ namespace pardibaal {
         std::vector<dim_t> src_indir(src_bits.size(), 0);
         dim_t dst_cnt = 0;
 
-        for (dim_t i = 0; i < src_bits.size(); ++i) {
+        for (dim_t i = 0; i < dim; ++i) {
             if (src_bits[i]) {
                 while (not dst_bits[dst_cnt]) ++dst_cnt; // increment to first used position
                 src_indir[i] = dst_cnt++;
@@ -598,8 +635,8 @@ namespace pardibaal {
         }
 
         // dest(src_indir[i], src_indir[j] = src(i, j);
-        for (dim_t i = 0; i < src_indir.size(); ++i) {
-            for (dim_t j = 0; j < src_indir.size(); ++j) {
+        for (dim_t i = 0; i < dim; ++i) {
+            for (dim_t j = 0; j < dim; ++j) {
                 if (src_indir[i] != -1 && src_indir[j] != -1)
                     dest_dbm._bounds_table.set(src_indir[i], src_indir[j], this->_bounds_table.at(i, j));
             }
@@ -616,15 +653,17 @@ namespace pardibaal {
     }
 
     void DBM::reorder(const std::vector<dim_t>& order, dim_t new_size) {
+        const auto dim = this->dimension();
+
 #ifndef NEXCEPTIONS
-        if (order.size() != this->dimension())
+        if (order.size() != dim)
             throw base_error("ERROR: Order vector has size: ", order.size(), " but the dimension of the DBM is: ",
-                             this->dimension(), " They must be equal");
+                             dim, " They must be equal");
 
         int clocks_removed = std::count_if(order.begin(), order.end(), [](dim_t i){return i == ~0;});
-        if (this->dimension() - clocks_removed != new_size)
+        if (dim - clocks_removed != new_size)
             throw base_error("ERROR: new_size does not match the number of clocks removed. new_size is: ", new_size,
-                             " current size: ", this->dimension(), " Clocks removed: ", clocks_removed);
+                             " current size: ", dim, " Clocks removed: ", clocks_removed);
         for (const dim_t& i : order)
             if (i >= new_size && i != (dim_t) -1)
                 throw base_error("ERROR: order has value ", order[i], " on index ", i,
@@ -633,8 +672,8 @@ namespace pardibaal {
 
         DBM D(new_size);
 
-        for (dim_t i = 0; i < this->dimension(); ++i) {
-            for (dim_t j = 0; j < this->dimension(); ++j) {
+        for (dim_t i = 0; i < dim; ++i) {
+            for (dim_t j = 0; j < dim; ++j) {
                 if (order[i] != ~0 && order[j] != ~0)
                     D._bounds_table.set(order[i], order[j], this->_bounds_table.at(i, j));
             }
