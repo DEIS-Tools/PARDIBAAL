@@ -484,7 +484,7 @@ namespace pardibaal {
             throw(base_error("ERROR: Cannot take intersection of two dbms with different dimensions. ",
                              "Got dimensions ", dbm.dimension(), " and ", dimension()));
 #endif
-        if (dbm.is_empty()) {
+        if (dbm.is_empty() || this->is_empty()) {
             this->_empty_status = EMPTY;
             return;
         }
@@ -610,7 +610,6 @@ namespace pardibaal {
             if (not dst_bits[i])
                 dest_dbm.free(i);
 
-        _empty_status = UNKNOWN;
         *this = std::move(dest_dbm);
 
         return src_indir;
