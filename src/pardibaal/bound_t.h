@@ -79,7 +79,7 @@ namespace pardibaal {
         [[nodiscard]] inline val_t get_bound()    const {return this->_data >> 1;}
         [[nodiscard]] inline bool is_strict()     const {return not this->is_non_strict();}
         [[nodiscard]] inline bool is_non_strict() const {return this->_data << 31;}
-        [[nodiscard]] inline bool is_inf()        const {return this->_data & INF_BOUND;}
+        [[nodiscard]] inline bool is_inf()        const {return this->_data == INF_BOUND;}
 
         [[nodiscard]] static inline bound_t max(bound_t a, bound_t b) {return a < b ? b : a;}
         [[nodiscard]] static inline bound_t min(bound_t a, bound_t b) {return a < b ? a : b;}

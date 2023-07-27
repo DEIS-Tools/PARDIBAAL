@@ -61,7 +61,7 @@ namespace pardibaal {
         
         auto prod = this->get_bound() * rhs;
 
-        assert((this->get_bound() != 0 && prod / this->get_bound() != rhs)
+        assert((!(this->get_bound() != 0) || (prod / this->get_bound() == rhs))
                 && prod > BOUND_VAL_MIN && prod < BOUND_VAL_MAX
                 && rhs > BOUND_VAL_MIN && rhs < BOUND_VAL_MAX && ("Overflow or Underflow"));
 
