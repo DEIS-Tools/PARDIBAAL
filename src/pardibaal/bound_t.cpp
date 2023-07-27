@@ -33,8 +33,14 @@ namespace pardibaal {
             return bound_t::inf();
 
         assert(get_bound() < BOUND_VAL_MAX - rhs.get_bound() && "Overflow");
+        
+        const val_t val1 = this->_data,
+                    val2 = rhs._data;
 
-        return bound_t(this->get_bound() + rhs.get_bound(), this->is_strict() || rhs.is_strict());
+        // If both are non-strict (first bit is 1), then the result should be non strict
+        const val_t strictness = 1 & val1 & val2;
+
+        return bound_t((((val1 >> 1) + (val2 >> 1)) << 1) | strictness);
     }
 
     bound_t bound_t::operator+(val_t rhs) const {
@@ -42,8 +48,11 @@ namespace pardibaal {
             return *this;
 
         assert(get_bound() < BOUND_VAL_MAX - rhs && "Overflow");
+        
+        const val_t lhs = this->_data;
+        const val_t strictness = 1 & lhs;
 
-        return bound_t(this->get_bound() + rhs, this->is_strict());
+        return bound_t((((lhs >> 1) + rhs) << 1) | strictness);
     }
 
     bound_t bound_t::operator-(val_t rhs) const {
@@ -52,20 +61,24 @@ namespace pardibaal {
 
         assert(get_bound() > BOUND_VAL_MIN + rhs && rhs > BOUND_VAL_MIN && rhs < BOUND_VAL_MAX && "Underflow");
 
-        return bound_t(this->get_bound() - rhs, this->is_strict());
+        const val_t lhs = this->_data;
+        const val_t strictness = 1 & lhs;
+
+        return bound_t((((lhs >> 1) - rhs) << 1) | strictness);
     }
 
     bound_t bound_t::operator*(val_t rhs) const {
         if (this->is_inf())
             return *this;
-        
-        auto prod = this->get_bound() * rhs;
 
-        assert((!(this->get_bound() != 0) || (prod / this->get_bound() == rhs))
-                && prod > BOUND_VAL_MIN && prod < BOUND_VAL_MAX
+        assert((!(this->get_bound() != 0) || (this->get_bound() * rhs / this->get_bound() == rhs))
+                && this->get_bound() * rhs > BOUND_VAL_MIN && this->get_bound() * rhs < BOUND_VAL_MAX
                 && rhs > BOUND_VAL_MIN && rhs < BOUND_VAL_MAX && ("Overflow or Underflow"));
 
-        return bound_t(this->get_bound() * rhs, this->is_strict());
+        const val_t lhs = this->_data;
+        const val_t strictness = 1 & lhs;
+
+        return bound_t((((lhs >> 1) * rhs) << 1) | strictness);
     }
 
     bool bound_t::operator==(val_t rhs) const {return this->_data == bound_t::non_strict(rhs)._data;}

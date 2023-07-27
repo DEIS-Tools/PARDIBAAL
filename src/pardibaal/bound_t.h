@@ -45,7 +45,7 @@ namespace pardibaal {
     const int32_t BOUND_VAL_MAX = std::numeric_limits<int32_t>::max() >> 1;
     const int32_t BOUND_VAL_MIN = std::numeric_limits<int32_t>::min() >> 1;
 
-    enum strict_e {STRICT, NON_STRICT};
+    enum strict_e {STRICT = 0, NON_STRICT = 1};
 
     struct bound_t {
 
@@ -57,17 +57,11 @@ namespace pardibaal {
     public:
         constexpr bound_t(){};
         constexpr bound_t(val_t n, strict_e strictness) {
-            if (strictness == STRICT)
-                _data = n << 1;
-            else
-                _data = ~((~n) << 1);
+            _data = (n << 1) | (val_t) strictness;
         }
 
         constexpr bound_t(val_t n, bool strict) {
-            if (strict)
-                _data = n << 1;
-            else
-                _data = ~((~n) << 1);
+            _data = (n << 1) | (val_t) !strict;
         }
 
         [[nodiscard]] static constexpr bound_t strict(val_t n)     {return bound_t(n << 1);}
