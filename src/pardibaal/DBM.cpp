@@ -402,6 +402,10 @@ namespace pardibaal {
         std::vector<std::pair<dim_t, dim_t>> modified_bounds;
         modified_bounds.reserve(dim * (dim - 1));
 
+        std::vector<bool> close_zero(dim, false);
+
+        std::vector<bool> skip(dim, false);
+
         for (dim_t oi = 1; oi <= dim; ++oi) {
             auto i = oi % dim; // Ordering: 1, 2, ..., dim, 0.
             for (dim_t j = 0; j < dim; ++j) {
@@ -410,11 +414,11 @@ namespace pardibaal {
 
                 if((- _bounds_table.at(0, i).get_bound() > ceiling[i])) {
                     this->_bounds_table.set(i, j, bound_t::inf());
-                    modified_bounds.push_back({i, j});
+                    skip[i] = true;
                 }
                 else if ((i != 0 && -_bounds_table.at(0, j).get_bound() > ceiling[j])) {
                     this->_bounds_table.set(i, j, bound_t::inf());
-                    modified_bounds.push_back({i, j});
+                    close_zero[j] = true;
                 }
                 else if (bound_ij > ceiling[i]) {
                     this->_bounds_table.set(i, j, bound_t::inf());
@@ -433,8 +437,15 @@ namespace pardibaal {
             }
         }
 
-        for (const auto b : modified_bounds)
-            close_single_bound(b.first, b.second);
+        for (dim_t j = 0; j < dim; ++j)
+            if(close_zero[j])
+                for (dim_t i = 0; i < dim; ++i)
+                    _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j), _bounds_table.at(i, 0) + _bounds_table.at(0, j)));
+
+        for (dim_t k = 0; k < dim; ++k)
+            if (not skip[k])
+                for (const auto& b : modified_bounds)
+                    _bounds_table.set(b.first, b.second, bound_t::min(_bounds_table.at(b.first, b.second), _bounds_table.at(b.first, k) + _bounds_table.at(k, b.second)));
     }
 
     void DBM::extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
