@@ -28,6 +28,7 @@
 #include <vector>
 #include <ostream>
 #include <algorithm>
+#include <numeric>
 
 namespace pardibaal {
 
@@ -120,20 +121,13 @@ namespace pardibaal {
             return relation_t::superset();
 
         bool eq = true, sub = true, super = true;
-        
-        auto lhs_it = this->_bounds_table.begin(), 
-             rhs_it = dbm._bounds_table.begin(),
-             end = this->_bounds_table.end();
-        
-        while (lhs_it != end) {
-            auto lhs = *lhs_it,
-                 rhs = *rhs_it;
 
-            sub = sub && lhs <= rhs;
-            super = super && lhs >= rhs;
-            if (!sub && !super) return relation_t::different();
-            ++lhs_it; ++rhs_it;
-        }
+        auto cmp = std::inner_product(this->_bounds_table.begin(), this->_bounds_table.end(), dbm._bounds_table.begin(),
+                           std::pair(true, true),
+                           [](std::pair<bool, bool> a, std::pair<bool, bool> b){return std::pair(a.first && b.first, a.second && b.second);},
+                           [](bound_t a, bound_t b){return std::pair(a <= b, a >= b);});
+        sub = cmp.first;
+        super = cmp.second;
 
         eq = sub && super;
 
