@@ -120,13 +120,19 @@ namespace pardibaal {
             return relation_t::superset();
 
         bool eq = true, sub = true, super = true;
+        
+        auto lhs_it = this->_bounds_table.begin(), 
+             rhs_it = dbm._bounds_table.begin();
+        
+        while (lhs_it != this->_bounds_table.end()) {
+            auto lhs = *lhs_it,
+                 rhs = *rhs_it;
 
-        for (dim_t i = 0; i < dim; ++i)
-            for (dim_t j = 0; j < dim; ++j) {
-                sub = sub && this->at(i, j) <= dbm.at(i, j);
-                super = super && this->at(i, j) >= dbm.at(i, j);
-                if (!sub && !super) return relation_t::different();
-            }
+            sub = sub && lhs <= rhs;
+            super = super && lhs >= rhs;
+            if (!sub && !super) return relation_t::different();
+            ++lhs_it; ++rhs_it;
+        }
 
         eq = sub && super;
 

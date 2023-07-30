@@ -303,3 +303,12 @@ BOOST_AUTO_TEST_CASE(comp_test_14) {
     BOOST_CHECK(!(a <= b));
     BOOST_CHECK(a >= b);
 }
+
+BOOST_AUTO_TEST_CASE(comp_test_15) {
+    auto a = bound_t::strict(-5);
+    auto b = bound_t::non_strict(-5);
+
+    BOOST_CHECK(!(a == b));
+    BOOST_CHECK(a < b);
+    BOOST_CHECK(!(a > b));
+}

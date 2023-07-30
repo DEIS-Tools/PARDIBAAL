@@ -40,8 +40,22 @@ namespace pardibaal {
          */
         [[nodiscard]] dim_t number_of_clocks() const;
 
-        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {return _bounds[i * _number_of_clocks + j];}
-        inline void set(dim_t i, dim_t j, bound_t bound) {this->_bounds[i * _number_of_clocks + j] = bound;};
+        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {
+            return _bounds[i * _number_of_clocks + j];
+        }
+        
+        inline void set(dim_t i, dim_t j, bound_t bound) {
+            this->_bounds[i * _number_of_clocks + j] = bound;
+        }
+
+        /** Used for iteration, where indexes does not matter
+         * Ordered as (0, 0), (0, 1), ..., (1, 0), (1, 1), ..., (n -1, n -1).
+         */
+        [[nodiscard]] std::vector<bound_t>::iterator       begin()       {return _bounds.begin();}
+        [[nodiscard]] std::vector<bound_t>::const_iterator begin() const {return _bounds.begin();}
+
+        [[nodiscard]] std::vector<bound_t>::iterator       end()       {return _bounds.end();}
+        [[nodiscard]] std::vector<bound_t>::const_iterator end() const {return _bounds.end();}
 
         friend std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
 
