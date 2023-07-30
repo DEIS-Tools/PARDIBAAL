@@ -122,9 +122,10 @@ namespace pardibaal {
         bool eq = true, sub = true, super = true;
         
         auto lhs_it = this->_bounds_table.begin(), 
-             rhs_it = dbm._bounds_table.begin();
+             rhs_it = dbm._bounds_table.begin(),
+             end = this->_bounds_table.end();
         
-        while (lhs_it != this->_bounds_table.end()) {
+        while (lhs_it != end) {
             auto lhs = *lhs_it,
                  rhs = *rhs_it;
 
@@ -537,10 +538,11 @@ namespace pardibaal {
             return;
         }
 
-        auto it_a = this->_bounds_table.begin();
+        auto it_a = this->_bounds_table.begin(),
+             end = this->_bounds_table.end();
         auto it_b = dbm._bounds_table.begin();
 
-        while (it_a != this->_bounds_table.end()) {
+        while (it_a != end) {
             *it_a = bound_t::min(*it_a, *it_b);
             ++it_a; ++it_b; 
         }
