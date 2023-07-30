@@ -537,9 +537,13 @@ namespace pardibaal {
             return;
         }
 
-        for (dim_t i = 0; i < dim; ++i)
-            for (dim_t j = 0; j < dim; ++j)
-                this->_bounds_table.set(i, j, bound_t::min(this->at(i, j), dbm.at(i, j)));
+        auto it_a = this->_bounds_table.begin();
+        auto it_b = dbm._bounds_table.begin();
+
+        while (it_a != this->_bounds_table.end()) {
+            *it_a = bound_t::min(*it_a, *it_b);
+            ++it_a; ++it_b; 
+        }
 
         _empty_status = UNKNOWN;
         _is_closed = false;
