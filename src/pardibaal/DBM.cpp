@@ -119,6 +119,8 @@ namespace pardibaal {
             return dbm.is_empty() ? relation_t::equal() : relation_t::subset();
         else if (dbm.is_empty())
             return relation_t::superset();
+        else if(dbm._bounds_table.raw_begin() == _bounds_table.raw_begin())
+            return relation_t::equal();
 /*
         // TODO, try this
          else if (this->_empty_status == EMPTY && dbm._empty_status != UNKNOWN)
@@ -138,7 +140,7 @@ namespace pardibaal {
         auto nd_a = this->_bounds_table.raw_end();
         auto bg_b = dbm._bounds_table.raw_begin();
         // auto nd_b = dbm._bounds_table.raw_end(); // not needed, same size.
-        for(; bg_a != nd_a; ++bg_a, ++bg_b)
+        for(; (super || sub) && bg_a != nd_a; ++bg_a, ++bg_b)
         {
             sub &= (*bg_a) <= (*bg_b);
             super &= (*bg_a) >= (*bg_b);
