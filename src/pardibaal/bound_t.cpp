@@ -40,7 +40,7 @@ namespace pardibaal {
         // If both are non-strict (first bit is 1), then the result should be non strict
         const val_t strictness = 1 & val1 & val2;
 
-        return bound_t((((val1 >> 1) + (val2 >> 1)) << 1) | strictness);
+        return bound_t(val1 + val2 - ((val1 & 1) | (val2 & 1)));
     }
 
     bound_t bound_t::operator+(val_t rhs) const {
