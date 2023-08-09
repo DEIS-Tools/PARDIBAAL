@@ -26,12 +26,6 @@
 #include "bound_t.h"
 
 namespace pardibaal {
-
-    bool bound_t::is_overlaping(bound_t a, bound_t b) {
-        auto val_a = a.get_bound(), val_b = b.get_bound();
-        return (val_a > -val_b) || ((val_a == -val_b) && (1 & a._data & b._data));
-    }
-
     bound_t bound_t::operator+(bound_t rhs) const {
 
         if (this->is_inf() || rhs.is_inf())

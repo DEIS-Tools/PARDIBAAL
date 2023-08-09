@@ -98,7 +98,7 @@ namespace pardibaal {
                 for (dim_t j = 0; j < dim; ++j) {
 
                     // If they don't intersect, then don't remove anything and go to next z
-                    if (not bound_t::is_overlaping(z.at(j, i), dbm.at(i, j))) {
+                    if (not bound_t::is_overlapping(z.at(j, i), dbm.at(i, j))) {
                         fed.add(z);
                         i = dim, j = dim;
                     }

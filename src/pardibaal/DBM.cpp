@@ -212,7 +212,7 @@ namespace pardibaal {
         if (this->is_empty() || dbm.is_empty()) return false;
         for (dim_t i = 0; i < dim; ++i)
             for (dim_t j = 0; j < dim; ++j)
-                if (not bound_t::is_overlaping(this->at(i, j), dbm.at(j, i)))
+                if (not bound_t::is_overlapping(this->at(i, j), dbm.at(j, i)))
                     return false;
 
         return true;
