@@ -93,13 +93,20 @@ namespace pardibaal {
         }
 #endif
         auto fed = Federation();
-        for (auto z : zones) {
+        for (const auto& z : zones) {
             for (dim_t i = 0; i < dim; ++i) {
                 for (dim_t j = 0; j < dim; ++j) {
-                    // This check ensures that the zone added is non-empty iff it is on max canonical form.
-                    if (z.at(i, j) > dbm.at(i, j)) {
-                        z.restrict(j, i, bound_t(-dbm.at(i, j).get_bound(), dbm.at(i, j).is_non_strict()));
+
+                    // If they don't intersect, then don't remove anything and go to next z
+                    if (not bound_t::is_overlaping(z.at(j, i), dbm.at(i, j))) {
                         fed.add(z);
+                        i = dim, j = dim;
+                    }
+                    // This check ensures that the zone added is non-empty iff it is on max canonical form.
+                    else if (z.at(i, j) > dbm.at(i, j)) {
+                        auto tmp = z;
+                        tmp.restrict(j, i, bound_t(-dbm.at(i, j).get_bound(), dbm.at(i, j).is_non_strict()));
+                        fed.add(tmp);
                     }
                 }
             }

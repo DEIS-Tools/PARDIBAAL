@@ -796,3 +796,26 @@ BOOST_AUTO_TEST_CASE(something) {
     BOOST_CHECK(rel12.is_different());
     BOOST_CHECK(rel21.is_different());
 }
+
+BOOST_AUTO_TEST_CASE(subtract_test_3) {
+    auto fed = Federation::unconstrained(3);
+    auto dbm = DBM::unconstrained(3);
+
+    fed.restrict(difference_bound_t::upper_strict(1, 10));
+    fed.restrict(difference_bound_t::upper_strict(2, 10));
+
+    dbm.restrict(difference_bound_t::lower_strict(1, 4));
+    dbm.restrict(difference_bound_t::upper_strict(1, 6));
+
+    dbm.restrict(difference_bound_t::lower_strict(2, 20));
+    dbm.restrict(difference_bound_t::upper_strict(2, 22));
+
+    BOOST_CHECK(not fed.is_intersecting(dbm));
+
+    auto fed2 = fed;
+
+    fed2.subtract(dbm);
+
+    BOOST_CHECK(fed2.is_equal(fed));
+
+}

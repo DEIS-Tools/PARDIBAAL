@@ -27,6 +27,11 @@
 
 namespace pardibaal {
 
+    bool bound_t::is_overlaping(bound_t a, bound_t b) {
+        auto val_a = a.get_bound(), val_b = b.get_bound();
+        return (val_a > -val_b) || ((val_a == -val_b) && (1 & a._data & b._data));
+    }
+
     bound_t bound_t::operator+(bound_t rhs) const {
 
         if (this->is_inf() || rhs.is_inf())
@@ -67,20 +72,6 @@ namespace pardibaal {
         return bound_t((((lhs >> 1) - rhs) << 1) | strictness);
     }
 
-    bound_t bound_t::operator*(val_t rhs) const {
-        if (this->is_inf())
-            return *this;
-
-        assert((!(this->get_bound() != 0) || (this->get_bound() * rhs / this->get_bound() == rhs))
-                && this->get_bound() * rhs > BOUND_VAL_MIN && this->get_bound() * rhs < BOUND_VAL_MAX
-                && rhs > BOUND_VAL_MIN && rhs < BOUND_VAL_MAX && ("Overflow or Underflow"));
-
-        const val_t lhs = this->_data;
-        const val_t strictness = 1 & lhs;
-
-        return bound_t((((lhs >> 1) * rhs) << 1) | strictness);
-    }
-
     bool bound_t::operator==(val_t rhs) const {return this->_data == bound_t::non_strict(rhs)._data;}
     bool bound_t::operator!=(val_t rhs) const {return this->_data != bound_t::non_strict(rhs)._data;}
     bool bound_t::operator<(val_t rhs) const {return this->_data < bound_t::non_strict(rhs)._data;}
@@ -95,7 +86,6 @@ namespace pardibaal {
 
     bound_t operator+(val_t val, bound_t bound) {return bound + val;}
     bound_t operator-(val_t val, bound_t bound) {return bound - val;}
-    bound_t operator*(val_t val, bound_t bound) {return bound * val;}
 
     std::ostream& operator<<(std::ostream& out, const bound_t& bound) {
         if (bound.is_inf()) {

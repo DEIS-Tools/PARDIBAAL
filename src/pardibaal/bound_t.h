@@ -40,6 +40,7 @@ namespace pardibaal {
      * This means that the max limit for a bound value is a 32 bit int where the two most significant bits are 0
      */
     const int32_t INF_BOUND = std::numeric_limits<int32_t>::max();
+    const int32_t NEG_INF_BOUND = std::numeric_limits<int32_t>::min();
     const int32_t LE_ZERO_BOUND = 1;
     const int32_t LT_ZERO_BOUND = 0;
     const int32_t BOUND_VAL_MAX = std::numeric_limits<int32_t>::max() >> 1;
@@ -67,6 +68,7 @@ namespace pardibaal {
         [[nodiscard]] static constexpr bound_t strict(val_t n)     {return bound_t(n << 1);}
         [[nodiscard]] static constexpr bound_t non_strict(val_t n) {return bound_t(~((~n) << 1));}
         [[nodiscard]] static constexpr bound_t inf()               {return bound_t(INF_BOUND);}
+        [[nodiscard]] static constexpr bound_t neg_inf()           {return bound_t(NEG_INF_BOUND);}
         [[nodiscard]] static constexpr bound_t le_zero()           {return bound_t(LE_ZERO_BOUND);}
         [[nodiscard]] static constexpr bound_t lt_zero()           {return bound_t(LT_ZERO_BOUND);}
 
@@ -74,6 +76,13 @@ namespace pardibaal {
         [[nodiscard]] inline bool is_strict()     const {return not this->is_non_strict();}
         [[nodiscard]] inline bool is_non_strict() const {return this->_data << 31;}
         [[nodiscard]] inline bool is_inf()        const {return this->_data == INF_BOUND;}
+        [[nodiscard]] inline bool is_neg_inf()    const {return this->_data == NEG_INF_BOUND;}
+
+        /** Checks if two opposite bounds overlap
+         * The bounds MUST be on the form (i,j) and (j,i)
+         * @return Bool whether the two opposite bounds are consistent with each other
+         */
+        [[nodiscard]] static bool is_overlaping(bound_t a, bound_t b);
 
         [[nodiscard]] static inline bound_t max(bound_t a, bound_t b) {return a < b ? b : a;}
         [[nodiscard]] static inline bound_t min(bound_t a, bound_t b) {return a < b ? a : b;}
@@ -82,8 +91,6 @@ namespace pardibaal {
         [[nodiscard]] bound_t operator+(val_t rhs) const;
 
         [[nodiscard]] bound_t operator-(val_t rhs) const;
-
-        [[nodiscard]] bound_t operator*(val_t rhs) const;
 
         [[nodiscard]] inline bool operator==(bound_t rhs) const {return this->_data == rhs._data;}
         [[nodiscard]] inline bool operator!=(bound_t rhs) const {return this->_data != rhs._data;}
@@ -109,7 +116,6 @@ namespace pardibaal {
 
     [[nodiscard]] bound_t operator+(val_t val, bound_t bound);
     [[nodiscard]] bound_t operator-(val_t val, bound_t bound);
-    [[nodiscard]] bound_t operator*(val_t val, bound_t bound);
     std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 }
 

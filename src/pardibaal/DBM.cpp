@@ -208,21 +208,10 @@ namespace pardibaal {
                              "Got dimensions ", dbm.dimension(), " and ", dim));
 #endif
         if (this->is_empty() || dbm.is_empty()) return false;
-        for (dim_t i = 0; i < dim; ++i) {
-            for (dim_t j = 0; j < dim; ++j) {
-                bound_t b1 = this->at(i, j);
-                bound_t b2 = dbm.at(j, i);
-
-                // For opposite diagonal bounds: if they are both + or -, then they overlap
-                // Upper bounds can be inf; if upper bound is inf, then it overlaps with any opposite lower bound
-                if ((b1 > bound_t::le_zero() && b2 > bound_t::le_zero()) ||
-                    (b1 < bound_t::le_zero() && b2 < bound_t::le_zero()) ||
-                    (b1.is_inf() || b2.is_inf()))
-                    continue;
-                else if (((b1.is_strict() || b2.is_strict()) && (not (b1 * -1 < b2))) || (not (b1 * -1 <= b2)))
+        for (dim_t i = 0; i < dim; ++i)
+            for (dim_t j = 0; j < dim; ++j)
+                if (not bound_t::is_overlaping(this->at(i, j), dbm.at(j, i)))
                     return false;
-            }
-        }
 
         return true;
     }
