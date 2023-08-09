@@ -66,20 +66,20 @@ namespace pardibaal {
         [[nodiscard]] static bound_t min(const bound_t &a, bound_t &&b);
         [[nodiscard]] static bound_t min(bound_t &&a, const bound_t &b);
 
-        [[nodiscard]] bound_t operator+(bound_t rhs) const;
+        [[nodiscard]] bound_t operator+(const bound_t& rhs) const;
         [[nodiscard]] bound_t operator+(val_t rhs) const;
 
         [[nodiscard]] bound_t operator-(val_t rhs) const;
 
         [[nodiscard]] bound_t operator*(val_t rhs) const;
 
-        [[nodiscard]] bool operator<(bound_t rhs) const;
-        [[nodiscard]] bool operator==(bound_t rhs) const;
+        [[nodiscard]] bool operator<(const bound_t& rhs) const;
+        [[nodiscard]] bool operator==(const bound_t& rhs) const;
 
-        [[nodiscard]] bool operator!=(bound_t rhs) const;
-        [[nodiscard]] bool operator>(bound_t rhs) const;
-        [[nodiscard]] bool operator>=(bound_t rhs) const;
-        [[nodiscard]] bool operator<=(bound_t rhs) const;
+        [[nodiscard]] bool operator!=(const bound_t& rhs) const;
+        [[nodiscard]] bool operator>(const bound_t& rhs) const;
+        [[nodiscard]] bool operator>=(const bound_t& rhs) const;
+        [[nodiscard]] bool operator<=(const bound_t& rhs) const;
 
         [[nodiscard]] bool operator==(val_t rhs) const;
         [[nodiscard]] bool operator!=(val_t rhs) const;
@@ -90,15 +90,15 @@ namespace pardibaal {
 
         friend std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 
-        [[nodiscard]] static bool is_lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
-        [[nodiscard]] static bool is_le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
-        [[nodiscard]] static bool is_gt(bound_t lhs, bound_t rhs) {return lhs > rhs;}
-        [[nodiscard]] static bool is_ge(bound_t lhs, bound_t rhs) {return lhs >= rhs;}
+        [[nodiscard]] static bool is_lt(const bound_t& lhs, const bound_t& rhs) {return lhs < rhs;}
+        [[nodiscard]] static bool is_le(const bound_t& lhs, const bound_t& rhs) {return lhs <= rhs;}
+        [[nodiscard]] static bool is_gt(const bound_t& lhs, const bound_t& rhs) {return lhs > rhs;}
+        [[nodiscard]] static bool is_ge(const bound_t& lhs, const bound_t& rhs) {return lhs >= rhs;}
     };
 
-    [[nodiscard]] bound_t operator+(val_t val, bound_t bound);
-    [[nodiscard]] bound_t operator-(val_t val, bound_t bound);
-    [[nodiscard]] bound_t operator*(val_t val, bound_t bound);
+    [[nodiscard]] bound_t operator+(val_t val,const bound_t& bound);
+    [[nodiscard]] bound_t operator-(val_t val,const bound_t& bound);
+    [[nodiscard]] bound_t operator*(val_t val, const bound_t& bound);
     std::ostream& operator<<(std::ostream& out, const bound_t& bound);
 }
 

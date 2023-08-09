@@ -81,7 +81,7 @@ namespace pardibaal {
         /**
          * Subtract everything that satisfies the constraint i - j </<= bound constraint
          */
-        void subtract(dim_t i, dim_t j, bound_t bound);
+        void subtract(dim_t i, dim_t j, const bound_t& bound);
         
         /**
          * Subtract everything that satisfies the difference constraint
@@ -130,7 +130,7 @@ namespace pardibaal {
          * @param g The bound (value and strictness) that is checked for
          * @return True if any of the zones satisfy the bound
          */
-        [[nodiscard]] bool is_satisfying(dim_t x, dim_t y, bound_t g) const;
+        [[nodiscard]] bool is_satisfying(dim_t x, dim_t y, const bound_t& g) const;
 
         [[nodiscard]] bool is_satisfying(const difference_bound_t& constraint) const;
         [[nodiscard]] bool is_satisfying(const std::vector<difference_bound_t>& constraints) const;
@@ -260,7 +260,7 @@ namespace pardibaal {
         void delay(val_t d);
         void interval_delay(val_t lower, val_t upper);
 
-        void restrict(dim_t x, dim_t y, bound_t g);
+        void restrict(dim_t x, dim_t y, const bound_t& g);
         void restrict(const difference_bound_t& constraint);
         void restrict(const std::vector<difference_bound_t>& constraints);
         void free(dim_t x);

@@ -59,7 +59,7 @@ namespace pardibaal {
     //     this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
     // }
 
-    void DBM::subtract(dim_t i, dim_t j, bound_t bound) {
+    void DBM::subtract(dim_t i, dim_t j, const bound_t& bound) {
         if (this->at(i, j) > bound) // if i,j,bound is larger than current, then result is empty. Always false if bound is inf
             this->restrict(j, i, bound_t(-bound.get_bound(), bound.is_non_strict()));
         else
@@ -95,7 +95,7 @@ namespace pardibaal {
         return false;
     }
 
-    bool DBM::is_satisfying(dim_t x, dim_t y, bound_t g) const {
+    bool DBM::is_satisfying(dim_t x, dim_t y, const bound_t& g) const {
         if (this->is_empty()) return false;
         return bound_t::le_zero() <= (this->_bounds_table.at(y, x) + g);
     }
@@ -310,7 +310,7 @@ namespace pardibaal {
         }
     }
 
-    void DBM::restrict(dim_t x, dim_t y, bound_t g) {
+    void DBM::restrict(dim_t x, dim_t y, const bound_t& g) {
         if ((_bounds_table.at(y, x) + g) < bound_t::le_zero()) // In this case the zone is now empty
             _empty_status = EMPTY;
         else if (g < _bounds_table.at(x, y)) {

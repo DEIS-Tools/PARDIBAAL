@@ -73,7 +73,7 @@ namespace pardibaal {
             this->add(dbm);
     }
 
-    void Federation::subtract(dim_t i, dim_t j, bound_t bound) {
+    void Federation::subtract(dim_t i, dim_t j, const bound_t& bound) {
         for (auto& z : zones) {
             z.subtract(i, j, bound);
         }
@@ -136,7 +136,7 @@ namespace pardibaal {
         return true;
     }
 
-    bool Federation::is_satisfying(dim_t x, dim_t y, bound_t g) const {
+    bool Federation::is_satisfying(dim_t x, dim_t y, const bound_t& g) const {
         for (const auto& dbm : zones) {
             if (dbm.is_satisfying(x, y, g))
                 return true;
@@ -345,7 +345,7 @@ namespace pardibaal {
         for (DBM& dbm : zones) dbm.interval_delay(lower, upper);
     }
 
-    void Federation::restrict(dim_t x, dim_t y, bound_t g) {
+    void Federation::restrict(dim_t x, dim_t y, const bound_t& g) {
         for (DBM& dbm : zones) dbm.restrict(x, y, g);
         make_consistent();
     }
