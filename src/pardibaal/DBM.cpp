@@ -398,43 +398,54 @@ namespace pardibaal {
             throw base_error("ERROR: Got max constants vector of size ", ceiling.size(), " but the DBM has ",
                              dim, " clocks");
 #endif
-        DBM D(*this);
 
         std::vector<std::pair<dim_t, dim_t>> modified_bounds;
+        modified_bounds.reserve(dim * (dim - 1));
 
-        for (dim_t i = 0; i < dim; ++i) {
+        std::vector<bool> close_zero(dim, false);
+
+        std::vector<bool> skip(dim, false);
+
+        for (dim_t oi = 1; oi <= dim; ++oi) {
+            auto i = oi % dim; // Ordering: 1, 2, ..., dim, 0.
             for (dim_t j = 0; j < dim; ++j) {
                 if (i == j) continue;
-                if ((D.at(i, j).get_bound() > ceiling[i]) ||
-                        (-D.at(0, i).get_bound() > ceiling[i]) ||
-                        (-D.at(0, j).get_bound() > ceiling[j] && i != 0)) {
-                    this->set(i, j, bound_t::inf());
+                auto bound_ij = _bounds_table.at(i, j).get_bound();
+
+                if((- _bounds_table.at(0, i).get_bound() > ceiling[i])) {
+                    this->_bounds_table.set(i, j, bound_t::inf());
+                    skip[i] = true;
+                }
+                else if ((i != 0 && -_bounds_table.at(0, j).get_bound() > ceiling[j])) {
+                    this->_bounds_table.set(i, j, bound_t::inf());
+                    close_zero[j] = true;
+                }
+                else if (bound_ij > ceiling[i]) {
+                    this->_bounds_table.set(i, j, bound_t::inf());
                     modified_bounds.push_back({i, j});
                 }
-                else if (-D.at(i, j).get_bound() > ceiling[j] && i == 0) {
-                    this->set(i, j, bound_t::strict(-ceiling[j]));
+                else if (-bound_ij > ceiling[j] && i == 0) {
+                    // If it is the case that ceiling is -INF, then we should not do anything
+                    this->_bounds_table.set(i, j, bound_t::strict(-ceiling[j]));
                     modified_bounds.push_back({i, j});
                 }
 
-                // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
-                //TODO: We only do this because regular close() does not catch these.
-                // We should propably use a smarter close()
-                if (i == 0 && this->at(i, j) > bound_t::le_zero()) {
-                    this->set(i, j, bound_t::le_zero());
+                // Make sure we don't set 0, j to positive bound
+                if ((i == 0 && _bounds_table.at(i, j) > bound_t::le_zero())) {
+                    this->_bounds_table.set(i, j, bound_t::le_zero());
                 }
-                if (j == 0 && this->at(i, j) < bound_t::le_zero()) {
-                    this->set(i, j, bound_t::le_zero());
-                }
-
             }
         }
 
-        for (const auto& bound : modified_bounds)
-            close_single_bound(bound.first, bound.second);
+        for (dim_t j = 0; j < dim; ++j)
+            if(close_zero[j])
+                for (dim_t i = 0; i < dim; ++i)
+                    _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j), _bounds_table.at(i, 0) + _bounds_table.at(0, j)));
 
-        //TODO: Do something smart where we only close if something changes
-        // _is_closed = false;
-        // this->close();
+        for (dim_t k = 0; k < dim; ++k)
+            if (not skip[k])
+                for (const auto& b : modified_bounds)
+                    _bounds_table.set(b.first, b.second, bound_t::min(_bounds_table.at(b.first, b.second), _bounds_table.at(b.first, k) + _bounds_table.at(k, b.second)));
     }
 
     void DBM::extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
