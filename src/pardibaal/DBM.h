@@ -68,9 +68,6 @@ namespace pardibaal {
         mutable empty_status_e _empty_status = NON_EMPTY;
         mutable bool _is_closed = true;
 
-        // Set bound (i, j) to the shortest/lowest (canonical) form
-        void close_single_bound(dim_t i, dim_t j);
-
     public:
         DBM(dim_t number_of_clocks);
 

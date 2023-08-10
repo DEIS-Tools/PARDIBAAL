@@ -228,17 +228,9 @@ namespace pardibaal {
             for(dim_t i = 0; i < size; ++i)
                 for(dim_t j = 0; j < size; ++j)
                     _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j),
-                                                         _bounds_table.at(i, k) + _bounds_table.at(k, j)));
+                                                              _bounds_table.at(i, k) + _bounds_table.at(k, j)));
 
         _is_closed = true;
-    }
-
-    void DBM::close_single_bound(dim_t i, dim_t j) {
-        const dim_t size = this->dimension();
-
-        for(dim_t k = 0; k < size; ++k)
-            _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j), 
-                              _bounds_table.at(i, k) + _bounds_table.at(k, j)));
     }
 
     void DBM::future() {
@@ -377,21 +369,17 @@ namespace pardibaal {
 #endif
         DBM D(*this);
 
-        std::vector<std::pair<dim_t, dim_t>> modified_bounds;
-
         for (dim_t i = 0; i < D.dimension(); ++i) {
             for (dim_t j = 0; j < D.dimension(); ++j) {
                 if (i == j) continue;
                 if ((D.at(i, j).get_bound() > ceiling[i]) ||
-                        (-D.at(0, i).get_bound() > ceiling[i]) ||
-                        (-D.at(0, j).get_bound() > ceiling[j] && i != 0)) {
+                    (-D.at(0, i).get_bound() > ceiling[i]) ||
+                    (-D.at(0, j).get_bound() > ceiling[j] && i != 0)){
+
                     this->set(i, j, bound_t::inf());
-                    modified_bounds.push_back({i, j});
                 }
-                else if (-D.at(i, j).get_bound() > ceiling[j] && i == 0) {
+                else if (-D.at(i, j).get_bound() > ceiling[j] && i == 0)
                     this->set(i, j, bound_t::strict(-ceiling[j]));
-                    modified_bounds.push_back({i, j});
-                }
 
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
@@ -406,12 +394,9 @@ namespace pardibaal {
             }
         }
 
-        for (const auto& bound : modified_bounds)
-            close_single_bound(bound.first, bound.second);
-
         //TODO: Do something smart where we only close if something changes
-        // _is_closed = false;
-        // this->close();
+        _is_closed = false;
+        this->close();
     }
 
     void DBM::extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
