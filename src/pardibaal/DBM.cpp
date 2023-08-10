@@ -76,9 +76,11 @@ namespace pardibaal {
         if (_empty_status != UNKNOWN)
             return _empty_status == EMPTY ? true : false;
 
+        const dim_t dim = this->dimension();
+
         // The DBM has to be closed for this to actually work
-        for (dim_t i = 0; i < this->dimension(); ++i) {
-            for (dim_t j = 0; j < this->dimension(); ++j) {
+        for (dim_t i = 0; i < dim; ++i) {
+            for (dim_t j = 0; j < dim; ++j) {
                 bound_t i_to_j_to_i = this->_bounds_table.at(i, j) + this->_bounds_table.at(j, i);
 
                 if (i_to_j_to_i < bound_t::le_zero()) {
