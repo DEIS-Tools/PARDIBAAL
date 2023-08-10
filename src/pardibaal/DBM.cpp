@@ -239,14 +239,6 @@ namespace pardibaal {
         _is_closed = true;
     }
 
-    void DBM::close_single_bound(dim_t i, dim_t j) {
-        const dim_t dim = this->dimension();
-
-        for(dim_t k = 0; k < dim; ++k)
-            _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j), 
-                              _bounds_table.at(i, k) + _bounds_table.at(k, j)));
-    }
-
     void DBM::future() {
         const dim_t dim = this->dimension();
 
