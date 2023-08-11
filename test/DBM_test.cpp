@@ -520,7 +520,7 @@ BOOST_AUTO_TEST_CASE(reorder_test_2) {
 
 BOOST_AUTO_TEST_CASE(extrapolate_test_1) {
     DBM D(10);
-    std::vector ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    std::vector<val_t> ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
     BOOST_CHECK_THROW(D.extrapolate(ceiling), base_error);
 }
@@ -727,14 +727,14 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_4) {
 
 BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_5) {
     DBM D(10);
-    std::vector ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
+    std::vector<val_t> ceiling{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11};
 
     BOOST_CHECK_THROW(D.extrapolate_diagonal(ceiling), base_error);
 }
 
 BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_6) {
     DBM dbm = DBM::unconstrained(4);
-    std::vector ceiling{0, 2, 2, 6};
+    std::vector<val_t> ceiling{0, 2, 2, 6};
 
     dbm.set(0, 1, {-2, STRICT});
     dbm.set(2, 1, {-2, STRICT});

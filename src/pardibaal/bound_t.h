@@ -30,7 +30,7 @@
 
 namespace pardibaal {
     using dim_t = uint32_t;
-    using val_t = int32_t;
+    using val_t = int64_t;
 
     /**
      * Representing a bound in 32 bit:
@@ -39,11 +39,11 @@ namespace pardibaal {
      * Infinite bound is represented as the largesst 31 bit value.
      * This means that the max limit for a bound value is a 32 bit int where the two most significant bits are 0
      */
-    const int32_t INF_BOUND = std::numeric_limits<int32_t>::max();
-    const int32_t LE_ZERO_BOUND = 1;
-    const int32_t LT_ZERO_BOUND = 0;
-    const int32_t BOUND_VAL_MAX = std::numeric_limits<int32_t>::max() >> 1;
-    const int32_t BOUND_VAL_MIN = std::numeric_limits<int32_t>::min() >> 1;
+    const val_t INF_BOUND = std::numeric_limits<val_t>::max();
+    const val_t LE_ZERO_BOUND = 1;
+    const val_t LT_ZERO_BOUND = 0;
+    const val_t BOUND_VAL_MAX = std::numeric_limits<val_t>::max() >> 1;
+    const val_t BOUND_VAL_MIN = std::numeric_limits<val_t>::min() >> 1;
 
     enum strict_e {STRICT = 0, NON_STRICT = 1};
 
@@ -72,7 +72,7 @@ namespace pardibaal {
 
         [[nodiscard]] inline val_t get_bound()    const {return this->_data >> 1;}
         [[nodiscard]] inline bool is_strict()     const {return not this->is_non_strict();}
-        [[nodiscard]] inline bool is_non_strict() const {return this->_data << 31;}
+        [[nodiscard]] inline bool is_non_strict() const {return this->_data & 1;}
         [[nodiscard]] inline bool is_inf()        const {return this->_data == INF_BOUND;}
 
         [[nodiscard]] static inline bound_t max(bound_t a, bound_t b) {return a < b ? b : a;}
