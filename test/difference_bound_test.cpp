@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(inf_test_1) {
 
     BOOST_CHECK(c._i == 10);
     BOOST_CHECK(c._j == 3);
-    BOOST_CHECK(c._bound.is_strict());
+    BOOST_CHECK(c._bound.is_non_strict());
     BOOST_CHECK(c._bound.is_inf());
 }
 
