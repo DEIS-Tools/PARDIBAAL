@@ -84,18 +84,17 @@ namespace pardibaal {
     }
 
     void Federation::subtract(const DBM& dbm) {
-    const auto dim = this->dimension();
 #ifndef NEXCEPTIONS
         if (!zones.empty()) {
-            if (dim != dbm.dimension())
+            if (dimension() != dbm.dimension())
                 throw base_error("ERROR: Subtracting dbm with dimension: ", dbm.dimension(),
-                                 " from a federation with dimension: ", dim);
+                                 " from a federation with dimension: ", dimension());
         }
 #endif
         auto fed = Federation();
         for (auto z : zones) {
-            for (dim_t i = 0; i < dim; ++i) {
-                for (dim_t j = 0; j < dim; ++j) {
+            for (dim_t i = 0; i < dimension(); ++i) {
+                for (dim_t j = 0; j < dimension(); ++j) {
                     // This check ensures that the zone added is non-empty iff it is on max canonical form.
                     if (z.at(i, j) > dbm.at(i, j)) {
                         z.restrict(j, i, bound_t(-dbm.at(i, j).get_bound(), dbm.at(i, j).is_non_strict()));

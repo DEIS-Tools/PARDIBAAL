@@ -32,9 +32,9 @@
 
 namespace pardibaal {
     class Federation;
-
+    
     enum relation_e {EQUAL, SUBSET, SUPERSET, DIFFERENT};
-    /**
+    /** 
      * Relation struct
      * represents the relation between two DBMs.
      * different means that they are not equal or a sub/superset of each other, or the dimensions are different.
@@ -43,7 +43,7 @@ namespace pardibaal {
     struct relation_t {
     private:
         bool _is_equal, _is_subset, _is_superset, _is_different;
-
+    
     public:
         constexpr relation_t(bool equal, bool subset, bool superset, bool different) :
             _is_equal(equal), _is_subset(subset), _is_superset(superset), _is_different(different) {}
@@ -124,7 +124,7 @@ namespace pardibaal {
 
         template<bool is_exact = true>
         [[nodiscard]] bool is_subset(const Federation& fed) const;
-
+        
         [[nodiscard]] bool is_superset(const DBM& dbm) const;
 
         template<bool is_exact = true>
@@ -174,11 +174,11 @@ namespace pardibaal {
          * Also known as "up" raises all upper bounds to inf
          */
         void future();
-
+        
         /**
          * Bounded future raises all upper bounds by d
-         * @param d Value added to all upper bounds
-         */
+         * @param d Value added to all upper bounds 
+         */ 
         void future(val_t d);
 
         /**
@@ -208,27 +208,27 @@ namespace pardibaal {
         void shift(dim_t x, val_t n);
 
         /**
-         * sets all bounds above the ceiling to inf.
+         * sets all bounds above the ceiling to inf. 
          * @param ceiling Vector of clock maximum (ceiling) values
-         */
+         */ 
         void extrapolate(const std::vector<val_t> &ceiling);
 
         /**
-         * Read about this in
+         * Read about this in 
          *   Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
          *   Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
          */
         void extrapolate_diagonal(const std::vector<val_t> &ceiling);
 
         /**
-         * Read about this in
+         * Read about this in 
          *   Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
          *   Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
          */
         void extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper);
 
         /**
-         * Read about this in
+         * Read about this in 
          *   Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
          *   Lower and Upper Bounds in Zone Based Abstractions of Timed Automata. 312-326. 10.1007/978-3-540-24730-2_25.
          */

@@ -21,72 +21,79 @@
  */
 
 #include <ostream>
-#include <cassert>
 
 #include "bound_t.h"
 
 namespace pardibaal {
 
-    bound_t bound_t::operator+(bound_t rhs) const {
+    // val_t bound_t::get_bound()    const {return this->_n;}
+    // bool bound_t::is_strict()     const {return this->_strict;}
+    // bool bound_t::is_non_strict() const {return not this->_strict;}
+    // bool bound_t::is_inf()        const {return this->_inf;}
 
+    const bound_t &bound_t::max(const bound_t &a, const bound_t &b) {return a < b ? b : a;}
+    bound_t bound_t::max(bound_t &&a, bound_t &&b) {return max(a, b);}
+    bound_t bound_t::max(const bound_t &a, bound_t &&b) {return max(a, b);}
+    bound_t bound_t::max(bound_t &&a, const bound_t &b) {return max(a, b);}
+
+    const bound_t &bound_t::min(const bound_t &a, const bound_t &b) {return a <= b ? a : b;}
+    bound_t bound_t::min(bound_t &&a, bound_t &&b) {return bound_t::min(a, b);}
+    bound_t bound_t::min(const bound_t &a, bound_t &&b) {return bound_t::min(a, b);}
+    bound_t bound_t::min(bound_t &&a, const bound_t &b) {return bound_t::min(a, b);}
+
+    bound_t bound_t::operator+(bound_t rhs) const {
         if (this->is_inf() || rhs.is_inf())
             return bound_t::inf();
 
-        assert(get_bound() < BOUND_VAL_MAX - rhs.get_bound() && "Overflow");
-        
-        const val_t val1 = this->_data,
-                    val2 = rhs._data;
-
-        // If both are non-strict (first bit is 1), then the result should be non strict
-        const val_t strictness = 1 & val1 & val2;
-
-        return bound_t((((val1 >> 1) + (val2 >> 1)) << 1) | strictness);
+        return bound_t(this->get_bound() + rhs.get_bound(), this->is_strict() || rhs.is_strict());
     }
 
     bound_t bound_t::operator+(val_t rhs) const {
-        if (this->is_inf())
-            return *this;
-
-        assert(get_bound() < BOUND_VAL_MAX - rhs && "Overflow");
-        
-        const val_t lhs = this->_data;
-        const val_t strictness = 1 & lhs;
-
-        return bound_t((((lhs >> 1) + rhs) << 1) | strictness);
+        if (not this->is_inf())
+            return bound_t(this->get_bound() + rhs, this->is_strict());
+        return *this;
     }
 
     bound_t bound_t::operator-(val_t rhs) const {
-        if (this->is_inf())
-            return *this;
-
-        assert(get_bound() > BOUND_VAL_MIN + rhs && rhs > BOUND_VAL_MIN && rhs < BOUND_VAL_MAX && "Underflow");
-
-        const val_t lhs = this->_data;
-        const val_t strictness = 1 & lhs;
-
-        return bound_t((((lhs >> 1) - rhs) << 1) | strictness);
+        if (not this->is_inf())
+            return bound_t(this->get_bound() - rhs, this->is_strict());
+        return *this;
     }
 
     bound_t bound_t::operator*(val_t rhs) const {
-        if (this->is_inf())
-            return *this;
-
-        assert((!(this->get_bound() != 0) || (this->get_bound() * rhs / this->get_bound() == rhs))
-                && this->get_bound() * rhs > BOUND_VAL_MIN && this->get_bound() * rhs < BOUND_VAL_MAX
-                && rhs > BOUND_VAL_MIN && rhs < BOUND_VAL_MAX && ("Overflow or Underflow"));
-
-        const val_t lhs = this->_data;
-        const val_t strictness = 1 & lhs;
-
-        return bound_t((((lhs >> 1) * rhs) << 1) | strictness);
+        if (not this->is_inf())
+            return bound_t(this->get_bound() * rhs, this->is_strict());
+        return *this;
     }
 
-    bool bound_t::operator==(val_t rhs) const {return this->_data == bound_t::non_strict(rhs)._data;}
-    bool bound_t::operator!=(val_t rhs) const {return this->_data != bound_t::non_strict(rhs)._data;}
-    bool bound_t::operator<(val_t rhs) const {return this->_data < bound_t::non_strict(rhs)._data;}
-    bool bound_t::operator>(val_t rhs) const {return this->_data > bound_t::non_strict(rhs)._data;}
-    bool bound_t::operator<=(val_t rhs) const {return this->_data <= bound_t::non_strict(rhs)._data;}
-    bool bound_t::operator>=(val_t rhs) const {return this->_data >= bound_t::non_strict(rhs)._data;}
+    bool bound_t::operator<(bound_t rhs) const {
+        if (this->is_inf()) return false;
+        if (rhs.is_inf()) return true;
+
+        if (this->get_bound() == rhs.get_bound())
+            return !rhs.is_strict() && this->is_strict();
+
+        return this->get_bound() < rhs.get_bound();
+    }
+
+    bool bound_t::operator==(bound_t rhs) const {
+        if (this->is_inf() || rhs.is_inf())
+            return this->is_inf() && rhs.is_inf();
+
+        return (this->get_bound() == rhs.get_bound()) && (this->is_strict() == rhs.is_strict());
+    }
+
+    bool bound_t::operator!=(bound_t rhs) const {return not (*this == rhs);}
+    bool bound_t::operator>(bound_t rhs)  const {return rhs < *this;}
+    bool bound_t::operator>=(bound_t rhs) const {return not (*this < rhs);}
+    bool bound_t::operator<=(bound_t rhs) const {return not (rhs < *this);}
+
+    bool bound_t::operator==(val_t rhs) const {return *this == bound_t::non_strict(rhs);}
+    bool bound_t::operator!=(val_t rhs) const {return *this != bound_t::non_strict(rhs);}
+    bool bound_t::operator<(val_t rhs) const {return *this < bound_t::non_strict(rhs);}
+    bool bound_t::operator>(val_t rhs) const {return *this > bound_t::non_strict(rhs);}
+    bool bound_t::operator<=(val_t rhs) const {return *this <= bound_t::non_strict(rhs);}
+    bool bound_t::operator>=(val_t rhs) const {return *this >= bound_t::non_strict(rhs);}
 
     bool lt(bound_t lhs, bound_t rhs) {return lhs < rhs;}
     bool le(bound_t lhs, bound_t rhs) {return lhs <= rhs;}
