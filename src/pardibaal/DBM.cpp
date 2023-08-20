@@ -241,8 +241,9 @@ namespace pardibaal {
         for(dim_t k = 0; k < dim; ++k)
             for(dim_t i = 0; i < dim; ++i)
                 for(dim_t j = 0; j < dim; ++j)
-                    _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j),
-                                                         _bounds_table.at(i, k) + _bounds_table.at(k, j)));
+                    if (k != j && k != i)
+                        _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j),
+                                                            _bounds_table.at(i, k) + _bounds_table.at(k, j)));
 
         _is_closed = true;
     }
