@@ -82,7 +82,9 @@ namespace pardibaal {
          * The bounds MUST be on the form (i,j) and (j,i)
          * @return Bool whether the two opposite bounds are consistent with each other
          */
-        [[nodiscard]] static inline bool is_overlapping(bound_t a, bound_t b) {return (a.get_bound() > -b.get_bound()) || ((b.get_bound() == -b.get_bound()) && (1 & a._data & b._data));}
+        [[nodiscard]] static inline bool is_overlapping(bound_t a, bound_t b) {
+            return (a.get_bound() > -b.get_bound()) || ((a.get_bound() == -b.get_bound()) && (1 & a._data & b._data));
+        }
 
         [[nodiscard]] static inline bound_t max(bound_t a, bound_t b) {return a < b ? b : a;}
         [[nodiscard]] static inline bound_t min(bound_t a, bound_t b) {return a < b ? a : b;}
