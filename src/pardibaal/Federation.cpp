@@ -28,7 +28,7 @@
 namespace pardibaal {
 
     void Federation::make_consistent() {
-        std::erase_if(zones, [](DBM& dbm){return dbm.is_empty();});
+        std::erase_if(zones, [](const DBM& dbm){return dbm.is_empty();});
     }
 
     Federation::Federation() : zones{} {}
