@@ -64,9 +64,9 @@ namespace pardibaal {
     class DBM {
         enum empty_status_e {EMPTY, NON_EMPTY, UNKNOWN};
 
-        bounds_table_t _bounds_table;
         mutable empty_status_e _empty_status = NON_EMPTY;
         mutable bool _is_closed = true;
+        bounds_table_t _bounds_table;
 
         // Set bound (i, j) to the shortest/lowest (canonical) form
         void close_single_bound(dim_t i, dim_t j);

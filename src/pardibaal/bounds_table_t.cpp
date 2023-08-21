@@ -30,7 +30,14 @@
 
 namespace pardibaal {
     bounds_table_t::bounds_table_t(dim_t number_of_clocks) : _number_of_clocks(number_of_clocks) {
-        _bounds = std::vector<bound_t>(number_of_clocks * number_of_clocks);
+        _memory = (bound_t*) malloc(_number_of_clocks * _number_of_clocks * sizeof(bound_t));
+        _bounds = (bound_t**) malloc(_number_of_clocks * sizeof(bound_t*));
+        
+        for (dim_t i = 0; i < _number_of_clocks * _number_of_clocks; ++i)
+            _memory[i] = bound_t::le_zero();
+
+        for (dim_t i = 0; i < _number_of_clocks; ++i)
+            _bounds[i] = _memory + (i * _number_of_clocks);
     }
 
     dim_t bounds_table_t::number_of_clocks() const {return this->_number_of_clocks;}
