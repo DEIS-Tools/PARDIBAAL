@@ -119,8 +119,6 @@ namespace pardibaal {
             return dbm.is_empty() ? relation_t::equal() : relation_t::subset();
         else if (dbm.is_empty())
             return relation_t::superset();
-        else if(dbm._bounds_table.raw_begin() == _bounds_table.raw_begin())
-            return relation_t::equal();
 /*
         // TODO, try this
          else if (this->_empty_status == EMPTY && dbm._empty_status != UNKNOWN)
@@ -134,18 +132,17 @@ namespace pardibaal {
         // this will be somewhat caught by the below check.
         // However we can compare two empty DBM's different and an empty DBM
         // different from a non-empty DBM.
+        
+        bool eq, sub = true, super = true;
 
-        bool eq = true, sub = true, super = true;
-        auto bg_a = this->_bounds_table.raw_begin();
-        auto nd_a = this->_bounds_table.raw_end();
-        auto bg_b = dbm._bounds_table.raw_begin();
-        // auto nd_b = dbm._bounds_table.raw_end(); // not needed, same size.
-        for(; (super || sub) && bg_a != nd_a; ++bg_a, ++bg_b)
-        {
-            sub &= (*bg_a) <= (*bg_b);
-            super &= (*bg_a) >= (*bg_b);
-            // TODO, try with a break here.
-        }
+        for (dim_t i = 0; i < dim; ++i)
+            for (dim_t j = 0; j < dim; ++j) {
+                const auto& b1 = this->at(i, j),
+                            b2 = dbm.at(i, j);
+                sub &= b1 <= b2;
+                super &= b1 >= b2;
+
+            }
 
         eq = sub && super;
 
@@ -540,14 +537,9 @@ namespace pardibaal {
             return;
         }
 
-        auto it_a = this->_bounds_table.begin(),
-             end = this->_bounds_table.end();
-        auto it_b = dbm._bounds_table.begin();
-
-        while (it_a != end) {
-            *it_a = bound_t::min(*it_a, *it_b);
-            ++it_a; ++it_b; 
-        }
+        for (dim_t i = 0; i < dim; ++i)
+            for (dim_t j = 0; j < dim; ++j)
+                this->_bounds_table.set(i, j, bound_t::min(this->at(i, j), dbm.at(i, j)));
 
         _empty_status = UNKNOWN;
         _is_closed = false;
