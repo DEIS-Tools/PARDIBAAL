@@ -238,12 +238,30 @@ namespace pardibaal {
 
         const dim_t dim = this->dimension();
 
-        for(dim_t k = 0; k < dim; ++k)
-            for(dim_t i = 0; i < dim; ++i)
-                for(dim_t j = 0; j < dim; ++j)
-                    if (k != j && k != i)
-                        _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j),
-                                                            _bounds_table.at(i, k) + _bounds_table.at(k, j)));
+        bound_t* k_bounds = _bounds_table.raw_begin();
+
+        for(dim_t k = 0; k < dim; ++k) {
+
+            bound_t* i_bounds = _bounds_table.raw_begin();
+            
+            for(dim_t i = 0; i < dim; ++i) {
+            
+                bound_t ik_bound = i_bounds[k];
+                
+                if (!ik_bound.is_inf() && i != k) {
+                    for(dim_t j = 0; j < dim; ++j) {
+                        bound_t kj_bound = k_bounds[j];
+                        bound_t ikkj_bound(ik_bound._data + kj_bound._data - ((ik_bound._data & 1) | (kj_bound._data & 1)));
+                        auto ij_bound = i_bounds[j];
+                        auto min_bound = ikkj_bound < ij_bound ? ikkj_bound : ij_bound;
+
+                        i_bounds[j] = kj_bound.is_inf() ? ij_bound : min_bound;
+                    }
+                }
+                i_bounds += dim;
+            }
+            k_bounds += dim;
+        }
 
         _is_closed = true;
     }

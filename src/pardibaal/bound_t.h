@@ -51,11 +51,11 @@ namespace pardibaal {
     struct bound_t {
 
     private:
-        val_t _data = LE_ZERO_BOUND;
 
-        constexpr bound_t(val_t bound) : _data(bound) {}
 
     public:
+        val_t _data = LE_ZERO_BOUND;
+        constexpr bound_t(val_t bound) : _data(bound) {}
         constexpr bound_t(){};
         constexpr bound_t(val_t n, strict_e strictness) {
             _data = (n << 1) | (val_t) strictness;
@@ -91,6 +91,8 @@ namespace pardibaal {
 
         [[nodiscard]] bound_t operator+(bound_t rhs) const;
         [[nodiscard]] bound_t operator+(val_t rhs) const;
+
+        [[nodiscard]] static bound_t finite_addition(const bound_t& rhs, const bound_t& lhs);
 
         [[nodiscard]] bound_t operator-(val_t rhs) const;
 

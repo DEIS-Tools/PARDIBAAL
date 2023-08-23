@@ -52,6 +52,7 @@ namespace pardibaal {
          * Ordered as (0, 0), (0, 1), ..., (1, 0), (1, 1), ..., (n -1, n -1).
          */
         [[nodiscard]] const bound_t* raw_begin() const { return _bounds.data(); }
+        [[nodiscard]] bound_t* raw_begin() { return _bounds.data(); }
         [[nodiscard]] std::vector<bound_t>::iterator       begin()       {return _bounds.begin();}
         [[nodiscard]] std::vector<bound_t>::const_iterator begin() const {return _bounds.begin();}
 

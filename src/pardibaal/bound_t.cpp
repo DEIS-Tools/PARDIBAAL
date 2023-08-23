@@ -43,6 +43,15 @@ namespace pardibaal {
         return bound_t(val1 + val2 - ((val1 & 1) | (val2 & 1)));
     }
 
+    bound_t bound_t::finite_addition(const bound_t& rhs, const bound_t& lhs) {
+        assert(lhs.get_bound() < BOUND_VAL_MAX - rhs.get_bound() && "Overflow");
+        
+        const val_t val1 = lhs._data,
+                    val2 = rhs._data;
+
+        return bound_t(val1 + val2 - ((val1 & 1) | (val2 & 1)));
+    }
+
     bound_t bound_t::operator+(val_t rhs) const {
         if (this->is_inf())
             return *this;
