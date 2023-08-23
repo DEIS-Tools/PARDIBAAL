@@ -435,46 +435,83 @@ namespace pardibaal {
 
         std::vector<bool> skip(dim, false);
 
+        bound_t* i_bounds;
+        bound_t* zero_bounds = _bounds_table.raw_begin();
+        val_t inf_val = std::numeric_limits<int32_t>::max() >> 1;
+
         for (dim_t oi = 1; oi <= dim; ++oi) {
             auto i = oi % dim; // Ordering: 1, 2, ..., dim, 0.
+            
+            i_bounds = zero_bounds + i * dim;
+
             for (dim_t j = 0; j < dim; ++j) {
                 if (i == j) continue;
-                auto bound_ij = _bounds_table.at(i, j).get_bound();
+                val_t bound_ij = i_bounds[j].get_bound();
+                if (bound_ij == inf_val) continue;
 
-                if((- _bounds_table.at(0, i).get_bound() > ceiling[i])) {
-                    this->_bounds_table.set(i, j, bound_t::inf());
+                if((- zero_bounds[i].get_bound() > ceiling[i])) {
+                    i_bounds[j] = bound_t::inf();
                     skip[i] = true;
                 }
-                else if ((i != 0 && -_bounds_table.at(0, j).get_bound() > ceiling[j])) {
-                    this->_bounds_table.set(i, j, bound_t::inf());
+                else if ((i != 0 && -zero_bounds[j].get_bound() > ceiling[j])) {
+                    i_bounds[j] = bound_t::inf();
                     close_zero[j] = true;
                 }
                 else if (bound_ij > ceiling[i]) {
-                    this->_bounds_table.set(i, j, bound_t::inf());
+                    i_bounds[j] = bound_t::inf();
                     modified_bounds.push_back({i, j});
                 }
                 else if (-bound_ij > ceiling[j] && i == 0) {
                     // If it is the case that ceiling is -INF, then we should not do anything
-                    this->_bounds_table.set(i, j, bound_t::strict(-ceiling[j]));
+                    i_bounds[j] = bound_t((-ceiling[j]) << 1);
                     modified_bounds.push_back({i, j});
                 }
 
                 // Make sure we don't set 0, j to positive bound
-                if ((i == 0 && _bounds_table.at(i, j) > bound_t::le_zero())) {
-                    this->_bounds_table.set(i, j, bound_t::le_zero());
+                if ((i == 0 && i_bounds[j] > bound_t::le_zero())) {
+                    i_bounds[j] = bound_t::le_zero();
                 }
             }
         }
 
-        for (dim_t j = 0; j < dim; ++j)
-            if(close_zero[j])
-                for (dim_t i = 0; i < dim; ++i)
-                    _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j), _bounds_table.at(i, 0) + _bounds_table.at(0, j)));
+        i_bounds = zero_bounds;
+        for (dim_t j = 0; j < dim; ++j) {
+            if(close_zero[j]) {
+                bound_t j_lower = zero_bounds[j];
 
-        for (dim_t k = 0; k < dim; ++k)
+                if (!j_lower.is_inf()) {
+                    i_bounds = zero_bounds;
+                    for (dim_t i = 0; i < dim; ++i) {
+                        val_t i_upper = i_bounds[0]._data;
+                        bound_t ij_bound = i_bounds[j];
+                        bound_t tighter((i_upper + j_lower._data - ((i_upper & 1) | (j_lower._data & 1))));
+                        bound_t min = tighter < ij_bound ? tighter : ij_bound;
+
+                        i_bounds[j] = i_upper == INF_BOUND ? ij_bound : min;
+                        i_bounds += dim;
+                    }
+                }
+            }
+        }
+        i_bounds = zero_bounds;
+        for (dim_t k = 0; k < dim; ++k) {
+
             if (not skip[k])
-                for (const auto& b : modified_bounds)
-                    _bounds_table.set(b.first, b.second, bound_t::min(_bounds_table.at(b.first, b.second), _bounds_table.at(b.first, k) + _bounds_table.at(k, b.second)));
+                for (const auto& b : modified_bounds) {
+                    bound_t* b_bounds = zero_bounds + b.first * dim;
+                    bound_t bb_bound = b_bounds[b.second];
+                    val_t bk_bound = b_bounds[k]._data;
+                    val_t kb_bound = i_bounds[b.second]._data;
+
+                    if (kb_bound == INF_BOUND || bk_bound == INF_BOUND) continue;
+
+                    bound_t tighter((bk_bound + kb_bound - ((bk_bound & 1) | (kb_bound & 1))));
+
+                    b_bounds[b.second] = tighter < bb_bound ? tighter : bb_bound;
+                }
+            
+            i_bounds += dim;
+        }
     }
 
     void DBM::extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
