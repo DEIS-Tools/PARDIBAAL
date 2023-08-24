@@ -36,58 +36,43 @@ namespace pardibaal {
 
         bounds_table_t(const bounds_table_t& other) : _number_of_clocks(other._number_of_clocks) {
             _memory = (bound_t*) malloc(_number_of_clocks * _number_of_clocks * sizeof(bound_t));
-            _bounds = (bound_t**) malloc(_number_of_clocks * sizeof(bound_t*));
             
             for (dim_t i = 0; i < _number_of_clocks * _number_of_clocks; ++i)
                 _memory[i] = other._memory[i];
-
-            for (dim_t i = 0; i < _number_of_clocks; ++i)
-                _bounds[i] = _memory + (i * _number_of_clocks);
         }
 
         bounds_table_t(bounds_table_t&& other) : _number_of_clocks(other._number_of_clocks) {
             if (_memory == other._memory) return;
-            free(_bounds);
             free(_memory);
             
             _memory = other._memory;
-            _bounds = other._bounds;
 
             other._memory = nullptr;
-            other._bounds = nullptr;
         }
 
         bounds_table_t& operator=(const bounds_table_t& other) {
             if (_memory == other._memory) return *this;
-            free(_bounds);
             free(_memory);
 
             _number_of_clocks = other._number_of_clocks;
 
             _memory = (bound_t*) malloc(_number_of_clocks * _number_of_clocks * sizeof(bound_t));
-            _bounds = (bound_t**) malloc(_number_of_clocks * sizeof(bound_t*));
 
             for (dim_t i = 0; i < _number_of_clocks * _number_of_clocks; ++i)
                 _memory[i] = other._memory[i];
-
-            for (dim_t i = 0; i < _number_of_clocks; ++i)
-                _bounds[i] = _memory + (i * _number_of_clocks);
 
             return *this;
         }
 
         bounds_table_t& operator=(bounds_table_t&& other) {
             if (_memory == other._memory) return *this;
-            free(_bounds);
             free(_memory);
 
             _number_of_clocks = other._number_of_clocks;
             
             _memory = other._memory;
-            _bounds = other._bounds;
 
             other._memory = nullptr;
-            other._bounds = nullptr;
 
             return *this;
         }
@@ -99,11 +84,11 @@ namespace pardibaal {
         [[nodiscard]] dim_t number_of_clocks() const;
 
         [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {
-            return _bounds[i][j];
+            return _memory[i * _number_of_clocks + j];
         }
 
         inline void set(dim_t i, dim_t j, bound_t bound) {
-            this->_bounds[i][j] = bound;
+            this->_memory[i * _number_of_clocks + j] = bound;
         }
 
         /** Used for iteration, where indexes does not matter
@@ -120,14 +105,13 @@ namespace pardibaal {
         friend std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
 
         ~bounds_table_t() {
-            free(_bounds);
             free(_memory);
         }
 
     private:
         dim_t _number_of_clocks;
         bound_t* _memory = nullptr;
-        bound_t** _bounds = nullptr;
+        // bound_t** _bounds = nullptr;
     };
 
     std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
