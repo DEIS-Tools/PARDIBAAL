@@ -331,11 +331,14 @@ namespace pardibaal {
             const auto dim = this->dimension();
             for (dim_t i = 0; i < dim; ++i) {
                 for (dim_t j = 0; j < dim; ++j) {
-                    if (_bounds_table.at(i, x) + _bounds_table.at(x, j) < _bounds_table.at(i, j))
-                        _bounds_table.set(i, j, _bounds_table.at(i, x) + _bounds_table.at(x, j));
+                    auto ij_bound = _bounds_table.at(i, j);
+                    
+                    auto ixxj_bound = _bounds_table.at(i, x) + _bounds_table.at(x, j);
+                    auto iyyj_bound = _bounds_table.at(i, y) + _bounds_table.at(y, j);
+                    
+                    auto min = ixxj_bound < iyyj_bound ? ixxj_bound : iyyj_bound;
 
-                    if (_bounds_table.at(i, y) + _bounds_table.at(y, j) < _bounds_table.at(i, j))
-                        _bounds_table.set(i, j, _bounds_table.at(i, y) + _bounds_table.at(y, j));
+                    _bounds_table.set(i, j, bound_t::min(min, ij_bound));
                 }
             }
         }
