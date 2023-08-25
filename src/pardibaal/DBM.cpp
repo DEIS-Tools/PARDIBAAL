@@ -323,23 +323,34 @@ namespace pardibaal {
     }
 
     void DBM::restrict(dim_t x, dim_t y, bound_t g) {
-        if ((_bounds_table.at(y, x) + g) < bound_t::le_zero()) // In this case the zone is now empty
+        const auto dim = this->dimension();
+        auto x_bounds = _bounds_table.raw_begin() + (x * dim);
+        auto y_bounds = _bounds_table.raw_begin() + (y * dim);
+        
+        if ((y_bounds[x] + g) < bound_t::le_zero()) // In this case the zone is now empty
             _empty_status = EMPTY;
-        else if (g < _bounds_table.at(x, y)) {
-            _bounds_table.set(x, y, g);
+        else if (g < x_bounds[y]) {
+            x_bounds[y] = g;
 
-            const auto dim = this->dimension();
+            auto i_bounds = _bounds_table.raw_begin();
+
             for (dim_t i = 0; i < dim; ++i) {
+                auto ix_bound = i_bounds[x];
+                auto iy_bound = i_bounds[y];
+
                 for (dim_t j = 0; j < dim; ++j) {
-                    auto ij_bound = _bounds_table.at(i, j);
+                    auto ij_bound = i_bounds[j],
+                         xj_bound = x_bounds[j],
+                         yj_bound = y_bounds[j];
                     
-                    auto ixxj_bound = _bounds_table.at(i, x) + _bounds_table.at(x, j);
-                    auto iyyj_bound = _bounds_table.at(i, y) + _bounds_table.at(y, j);
+                    auto ixxj_bound = ix_bound + xj_bound;
+                    auto iyyj_bound = iy_bound + yj_bound;
                     
                     auto min = ixxj_bound < iyyj_bound ? ixxj_bound : iyyj_bound;
 
                     _bounds_table.set(i, j, bound_t::min(min, ij_bound));
                 }
+                i_bounds += dim;
             }
         }
     }
