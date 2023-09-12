@@ -732,6 +732,27 @@ BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_5) {
     BOOST_CHECK_THROW(D.extrapolate_diagonal(ceiling), base_error);
 }
 
+BOOST_AUTO_TEST_CASE(extrapolate_diagonal_test_6) {
+    DBM dbm = DBM::unconstrained(4);
+    std::vector ceiling{0, 2, 2, 6};
+
+    dbm.set(0, 1, {-2, STRICT});
+    dbm.set(2, 1, {-2, STRICT});
+    dbm.set(3, 2, {2, NON_STRICT});
+    dbm.set(0, 2, bound_t::zero());
+    dbm.set(0, 3, bound_t::zero());
+    dbm.set(2, 3, bound_t::zero());
+    dbm.set(3, 1, {0, STRICT});
+
+    BOOST_CHECK(!dbm.is_empty());
+
+    auto cpy = dbm;
+
+    dbm.extrapolate_diagonal(ceiling);
+
+    BOOST_CHECK(dbm.is_equal(cpy));
+}
+
 BOOST_AUTO_TEST_CASE(extrapolate_lu_test_1) {
     /* LU Extrapolation
      * Example from Behrmann, Gerd & Bouyer, Patricia & Larsen, Kim & Pelánek, Radek. (2004).
