@@ -45,13 +45,13 @@ namespace pardibaal {
         bool _is_equal, _is_subset, _is_superset, _is_different;
     
     public:
-        relation_t(bool equal, bool subset, bool superset, bool different) :
+        constexpr relation_t(bool equal, bool subset, bool superset, bool different) :
             _is_equal(equal), _is_subset(subset), _is_superset(superset), _is_different(different) {}
 
-        [[nodiscard]] static relation_t equal();
-        [[nodiscard]] static relation_t subset();
-        [[nodiscard]] static relation_t superset();
-        [[nodiscard]] static relation_t different();
+        [[nodiscard]] static constexpr relation_t equal() {return relation_t(true, false, false, false);}
+        [[nodiscard]] static constexpr relation_t subset() {return relation_t(false, true, false, false);}
+        [[nodiscard]] static constexpr relation_t superset() {return relation_t(false, false, true, false);}
+        [[nodiscard]] static constexpr relation_t different() {return relation_t(false, false, false, true);}
 
         [[nodiscard]] relation_e type() const;
 
@@ -62,7 +62,11 @@ namespace pardibaal {
     };
 
     class DBM {
+        enum empty_status_e {EMPTY, NON_EMPTY, UNKNOWN};
+
         bounds_table_t _bounds_table;
+        mutable empty_status_e _empty_status = NON_EMPTY;
+        mutable bool _is_closed = true;
 
     public:
         DBM(dim_t number_of_clocks);
@@ -71,9 +75,19 @@ namespace pardibaal {
 
         static DBM unconstrained(dim_t dimension);
 
-        [[nodiscard]] bound_t at(dim_t i, dim_t j) const;
-        void set(dim_t i, dim_t j, bound_t bound);
-        void set(const difference_bound_t& constraint);
+        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const { return this->_bounds_table.at(i, j); }
+
+        inline void set(dim_t i, dim_t j, bound_t bound) {
+            this->_bounds_table.set(i, j, bound);
+            _is_closed = false;
+            _empty_status = UNKNOWN;
+        }
+
+        inline void set(const difference_bound_t& constraint) {
+            this->set(constraint._i, constraint._j, constraint._bound);
+        }
+
+        [[nodiscard]] inline empty_status_e empty_status() const { return _empty_status; }
 
         void subtract(dim_t i, dim_t j, bound_t bound);
         void subtract(difference_bound_t constraint);

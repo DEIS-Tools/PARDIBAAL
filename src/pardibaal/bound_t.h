@@ -38,20 +38,23 @@ namespace pardibaal {
         val_t _n = 0;
         bool _strict = false,
              _inf = false;
+
+        constexpr bound_t(val_t n, bool strict, bool inf) : _n(n), _strict(strict), _inf(inf){};
     public:
-        bound_t(){};
-        bound_t(val_t n, strict_e strictness);
-        bound_t(val_t n, bool strict);
+        constexpr bound_t(){};
+        constexpr bound_t(val_t n, strict_e strictness) : _n(n) {_strict = strictness == STRICT ? true : false;}
+        constexpr bound_t(val_t n, bool strict) : _n(n), _strict(strict) {}
 
-        [[nodiscard]] static bound_t strict(val_t n);
-        [[nodiscard]] static bound_t non_strict(val_t n);
-        [[nodiscard]] static bound_t inf();
-        [[nodiscard]] static bound_t zero();
+        [[nodiscard]] static constexpr bound_t strict(val_t n)     {return bound_t(n, true,  false);}
+        [[nodiscard]] static constexpr bound_t non_strict(val_t n) {return bound_t(n, false, false);}
+        [[nodiscard]] static constexpr bound_t inf()               {return bound_t(0, true,  true);}
+        [[nodiscard]] static constexpr bound_t le_zero()           {return bound_t(0, false, false);}
+        [[nodiscard]] static constexpr bound_t lt_zero()           {return bound_t(0, true,  false);}
 
-        [[nodiscard]] val_t get_bound() const;
-        [[nodiscard]] bool is_strict() const;
-        [[nodiscard]] bool is_non_strict() const;
-        [[nodiscard]] bool is_inf() const;
+        [[nodiscard]] inline val_t get_bound()    const {return this->_n;}
+        [[nodiscard]] inline bool is_strict()     const {return this->_strict;}
+        [[nodiscard]] inline bool is_non_strict() const {return not this->_strict;}
+        [[nodiscard]] inline bool is_inf()        const {return this->_inf;}
 
         [[nodiscard]] static const bound_t& max(const bound_t &a, const bound_t &b);
         [[nodiscard]] static bound_t max(bound_t &&a, bound_t &&b);

@@ -26,28 +26,10 @@
 
 namespace pardibaal {
 
-    bound_t::bound_t(val_t n, strict_e strictness) : _n(n) {_strict = strictness == STRICT ? true : false;}
-
-    bound_t::bound_t(val_t n, bool strict) : _n(n), _strict(strict) {}
-
-    bound_t bound_t::strict(val_t n) {return bound_t(n, STRICT);}
-
-    bound_t bound_t::non_strict(val_t n) {return bound_t(n, NON_STRICT);}
-
-    bound_t bound_t::inf() {
-        bound_t b;
-        b._inf = true;
-        b._strict = true;
-
-        return b;
-    }
-
-    bound_t bound_t::zero() {return non_strict(0);}
-
-    val_t bound_t::get_bound()    const {return this->_n;}
-    bool bound_t::is_strict()     const {return this->_strict;}
-    bool bound_t::is_non_strict() const {return not this->_strict;}
-    bool bound_t::is_inf()        const {return this->_inf;}
+    // val_t bound_t::get_bound()    const {return this->_n;}
+    // bool bound_t::is_strict()     const {return this->_strict;}
+    // bool bound_t::is_non_strict() const {return not this->_strict;}
+    // bool bound_t::is_inf()        const {return this->_inf;}
 
     const bound_t &bound_t::max(const bound_t &a, const bound_t &b) {return a < b ? b : a;}
     bound_t bound_t::max(bound_t &&a, bound_t &&b) {return max(a, b);}
@@ -88,12 +70,8 @@ namespace pardibaal {
         if (this->is_inf()) return false;
         if (rhs.is_inf()) return true;
 
-        if (this->get_bound() == rhs.get_bound()) {
-            if (rhs.is_strict())
-                return false;
-
-            return this->is_strict();
-        }
+        if (this->get_bound() == rhs.get_bound())
+            return !rhs.is_strict() && this->is_strict();
 
         return this->get_bound() < rhs.get_bound();
     }

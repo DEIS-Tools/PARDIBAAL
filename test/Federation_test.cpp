@@ -627,6 +627,7 @@ BOOST_AUTO_TEST_CASE(intersection_test_2) {
     dbm.restrict(0, 1, bound_t::strict(-1));
     fed.intersection(dbm);
 
+    BOOST_CHECK(dbm.is_empty());
     BOOST_CHECK(fed.is_equal(dbm));
     BOOST_CHECK(fed.is_empty());
 }
@@ -764,7 +765,7 @@ BOOST_AUTO_TEST_CASE(something) {
 
     blue1.restrict({difference_bound_t::upper_non_strict(2, 2),
                     difference_bound_t::upper_non_strict(1, 3),
-                    difference_bound_t(2, 1, bound_t::zero()),
+                    difference_bound_t(2, 1, bound_t::le_zero()),
                     difference_bound_t(1, 2, bound_t::non_strict(2))});
     
     red2.restrict({difference_bound_t::upper_non_strict(2, 3), 

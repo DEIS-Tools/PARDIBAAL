@@ -31,11 +31,6 @@
 
 namespace pardibaal {
 
-    relation_t relation_t::equal() {return relation_t(true, false, false, false);}
-    relation_t relation_t::subset() {return relation_t(false, true, false, false);}
-    relation_t relation_t::superset() {return relation_t(false, false, true, false);}
-    relation_t relation_t::different() {return relation_t(false, false, false, true);}
-
     relation_e relation_t::type() const {return is_equal() ? EQUAL : is_subset() ? SUBSET : is_superset() ? SUPERSET : DIFFERENT;}
 
     bool relation_t::is_equal() const {return _is_equal;}
@@ -55,19 +50,11 @@ namespace pardibaal {
         return dbm;
     }
 
-    bound_t DBM::at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
-
-    void DBM::set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
-
-    void DBM::set(const difference_bound_t& constraint) {
-        this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
-    }
-
     void DBM::subtract(dim_t i, dim_t j, bound_t bound) {
         if (this->at(i, j) > bound) // if i,j,bound is larger than current, then result is empty. Always false if bound is inf
             this->restrict(j, i, bound_t(-bound.get_bound(), bound.is_non_strict()));
         else
-            this->set(0, 0, bound_t::non_strict(-1));
+            this->_empty_status = EMPTY;
     }
 
     void DBM::subtract(difference_bound_t constraint) {
@@ -78,25 +65,28 @@ namespace pardibaal {
 
     bool DBM::is_empty() const {
         // Check if 0 - 0 is less than 0 (used for quicker identification of empty zone
-        if (_bounds_table.at(0, 0) < bound_t().zero())
-            return true;
+        if (_empty_status != UNKNOWN)
+            return _empty_status == EMPTY ? true : false;
 
         // The DBM has to be closed for this to actually work
         for (dim_t i = 0; i < this->dimension(); ++i) {
             for (dim_t j = 0; j < this->dimension(); ++j) {
                 bound_t i_to_j_to_i = this->_bounds_table.at(i, j) + this->_bounds_table.at(j, i);
 
-                if (i_to_j_to_i < bound_t::non_strict(0))
+                if (i_to_j_to_i < bound_t::le_zero()) {
+                    _empty_status = EMPTY;
                     return true;
+                }
             }
         }
 
+        _empty_status = NON_EMPTY;
         return false;
     }
 
     bool DBM::is_satisfying(dim_t x, dim_t y, bound_t g) const {
         if (this->is_empty()) return false;
-        return bound_t::zero() <= (this->_bounds_table.at(y, x) + g);
+        return bound_t::le_zero() <= (this->_bounds_table.at(y, x) + g);
     }
 
     bool DBM::is_satisfying(const difference_bound_t& constraint) const {
@@ -112,6 +102,10 @@ namespace pardibaal {
     relation_t DBM::relation(const DBM &dbm) const {
         if (this->dimension() != dbm.dimension())
             return relation_t::different();
+        else if (this->is_empty())
+            return dbm.is_empty() ? relation_t::equal() : relation_t::subset();
+        else if (dbm.is_empty())
+            return relation_t::superset();
 
         bool eq = true, sub = true, super = true;
 
@@ -183,7 +177,7 @@ namespace pardibaal {
             throw(base_error("ERROR: Cannot measure intersection of two dbms with different dimensions. ",
                              "Got dimensions ", dbm.dimension(), " and ", dimension()));
 #endif
-        if (this->is_empty()) return false;
+        if (this->is_empty() || dbm.is_empty()) return false;
         for (dim_t i = 0; i < dimension(); ++i) {
             for (dim_t j = 0; j < dimension(); ++j) {
                 bound_t b1 = this->at(i, j);
@@ -191,8 +185,8 @@ namespace pardibaal {
 
                 // For opposite diagonal bounds: if they are both + or -, then they overlap
                 // Upper bounds can be inf; if upper bound is inf, then it overlaps with any opposite lower bound
-                if ((b1 > bound_t::zero() && b2 > bound_t::zero()) ||
-                    (b1 < bound_t::zero() && b2 < bound_t::zero()) ||
+                if ((b1 > bound_t::le_zero() && b2 > bound_t::le_zero()) ||
+                    (b1 < bound_t::le_zero() && b2 < bound_t::le_zero()) ||
                     (b1.is_inf() || b2.is_inf()))
                     continue;
                 else if (((b1.is_strict() || b2.is_strict()) && (not (b1 * -1 < b2))) || (not (b1 * -1 <= b2)))
@@ -208,6 +202,8 @@ namespace pardibaal {
     }
 
     bool DBM::is_unbounded() const {
+        if (is_empty()) return false;
+
         for (dim_t i = 1; i < dimension(); ++i)
             if (not this->at(i, 0).is_inf())
                 return false;
@@ -216,13 +212,17 @@ namespace pardibaal {
     }
 
     void DBM::close() {
+        if (_is_closed) return;
+
         const dim_t size = this->dimension();
 
         for(dim_t k = 0; k < size; ++k)
             for(dim_t i = 0; i < size; ++i)
                 for(dim_t j = 0; j < size; ++j)
                     _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j),
-                                                         _bounds_table.at(i, k) + _bounds_table.at(k, j)));
+                                                              _bounds_table.at(i, k) + _bounds_table.at(k, j)));
+
+        _is_closed = true;
     }
 
     void DBM::future() {
@@ -236,7 +236,7 @@ namespace pardibaal {
 
     void DBM::past() {
         for (dim_t i = 1; i < this->dimension(); ++i) {
-            this->_bounds_table.set(0, i, bound_t::zero());
+            this->_bounds_table.set(0, i, bound_t::le_zero());
             for (dim_t j = 1; j < this->dimension(); ++j) {
                 if (this->_bounds_table.at(j, i) < this->_bounds_table.at(0, i)) {
                     this->_bounds_table.set(0, i, this->_bounds_table.at(j, i));
@@ -265,8 +265,8 @@ namespace pardibaal {
     }
 
     void DBM::restrict(dim_t x, dim_t y, bound_t g) {
-        if ((_bounds_table.at(y, x) + g) < bound_t::zero()) // In this case the zone is now empty
-            _bounds_table.set(0, 0, bound_t::non_strict(-1));
+        if ((_bounds_table.at(y, x) + g) < bound_t::le_zero()) // In this case the zone is now empty
+            _empty_status = EMPTY;
         else if (g < _bounds_table.at(x, y)) {
             _bounds_table.set(x, y, g);
             for (dim_t i = 0; i < this->dimension(); ++i) {
@@ -315,8 +315,8 @@ namespace pardibaal {
                 _bounds_table.set(i, x, _bounds_table.at(i, y));
             }
         }
-        _bounds_table.set(x, y, bound_t::zero());
-        _bounds_table.set(y, x, bound_t::zero());
+        _bounds_table.set(x, y, bound_t::le_zero());
+        _bounds_table.set(y, x, bound_t::le_zero());
     }
 
     void DBM::shift(dim_t x, val_t n) {
@@ -326,8 +326,8 @@ namespace pardibaal {
                 this->_bounds_table.set(i, x, this->_bounds_table.at(i, x) + bound_t::non_strict(-n));
             }
         }
-        this->_bounds_table.set(x, 0, bound_t::max(this->_bounds_table.at(x, 0), bound_t::zero()));
-        this->_bounds_table.set(0, x, bound_t::min(this->_bounds_table.at(0, x), bound_t::zero()));
+        this->_bounds_table.set(x, 0, bound_t::max(this->_bounds_table.at(x, 0), bound_t::le_zero()));
+        this->_bounds_table.set(0, x, bound_t::min(this->_bounds_table.at(0, x), bound_t::le_zero()));
     }
 
     // Simple extrapolation from a ceiling for all clocks.
@@ -349,6 +349,7 @@ namespace pardibaal {
             }
         }
 
+        _is_closed = false;
         close();
     }
 
@@ -375,17 +376,18 @@ namespace pardibaal {
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
-                if (i == 0 && this->at(i, j) > bound_t::zero()) {
-                    this->set(i, j, bound_t::zero());
+                if (i == 0 && this->at(i, j) > bound_t::le_zero()) {
+                    this->set(i, j, bound_t::le_zero());
                 }
-                if (j == 0 && this->at(i, j) < bound_t::zero()) {
-                    this->set(i, j, bound_t::zero());
+                if (j == 0 && this->at(i, j) < bound_t::le_zero()) {
+                    this->set(i, j, bound_t::le_zero());
                 }
 
             }
         }
 
         //TODO: Do something smart where we only close if something changes
+        _is_closed = false;
         this->close();
     }
 
@@ -408,14 +410,15 @@ namespace pardibaal {
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
-                if (i == 0 && this->at(i, j) > bound_t::zero())
-                    this->set(i, j, bound_t::zero());
-                if (j == 0 && this->at(i, j) < bound_t::zero())
-                    this->set(i, j, bound_t::zero());
+                if (i == 0 && this->at(i, j) > bound_t::le_zero())
+                    this->set(i, j, bound_t::le_zero());
+                if (j == 0 && this->at(i, j) < bound_t::le_zero())
+                    this->set(i, j, bound_t::le_zero());
             }
         }
 
         //TODO: Do something smart where we only close if something changes
+        _is_closed = false;
         this->close();
     }
 
@@ -440,14 +443,15 @@ namespace pardibaal {
                 // Make sure we don't set 0, j to positive bound or i, 0 to a negative one
                 //TODO: We only do this because regular close() does not catch these.
                 // We should propably use a smarter close()
-                if (i == 0 && this->at(i, j) > bound_t::zero())
-                    this->set(i, j, bound_t::zero());
-                if (j == 0 && this->at(i, j) < bound_t::zero())
-                    this->set(i, j, bound_t::zero());
+                if (i == 0 && this->at(i, j) > bound_t::le_zero())
+                    this->set(i, j, bound_t::le_zero());
+                if (j == 0 && this->at(i, j) < bound_t::le_zero())
+                    this->set(i, j, bound_t::le_zero());
             }
         }
 
         //TODO: Do something smart where we only close if something changes
+        _is_closed = false;
         this->close();
     }
 
@@ -457,10 +461,17 @@ namespace pardibaal {
             throw(base_error("ERROR: Cannot take intersection of two dbms with different dimensions. ",
                              "Got dimensions ", dbm.dimension(), " and ", dimension()));
 #endif
+        if (dbm.is_empty() || this->is_empty()) {
+            this->_empty_status = EMPTY;
+            return;
+        }
+
         for (dim_t i = 0; i < dimension(); ++i)
             for (dim_t j = 0; j < dimension(); ++j)
                 this->_bounds_table.set(i, j, bound_t::min(this->at(i, j), dbm.at(i, j)));
 
+        _empty_status = UNKNOWN;
+        _is_closed = false;
         this->close();
     }
 
@@ -478,7 +489,7 @@ namespace pardibaal {
                 if (i == c && i < dimension() -1) {++i;}
                 if (j == c || i == c) continue;
 
-                D.set(i2, j2++, this->at(i, j));
+                D._bounds_table.set(i2, j2++, this->at(i, j));
             }
         }
 
@@ -498,18 +509,18 @@ namespace pardibaal {
         for (dim_t i = 0; i < dimension(); ++i) {
             if (!(i == a || i == b)) {
                 tmp = at(i, a);
-                set(i, a, at(i, b));
-                set(i, b, tmp);
+                _bounds_table.set(i, a, at(i, b));
+                _bounds_table.set(i, b, tmp);
 
                 tmp = at(a, i);
-                set(a, i, at(b, i));
-                set(b, i, tmp);
+                _bounds_table.set(a, i, at(b, i));
+                _bounds_table.set(b, i, tmp);
             }
         }
 
         tmp = at(a, b);
-        set(a, b, at(b, a));
-        set(b, a, tmp);
+        _bounds_table.set(a, b, at(b, a));
+        _bounds_table.set(b, a, tmp);
     }
 
     void DBM::add_clock_at(dim_t c) {
@@ -526,7 +537,7 @@ namespace pardibaal {
             for (dim_t j = 0, j2 = 0; j < D.dimension(); ++j) {
                 if (i == c && i < D.dimension() - 1) {++i;}
                 if (j == c || i == c) continue;
-                D.set(i, j, this->at(i2, j2++));
+                D._bounds_table.set(i, j, this->at(i2, j2++));
             }
         }
 
@@ -567,7 +578,7 @@ namespace pardibaal {
         for (dim_t i = 0; i < src_indir.size(); ++i) {
             for (dim_t j = 0; j < src_indir.size(); ++j) {
                 if (src_indir[i] != -1 && src_indir[j] != -1)
-                    dest_dbm.set(src_indir[i], src_indir[j], this->_bounds_table.at(i, j));
+                    dest_dbm._bounds_table.set(src_indir[i], src_indir[j], this->_bounds_table.at(i, j));
             }
         }
 
@@ -602,7 +613,7 @@ namespace pardibaal {
         for (dim_t i = 0; i < this->dimension(); ++i) {
             for (dim_t j = 0; j < this->dimension(); ++j) {
                 if (order[i] != ~0 && order[j] != ~0)
-                    D.set(order[i], order[j], this->_bounds_table.at(i, j));
+                    D._bounds_table.set(order[i], order[j], this->_bounds_table.at(i, j));
             }
         }
 
