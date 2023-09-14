@@ -40,8 +40,13 @@ namespace pardibaal {
          */
         [[nodiscard]] dim_t number_of_clocks() const;
 
-        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {return _bounds[i * _number_of_clocks + j];}
-        inline void set(dim_t i, dim_t j, bound_t bound) {this->_bounds[i * _number_of_clocks + j] = bound;};
+        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {
+            return _bounds[i * _number_of_clocks + j];
+        }
+
+        inline void set(dim_t i, dim_t j, bound_t bound) { 
+            this->_bounds[i * _number_of_clocks + j] = bound; 
+        }
 
         friend std::ostream& operator<<(std::ostream& out, const bounds_table_t& table);
 

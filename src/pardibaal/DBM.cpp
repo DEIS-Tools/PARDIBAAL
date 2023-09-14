@@ -50,14 +50,6 @@ namespace pardibaal {
         return dbm;
     }
 
-    // bound_t DBM::at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
-
-    // void DBM::set(dim_t i, dim_t j, bound_t bound) {this->_bounds_table.set(i, j, bound);}
-
-    // void DBM::set(const difference_bound_t& constraint) {
-    //     this->_bounds_table.set(constraint._i, constraint._j, constraint._bound);
-    // }
-
     void DBM::subtract(dim_t i, dim_t j, bound_t bound) {
         if (this->at(i, j) > bound) // if i,j,bound is larger than current, then result is empty. Always false if bound is inf
             this->restrict(j, i, bound_t(-bound.get_bound(), bound.is_non_strict()));
@@ -234,17 +226,9 @@ namespace pardibaal {
             for(dim_t i = 0; i < dim; ++i)
                 for(dim_t j = 0; j < dim; ++j)
                     _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j),
-                                                         _bounds_table.at(i, k) + _bounds_table.at(k, j)));
+                                                              _bounds_table.at(i, k) + _bounds_table.at(k, j)));
 
         _is_closed = true;
-    }
-
-    void DBM::close_single_bound(dim_t i, dim_t j) {
-        const dim_t dim = this->dimension();
-
-        for(dim_t k = 0; k < dim; ++k)
-            _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j), 
-                              _bounds_table.at(i, k) + _bounds_table.at(k, j)));
     }
 
     void DBM::future() {

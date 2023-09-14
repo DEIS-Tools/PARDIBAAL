@@ -68,9 +68,6 @@ namespace pardibaal {
         mutable empty_status_e _empty_status = NON_EMPTY;
         mutable bool _is_closed = true;
 
-        // Set bound (i, j) to the shortest/lowest (canonical) form
-        void close_single_bound(dim_t i, dim_t j);
-
     public:
         DBM(dim_t number_of_clocks);
 
@@ -78,7 +75,7 @@ namespace pardibaal {
 
         static DBM unconstrained(dim_t dimension);
 
-        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const {return this->_bounds_table.at(i, j);}
+        [[nodiscard]] inline bound_t at(dim_t i, dim_t j) const { return this->_bounds_table.at(i, j); }
 
         inline void set(dim_t i, dim_t j, bound_t bound) {
             this->_bounds_table.set(i, j, bound);
@@ -89,6 +86,8 @@ namespace pardibaal {
         inline void set(const difference_bound_t& constraint) {
             this->set(constraint._i, constraint._j, constraint._bound);
         }
+
+        [[nodiscard]] inline empty_status_e empty_status() const { return _empty_status; }
 
         void subtract(dim_t i, dim_t j, bound_t bound);
         void subtract(difference_bound_t constraint);
