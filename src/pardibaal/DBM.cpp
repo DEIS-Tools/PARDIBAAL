@@ -388,9 +388,8 @@ namespace pardibaal {
         std::vector<std::pair<dim_t, dim_t>> modified_bounds;
         modified_bounds.reserve(dim * (dim - 1));
 
-        std::vector<bool> close_zero(dim, false);
-
         std::vector<bool> skip(dim, false);
+        dim_t skip_counter = 0;
 
         for (dim_t oi = 1; oi <= dim; ++oi) {
             auto i = oi % dim; // Ordering: 1, 2, ..., dim, 0.
@@ -399,12 +398,14 @@ namespace pardibaal {
                 auto bound_ij = _bounds_table.at(i, j).get_bound();
 
                 if((- _bounds_table.at(0, i).get_bound() > ceiling[i])) {
-                    this->_bounds_table.set(i, j, bound_t::inf());
+                    for (; j < dim; ++j) // Complete j loop and add i to skip only once
+                        if (i != j)
+                            this->_bounds_table.set(i, j, bound_t::inf());
                     skip[i] = true;
+                    ++skip_counter;
                 }
                 else if ((i != 0 && -_bounds_table.at(0, j).get_bound() > ceiling[j])) {
                     this->_bounds_table.set(i, j, bound_t::inf());
-                    close_zero[j] = true;
                 }
                 else if (bound_ij > ceiling[i]) {
                     this->_bounds_table.set(i, j, bound_t::inf());
@@ -423,15 +424,21 @@ namespace pardibaal {
             }
         }
 
-        for (dim_t j = 0; j < dim; ++j)
-            if(close_zero[j])
-                for (dim_t i = 0; i < dim; ++i)
-                    _bounds_table.set(i, j, bound_t::min(_bounds_table.at(i, j), _bounds_table.at(i, 0) + _bounds_table.at(0, j)));
+        if (skip_counter == dim - 1) // All but the lower bounds are inf. Nothing to close.
+            return;
 
-        for (dim_t k = 0; k < dim; ++k)
+        // close only first case for k = 0
+        for (const auto& b : modified_bounds)
+            _bounds_table.set(b.first, b.second, bound_t::min(_bounds_table.at(b.first, b.second), _bounds_table.at(b.first, 0) + _bounds_table.at(0, b.second)));
+
+        for (dim_t k = 1; k < dim; ++k)
             if (not skip[k])
                 for (const auto& b : modified_bounds)
                     _bounds_table.set(b.first, b.second, bound_t::min(_bounds_table.at(b.first, b.second), _bounds_table.at(b.first, k) + _bounds_table.at(k, b.second)));
+            else
+                for (dim_t i = 1; i < dim; ++i)
+                    if (i != k && not skip[i])
+                        _bounds_table.set(i, k, bound_t::min(_bounds_table.at(i, k), _bounds_table.at(i, 0) + _bounds_table.at(0, k)));
     }
 
     void DBM::extrapolate_lu(const std::vector<val_t> &lower, const std::vector<val_t> &upper) {
