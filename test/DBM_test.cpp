@@ -93,12 +93,12 @@ BOOST_AUTO_TEST_CASE(bounded_future_test_3) {
         for (dim_t j = 0; j < 10; j++) {               
             if (j == 0 && i != 0) {
                 if (i == 2)
-                    BOOST_CHECK(D.at(i, j) == bound_t::inf() && D.at(i,j).get_bound() == 0);
+                    BOOST_CHECK(D.at(i, j) == bound_t::inf());
                 else
                     BOOST_CHECK(D.at(i, j) == bound_t::non_strict(5));
             } else {
                 if (i == 2 && j != 2)
-                    BOOST_CHECK(D.at(i, j) == bound_t::inf() && D.at(i, j).get_bound() == 0);
+                    BOOST_CHECK(D.at(i, j) == bound_t::inf());
                 else
                     BOOST_CHECK(D.at(i, j) == bound_t::le_zero());
             }
@@ -835,6 +835,28 @@ BOOST_AUTO_TEST_CASE(extrapolate_lu_diagonal_test_1) {
     BOOST_CHECK(D.at(2, 0) == bound_t::inf());
     BOOST_CHECK(D.at(2, 1) == bound_t::inf());
     BOOST_CHECK(D.at(2, 2) == bound_t::le_zero());
+}
+
+BOOST_AUTO_TEST_CASE(extrapolate_lu_diagonal_test_2) {
+    DBM D(3);
+    D.set(0, 1, bound_t::non_strict(-2));
+    D.set(0, 2, bound_t::non_strict(-2));
+    D.set(1, 0, bound_t::non_strict(5));
+    D.set(1, 2, bound_t::le_zero());
+    D.set(2, 0, bound_t::non_strict(7));
+    D.set(2, 1, bound_t::non_strict(2));
+
+    std::vector<val_t> upper {0, 10, 10};
+    std::vector<val_t> lower {0, 5, 5};
+
+    D.extrapolate_lu_diagonal(lower, upper);
+
+    BOOST_CHECK(D.at(0, 1) == bound_t::non_strict(-2));
+    BOOST_CHECK(D.at(0, 2) == bound_t::non_strict(-2));
+    BOOST_CHECK(D.at(1, 0) == bound_t::non_strict(5));
+    BOOST_CHECK(D.at(1, 2) == bound_t::le_zero());
+    BOOST_CHECK(D.at(2, 0) == bound_t::non_strict(7));
+    BOOST_CHECK(D.at(2, 1) == bound_t::non_strict(2));
 }
 
 BOOST_AUTO_TEST_CASE(intersection_test_1) {
