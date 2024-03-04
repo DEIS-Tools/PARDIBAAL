@@ -488,8 +488,8 @@ namespace pardibaal {
             for (dim_t j = 0; j < dim; ++j) {
                 if (i == j) continue;
                 else if ((D.at(i, j).get_bound() > lower[i]) ||
-                         (-D.at(0, i).get_bound() > -lower[i]) ||
-                         (-D.at(0, j).get_bound() > -upper[j] && i != 0))
+                         (-D.at(0, i).get_bound() > lower[i]) ||
+                         (-D.at(0, j).get_bound() > upper[j] && i != 0))
                     this->set(i, j, bound_t::inf());
                 else if (-D.at(0, j).get_bound() > upper[j] && i == 0)
                     this->set(i, j, bound_t::strict(-upper[j]));
